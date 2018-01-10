@@ -3,7 +3,7 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version  10.12.2017
+ * @version  10.01.2018
  * @todo Auf neue API umschreiben / die Funktionen bebehalten
  * STATUS: Reviewed
  */
@@ -1254,14 +1254,14 @@ private static function suhvDown() {
             $game_guestDisplay = $game_guestclub;
 
             if ($game_result == "")  { 
-              $game_result = " -:- ";
+              $game_result = "vs.";
             }
 
 
             if (($items <= $n_Games) and ($date_of_game <= $end_date_us)) {
 
               if (($date_of_game > $startdate) and ($date_of_game <= $end_date_us) and ($linkGame_ID_before != $linkGame_ID)) {  
-
+              
                $html_body .= "<div class=\"match-detail\">".
                "<div class=\"match-info\">".
                "<div class=\"match-headline\">"."<a href=\"".$game_detail_link."\" title=\"Matchtelegramm auf Swissunihockey\" >".$game_homeclub." vs. ".$game_guestclub."</a></div><div class=\"match-datetime\">".$game_date." - ".$game_time."</div>".

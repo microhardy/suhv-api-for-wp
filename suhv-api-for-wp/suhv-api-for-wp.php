@@ -3,14 +3,14 @@
  * Admin Page for SUHV API-2
  * 
  * @author Thomas Hardegger / based on Code form Jérôme Meier
- * @version  10.12.2017
+ * @version  10.01.2018
  * STATUS: Reviewed
 */
 /*
 Plugin Name: SUHV API-2 Schnittstelle für WordPress
 Plugin URI: www.churunihockey.ch
 Description: Nutzt da neu API 2.0 von Swissunihockey.ch Basiert auf Lösung von Jérôme Meier http://www.schwarzpunkt.ch 2012
-Version: 1.56
+Version: 1.57
 Text Domain: SUHV-API-2
 Author: Thomas Hardegger
 Author URI: www.churunihockey.ch
@@ -49,7 +49,8 @@ V1.47  26.06.2017  Support tablepress for primary table class settings
 V1.51  20.09.2017  Smaller effect on Club-Games if Swissunihockey API fails on ClubGames
 V1.51  29.10.2017  Smaller effect on Club-Games if Swissunihockey API fails over all functions
 V1.53  08.11.2017  Clean Log - fix wp_enqueue_scripts calls
-V1.55  20.11.2017  Gamedetails of directcppointsments at current weekend [suhv-api-team-get-gamedetails]
+V1.56  20.11.2017  Gamedetails of directcppointsments at current weekend [suhv-api-team-get-gamedetails]
+V1.57  10.01.2018  Standby-Result now "vs."
 *******************************************************************************/
 
 // Sicherstellen, dass keine Infos ausgegeben werden wenn direkt aufgerufen
