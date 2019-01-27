@@ -12,6 +12,7 @@
    visibility: hidden;
 }
 
+
 table.suhv-table {
 	width: 100%;
 	margin-bottom: 20px;
@@ -265,8 +266,12 @@ Table
 
 
 .match-detail{
+	max-width: 1280px;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
 	text-align:center;
-	border: 1px solid #D62221;
+	border: 0px solid #D62221;
 	margin: 3px;
 	padding: 3px;
 }
@@ -294,12 +299,6 @@ Table
   justify-content: space-between; /* switched from default (flex-start, see below) */
 }
 
-.match-team-home {
- margin-left: auto;
-}
-.match-team-home img {
-	width: auto;
-}
 
 .match-team-count {
 	vertical-align: middle;
@@ -312,8 +311,12 @@ Table
 }
 
 .match-team-count-add {
-    font-size: 0.6em;
+    font-size: 0.35em;
     margin-left: 3px;
+}
+
+.match-team-home {
+    margin-left: auto;
 }
 
 .match-team-guest {
@@ -321,6 +324,12 @@ Table
 }
 
 .match-team-guest img {
+        max-height: 96px;
+	width: auto;
+}
+
+.match-team-home img {
+        max-height: 96px;
 	width: auto;
 }
 
@@ -330,8 +339,174 @@ Table
 }
 
 @media screen and (max-width: 600px) {
+.match-team-home img {
+	max-width: 80%;
+}
 .match-team-guest img {
-	width: 50%;
+	max-width: 80%;
 }
 
+}
+
+body {
+	background:none;
+}
+
+.livematch-detail{
+	margin-top: 40px;
+	max-width: 900px;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+	text-align:center;
+	padding: 3px;
+	font-size: 11px;
+
+}
+
+.livematch-info {
+	text-align:center;
+	font-size: 1.2em;
+}
+
+.livematch-headline {
+	margin:5px;
+	text-align:center;
+	color: #D82423;
+}
+
+.livematch-datetime{
+	margin:3px;
+	font-size: 0.8em;
+}
+
+.livematch-result {
+  display: flex;              /* establish flex container */
+  flex-direction: row;            /* default value; can be omitted */
+  flex-wrap: nowrap;              /* default value; can be omitted */
+  justify-content: space-between; /* switched from default (flex-start, see below) */
+  color:black;
+}
+
+.livematch-result ul {
+	list-style-type: none;
+	overflow: hidden;
+	line-height: 1.3;
+	white-space: nowrap;
+}
+
+.livematch-result li:first-child {
+   line-height: 2;
+   font-size: 1.3em;
+}
+
+.livematch-change li:first-child {
+   font-weight: bold;
+   font-size: 1.3em;
+   line-height: 2;
+}
+
+.livematch-team-count {
+	vertical-align: middle;
+	padding-top: 30px;
+	white-space: nowrap;
+    text-align: center;
+    margin: 10px;
+    font-size: 7em;
+    line-height:100%;
+    width:30%;
+    color:black;
+}
+
+.livematch-promo-time {
+	display: none;
+	text-align: center;
+	font-size: 10px;
+	color: #808080;
+}
+
+.livematch-team-count-add {
+    font-size: 0.6em;
+    margin-left: 3px;
+    font-size: 0.25em;
+}
+
+.livematch-team-home {
+    margin-left: auto;
+    float:left;
+}
+
+.livematch-team-guest {
+	margin-right: auto;
+	float:right;
+}
+
+.livematch-team-guest img {
+    max-height: 150px;
+	width: auto;
+	margin: 40px;
+}
+
+.livematch-team-home img {
+    max-height: 150px;
+	width: auto;
+	margin: 40px;
+}
+
+.livematch-location {
+	margin:5px;
+    font-size: 0.75em;
+}
+
+.livematch-homeplayers{
+	text-align: left;
+	min-height: 100px;
+
+}
+.livematch-guestplayers{
+	text-align: left;
+	min-height: 100px;
+}
+
+.livematch-promo {
+  padding-top: 20px;
+  display: flex;                  /* establish flex container */
+  flex-direction: row;            /* default value; can be omitted */
+  flex-wrap: nowrap;              /* default value; can be omitted */
+  justify-content: space-between; /* switched from default (flex-start, see below) */
+  align-items: flex-end;
+}
+
+.livematch-promo-left {
+	width:20%;
+    margin-left: auto;
+    margin-right: 20px;
+    visibility: hidden;
+}
+
+.livematch-promo-middle {
+	width:40%;
+	margin-left: auto;
+    margin-right: auto;
+    visibility: hidden;
+}
+
+.livematch-promo-right {
+	width:20%;
+	margin-right: auto;
+	margin-left: 20px;
+	visibility: hidden;
+}
+ 
+
+.livematch-promo-left img {
+	max-height: 100px;
+}
+
+.livematch-promo-middle img {
+	max-height: 100px;
+}
+
+.livematch-promo-right img{
+	max-height: 100px;
 }

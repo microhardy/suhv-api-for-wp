@@ -295,13 +295,6 @@ Table
   justify-content: space-between; /* switched from default (flex-start, see below) */
 }
 
-.match-team-home {
- margin-left: auto;
-}
-.match-team-home img {
-	width: auto;
-}
-
 .match-team-count {
 	vertical-align: middle;
 	white-space: nowrap;
@@ -317,11 +310,21 @@ Table
     margin-left: 3px;
 }
 
+.match-team-home {
+    margin-left: auto;
+}
+
 .match-team-guest {
 	margin-right: auto;
 }
 
 .match-team-guest img {
+        max-height: 96px;
+	width: auto;
+}
+
+.match-team-home img {
+        max-height: 96px;
 	width: auto;
 }
 
@@ -331,8 +334,11 @@ Table
 }
 
 @media screen and (max-width: 600px) {
+.match-team-home img {
+	max-width: 80%;
+}
 .match-team-guest img {
-	width: 50%;
+	max-width: 80%;
 }
 
 }

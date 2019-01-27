@@ -3,7 +3,7 @@
  * Suhv_WP Klasse
  * 
  * @author Thonmas Hardegger / new API / based on Jérôme Meier, schwarzpunkt meier 2012
- * @version 16.11.2017
+ * @version 25.03.2018
  * @todo Auf neue API umschreiben / die Funktionen bebehalten
  * STATUS: first Review
  */
@@ -17,6 +17,7 @@ class Suhv_WP {
 	private $season; // Saison
 	private $club_id = 423403; // Chur Unihockey
 	private $club_shortname = "Chur"; // Shortname
+	private $home_location = NULL;  // Heimspiel-Ort
 	private $team_id = 429283; // Herren NLA-Team or change by pagevar
 	private $team_id_nla = 429283; // keep it - Herren NLA-Team 
 	private $league_id = 21; // Leage-ID "Junioren/-innen U14/U17 Vollmeisterschaft" / Saison 2016717
@@ -31,6 +32,14 @@ class Suhv_WP {
 	private $sponsor_link_title = NULL; // "www.churunihockey";
 	private $use_cache = True;
 	private $css_path = NULL;
+	private $live_game_id = NULL;
+	private $live_home_logo = NULL;
+	private $live_guest_logo = NULL;
+	private $live_refresh = 15; // 12 Refresh Page alle 12 Sekunden
+	private $live_auto_reload = 60 ; // Reload alle 60 Sekunden 
+	private $promo_link_left = "https://www.churunihockey.ch/promo/image-left.jpg"; // Liveticker Site - Live OSB Site
+	private $promo_link_middle = "https://www.churunihockey.ch/promo/image-middle.jpg";
+	private $promo_link_right = "https://www.churunihockey.ch/promo/image-right.jpg"; 
 
     
 		
@@ -52,6 +61,8 @@ class Suhv_WP {
 		add_shortcode ( 'suhv-api-get-team-table_nla', array( &$this, 'api_getTeamTable_nla' ) );
 		add_shortcode ( 'suhv-api-get-team-rank_nla', array( &$this, 'api_getTeam_Rank_nla' ) );
 		add_shortcode ( 'suhv-api-club-get-weekend-games', array( &$this, 'api_club_getWeekend_Games' ) );
+		add_shortcode ( 'suhv-api-club-get-weekend-games_for_LiveGames', array( &$this, 'api_club_getWeekend_Games_for_LiveGames' ) );
+		add_shortcode ( 'suhv-api-club-get-currentgamedetails', array( &$this, 'api_club_getCurrentGameDetails' ) );  
 		add_shortcode ( 'suhv-api-team-get-gamedetails', array( &$this, 'api_team_getGameDetails' ) );  
 		add_shortcode ( 'suhv-api-get-player', array( &$this, 'api_get_Player' ) );
 
@@ -59,6 +70,7 @@ class Suhv_WP {
 		add_shortcode ( 'suhv-api-show-params', array( &$this, 'api_show_params' ) );
 		add_shortcode ( 'suhv-api-show-vars', array( &$this, 'api_show_vars' ) );
 		add_shortcode ( 'suhv-api-show-processing', array( &$this, 'api_show_processing' ) );
+		add_shortcode ( 'suhv-api-reload-processing', array( &$this, 'api_reload_processing' ) );
 
         //************************************************************************************
 
@@ -75,6 +87,7 @@ class Suhv_WP {
 		if ( isset( $this->options['SUHV_round_id'] ) ) $this->league_round = $this->options['SUHV_round_id'];
 		if ( isset( $this->options['SUHV_class_id'] ) ) $this->league_class = $this->options['SUHV_class_id'];
 		if ( isset( $this->options['SUHV_group_id'] ) ) $this->league_group = $this->options['SUHV_group_id'];
+		if ( isset( $this->options['SUHV_default_home_location'] ) ) $this->home_location = $this->options['SUHV_default_home_location']; 
 
 		/* ------------------------------------------------------------------------------------ */
 		// Stylesheet verlinken wenn selektiert in Admin
@@ -176,6 +189,46 @@ class Suhv_WP {
 	  if ( $sponsor_link_title  != NULL )
  	    $this->sponsor_link_title = $sponsor_link_title;
 	}
+	/* ------------------------------------------------------------------------------------ */
+	// Funktion: Sponsor Werte
+	private function set_live_game_id($live_game_id = NULL){
+	  if ( $live_game_id  != NULL )
+ 	    $this->live_game_id = $live_game_id;
+	}
+	private function set_promo_link_left($promo_link_left = NULL){
+	  if ( $promo_link_left  != NULL )
+ 	    $this->promo_link_left = $promo_link_left;
+	}
+	private function set_promo_link_middle($promo_link_middle  = NULL){
+	  if ( $promo_link_middle  != NULL )
+ 	    $this->promo_link_middle = $promo_link_middle;
+	}
+	private function set_promo_link_right($promo_link_right = NULL){
+	  if ( $promo_link_right != NULL )
+ 	    $this->promo_link_right = $promo_link_right;
+	}
+	private function set_Live_home_logo($live_home_logo  = NULL){
+	  if ( $live_home_logo  != NULL )
+ 	    $this->live_home_logo = $live_home_logo;
+	}
+	private function set_live_guest_logo($live_guest_logo = NULL){
+	  if ( $live_guest_logo != NULL )
+ 	    $this->live_guest_logo = $live_guest_logo;
+	}
+	private function set_live_refresh($live_refresh = NULL){
+	  if ( $live_refresh != NULL )
+ 	    $this->live_refresh = $live_refresh;
+	}
+	private function set_live_auto_reload($live_auto_reload = NULL){
+	  if ( $live_auto_reload!= NULL )
+ 	    $this->live_auto_reload = $live_auto_reload;
+	}
+
+    private function set_home_location( $home_location = NULL ){
+		if ( $home_locatione != NULL )
+		  $this->home_location = $home_location;
+	}
+	
 	
 	/* ------------------------------------------------------------------------------------ */
 	// Funktion: Überprüfung der Meta-Values eines Post 
@@ -230,7 +283,32 @@ class Suhv_WP {
 	    if ( get_post_meta( get_the_ID(), 'Sponsor Link Title', true ) != "" ) {
 		  $this->set_sponsor_link_title( get_post_meta( get_the_ID(), 'Sponsor Link Title', true ) );
 		}
-		
+		//Live Game Site
+		// Ändert den Sponsorwert, wenn ein Promi-Wert im Post-Meta-Feld eingegeben wurde.
+		if ( get_post_meta( get_the_ID(), 'Live Game ID', true ) != "" ) {
+		  $this->set_live_game_id( get_post_meta( get_the_ID(), 'Live Game ID', true ) );
+		}
+		if ( get_post_meta( get_the_ID(), 'Promo Link Left', true ) != "" ) {
+		  $this->set_promo_link_left( get_post_meta( get_the_ID(), 'Promo Link Left', true ) );
+		}
+		if ( get_post_meta( get_the_ID(), 'Promo Link Middle', true ) != "" ) {
+		  $this->set_promo_link_middle( get_post_meta( get_the_ID(), 'Promo Link Middle', true ) );
+		}
+		if ( get_post_meta( get_the_ID(), 'Promo Link Right', true ) != "" ) {
+		  $this->set_promo_link_right( get_post_meta( get_the_ID(), 'Promo Link Right', true ) );
+		}
+		if ( get_post_meta( get_the_ID(), 'Home Logo', true ) != "" ) {
+		  $this->set_live_home_logo( get_post_meta( get_the_ID(), 'Home Logo', true ) );
+		}
+		if ( get_post_meta( get_the_ID(), 'Guest Logo', true ) != "" ) {
+		  $this->set_Live_guest_logo( get_post_meta( get_the_ID(), 'Guest Logo', true ) );
+		}
+		if ( get_post_meta( get_the_ID(), 'Live Refresh', true ) != "" ) {
+		  $this->set_live_refresh( get_post_meta( get_the_ID(), 'Live Refresh', true ) );
+		}
+		if ( get_post_meta( get_the_ID(), 'Live Auto Reload', true ) != "" ) {
+		  $this->set_live_auto_reload( get_post_meta( get_the_ID(), 'Live Auto Reload', true ) );
+		}
 	}
 	
 
@@ -251,7 +329,8 @@ class Suhv_WP {
      print_r( SuhvApiManager::getInstance()->getLog() ), '</pre>';
     }
 
- 
+ 	/* ------------------------------------------------------------------------------------ */
+
 	// *********************************************************************************************
 	//
 	// API 2.0
@@ -269,10 +348,23 @@ class Suhv_WP {
  	    return SwissUnihockey_Api_Public::api_club_getGames($season, $club_ID, $club_shortname,  $team_ID, $mode, $cache );
 	}
 
+	function api_club_getGames_Mails(){
+		if ( !isset ( $this->club ) ) $this->set_club();
+		//echo "api_club_getGames";
+		$season = $this->season;
+ 	    $club_ID = $this->club_id;
+ 	    $club_shortname = $this->club_shortname;
+ 	    $team_ID = $this->team_id;
+ 	    $mode = "club";
+ 	    $cache = $this->use_cache;
+ 	    return SwissUnihockey_Api_Public::api_club_getGames_Mails($season, $club_ID, $club_shortname,  $team_ID, $mode, $cache );
+	}
+
     function api_team_getGameDetails($atts){
 	    extract(shortcode_atts(array(
 	     "start_date" => '17.09.2015',
          "end_date" => '18.09.2015',
+         "game_id" => NULL ,
         ), $atts));
         if ( !isset ( $this->team_id ) ) $this->set_team();
 		if ( !isset ( $this->club_id ) ) $this->set_club();
@@ -282,7 +374,7 @@ class Suhv_WP {
  	    $team_ID = $this->team_id;
  	    $mode = "team";
  	    $cache = $this->use_cache;
- 	    return SwissUnihockey_Api_Public::api_team_getGameDetails($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $cache );
+ 	    return SwissUnihockey_Api_Public::api_team_getGameDetails($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $game_id, $cache );
 	}
 
 	function api_club_getCupGames(){
@@ -313,7 +405,7 @@ class Suhv_WP {
 
     function api_league_getWeekendGames(){
 		if ( !isset ( $this->club ) ) $this->set_club();
-	echo "api_league_getWeekendGames";
+	// echo "api_league_getWeekendGames";
 		$season = $this->season;
 		$league_id = $this->league_id;
  	    $league_class = $this->league_class;
@@ -438,7 +530,6 @@ class Suhv_WP {
         ), $atts));
         
 		if ( !isset ( $this->club ) ) $this->set_club();
-		//echo "api_club_getGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
  	    $club_shortname = $this->club_shortname;
@@ -447,6 +538,53 @@ class Suhv_WP {
  	    $cache = $this->use_cache;
  	    return SwissUnihockey_Api_Public::api_club_getWeekendGames($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $cache );
 	}
+
+	function api_club_getWeekend_Games_for_LiveGames($atts){
+	    extract(shortcode_atts(array(
+	     "away" => NULL ,
+	     "start_date" => '17.09.2015',
+         "end_date" => '18.09.2015',
+        ), $atts));
+     
+		if ( !isset ( $this->club ) ) $this->set_club();
+		$season = $this->season;
+ 	    $club_ID = $this->club_id;
+ 	    $club_shortname = $this->club_shortname;
+ 	    $team_ID = $this->team_id;
+ 	    $mode = "club";
+ 	    $cache = $this->use_cache;
+ 	    return SwissUnihockey_Api_Public::api_club_getWeekendGames_for_LiveGames($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $cache, $away );
+	}
+
+	function api_club_getCurrentGameDetails($atts){
+        extract(shortcode_atts(array(
+	     "game_id" => NULL ,
+        ), $atts));
+
+        if ( ($game_id < 100000) and ($game_id > 0) and ($game_id != NULL)) $game_id = 897372;
+        if ( !isset ( $this->team_id ) ) $this->set_team();
+		if ( !isset ( $this->club_id ) ) $this->set_club();
+		if ( !isset ( $this->game_id ) ) $this->set_live_game_id();
+		if ( $game_id == NULL ) $game_id = $this->live_game_id ;
+		if ( ($game_id == 0)) $game_id = NULL;
+        if ( !isset ( $this->live_home_logo) ) $this->set_live_home_logo();
+        if ( !isset ( $this->live_guest_logo) ) $this->set_live_guest_logo();
+        if ( !isset ( $this->live_refresh) ) $this->set_live_refresh();
+
+		$season = $this->season;
+ 	    $club_ID = $this->club_id;
+ 	    $club_shortname = $this->club_shortname;
+ 	    $team_ID = $this->team_id;
+ 	    $mode = "club";
+ 	    $promo_left = $this->promo_link_left;
+ 	    $promo_middle = $this->promo_link_middle;
+ 	    $promo_right = $this->promo_link_right;
+ 	    $home_logo = $this->live_home_logo;
+ 	    $guest_logo = $this->live_guest_logo;
+ 	    $live_refresh = $this->live_refresh;
+ 	    return SwissUnihockey_Api_Public::api_club_getCurrentGameDetails($season, $club_ID, $club_shortname, $team_ID, $mode, $game_id, $home_logo, $guest_logo, $promo_left, $promo_middle, $promo_right, $live_refresh);
+	}
+
 
 	function api_get_Player ($player_id = NULL ){
 		//echo "<p class='error suhv'>THE ID ".$player_id."<br></p>";
@@ -494,8 +632,23 @@ class Suhv_WP {
 
     function api_show_processing(){
 	  echo 'processing...';
-      $moment = "<img src=\"http://www.churunihockey.ch/picture_library/cu/icons/processing.gif\" title=\"Moment bitte!\">";
+      $moment = "<img src=\"https://www.churunihockey.ch/picture_library/cu/icons/processing.gif\" title=\"Moment bitte!\">";
       echo $moment;
+      flush(); 
+    }
+
+    function api_reload_processing(){
+      if ( !isset ( $this->live_auto_reload ) ) $this->set_live_auto_reload();
+      $live_auto_reload = $this->live_auto_reload;
+      if ( $live_auto_reload <= 10) $live_auto_reload = 10;
+      $reload_time = $live_auto_reload*1000;
+	  echo "Last update: ".date("H:i s")."&Prime; auto-reload every ".$live_auto_reload." seconds...";
+      $moment = "<img src=\"https://www.churunihockey.ch/picture_library/cu/icons/processing.gif\" title=\"Moment bitte!\">\n"
+      ."<script type=\"text/javascript\">\n"
+	  ."<!--\n"
+	  ."setTimeout(function(){location.reload();},".$reload_time.");\n"
+	  ."--></script>\n";
+      echo $moment."<br />";
       flush(); 
     }
 	
@@ -514,7 +667,8 @@ function Suhv_WP_init() {
  //SwissUnihockey_Api_Public::log_me($plugin_options);
  */
 
- add_action('plugins_loaded', 'Suhv_WP_init');
+add_action('plugins_loaded', 'Suhv_WP_init');
+
 
 } // End if ( !class_exists( 'Suhv_WP' ) )
 else echo "<p class='error suhv'>Es besteht eine Kollision mit einer anderen Klasse welche ebenfalls Suhv_WP heisst!</p>";

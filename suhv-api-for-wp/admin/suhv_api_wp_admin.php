@@ -2,7 +2,7 @@
 /**
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
- * @version 16.11.2017
+ * @version 17.11.2018
  * STATUS: Reviewed
  */
 
@@ -44,7 +44,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  					do_settings_sections( __FILE__ );
  				?>
     <h3>Schnelleinstieg</h3>
-    <p>Für eine ausführliche Beschreibung des Plugins besuche die <a href='http://suhv.teamchur.ch' title='Swiss Unihockey API 2.0 für WordPress'>Plugin-Website</a> von <a href='mailto:webmaster@churunihockey.ch' title='webmaster'>Thomas Hardegger</a></p>
+    <p>Für eine ausführliche Beschreibung des Plugins besuche die <a href='http://suhv.teamchur.ch' title='Swiss Unihockey API 2.0 für WordPress'>Plugin-Website</a> von <a href='mailto:websupport@churunihockey.ch' title='websupport'>Thomas Hardegger</a></p>
      <?php 
  					do_settings_sections( __FILE__ . "_description" );
  				?>
@@ -71,6 +71,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     add_settings_field( 'SUHV_mail_actual_result', 'SUHV Email Actual', array( $this, 'SUHV_mail_actual_result_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_mail_final_result', 'SUHV Email Result', array( $this, 'SUHV_mail_final_result_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_mail_send_from', 'SUHV Email From', array( $this, 'SUHV_mail_send_from_setting' ), __FILE__,  'SUHV_main_section');
+    add_settings_field( 'SUHV_default_home_location', 'Heimspiel Ort', array( $this, 'SUHV_default_home_location' ), __FILE__,  'SUHV_main_section');
  		//add_settings_field( 'SUHV_log', 'SUHV Logdaten anzeigen', array( $this, 'SUHV_log_setting' ), __FILE__,  'SUHV_main_section');
  		add_settings_section( 'SUHV_description_section', '', array( $this, 'SUHV_description_section_cb' ), __FILE__ . "_description" ); //id, title of section, cb, page
  		add_settings_field( 'SUHV_shortcode_club', 'SUHV Club', array( $this, 'SUHV_shortcodes_club' ), __FILE__ . "_description",  'SUHV_description_section');
@@ -193,7 +194,13 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     echo "<label><input name='SUHV_WP_plugin_options[SUHV_long_cache]' type='checkbox' value='1' " . checked( 1, $this->options['SUHV_long_cache'], false ) . "/>Langzeit-Cache (Falls swissunihockey überlastet)</label><br>";
   }
   
- 	
+ 	// Default Club Homegame Location
+  public function SUHV_default_home_location()
+  {
+    echo "<input name='SUHV_WP_plugin_options[SUHV_default_home_location]' type='text' value='" . $this->options['SUHV_default_home_location'] . "' /> ";
+    echo "<span class='description'>Heimspielaustragungsort. Beipiele: 'Chur' oder 'Maienfeld' oder 'Zuchwil'.</span>";
+  }
+
  	// Default Logfiles?
  	public function SUHV_log_setting()
  	{
@@ -206,6 +213,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     echo "[suhv-api-club-get-cupgames] <span class='description'>Alle Cup-Spiele des NLA-Teams </span><br>"; 
     echo "[suhv-api-club-get-weekend-games start_date=\"17.09.2016\" end_date=\"18.09.2016\"]<span class='description'> Spiele des Clubs am Wochenende</span><br>";
     echo "[suhv-api-club-get-weekend-games]<span class='description'> Spiele des Clubs am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
+    echo "[suhv-api-club-get-currentgamedetails]<span class='description'> Details der aktuellen Direktbegegnung</span><br>";
     echo "Bestimmende Variablen: 'SUHV Club ID'";
 
  	}
@@ -215,6 +223,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  		echo "[suhv-api-team-get-games] <span class='description'>Nächste Spiele des Teams</span><br>"; 
  		echo "[suhv-api-team-get-playedgames] <span class='description'>Gespielte Spiele des Teams</span><br>";
     echo "[suhv-api-team-get-gamedetails]<span class='description'> Details der Direktbegegnungen des Teams am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
+    echo "[suhv-api-team-get-gamedetails game_id=\"916647\"] Details der Direktbegegnungen des Spiels mit ID</span><br>";
  		echo "[suhv-api-get-team-table] <span class='description'>Tabelle des Teams</span><br>"; 
  		echo "[suhv-api-get-team-rank] <span class='description'>Rangliste in Liga des Teams</span><br>";	
  		echo "[suhv-api-nla-team-get-table] <span class='description'>Tabelle des NLA Teams</span><br>"; 

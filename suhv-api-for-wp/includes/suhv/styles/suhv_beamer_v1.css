@@ -1,5 +1,6 @@
 @CHARSET "utf-8";
 
+
 .suhv-round-link a {
 	float:right;
 }
@@ -11,7 +12,6 @@
    visibility: hidden;
 }
 
-
 table.suhv-table {
 	width: 100%;
 	margin-bottom: 20px;
@@ -19,13 +19,11 @@ table.suhv-table {
 }
 
 table.suhv-table th {
-	background-color: black; 
-	color: #ed8600;
+	background-color: #D82423; 
 	border: 0;
 	text-align: left;
 	font-weight: bold;
 }
-
 
 table.suhv-table td {
 }
@@ -42,6 +40,7 @@ table.suhv-table th.suhv-ties, table.suhv-table th.suhv-defeats{
 	text-align: center;
 }
 
+
 table.suhv-table td.suhv-scored, table.suhv-table  th.suhv-scored {
 	text-align: center;
 }
@@ -56,7 +55,7 @@ tr.alt {
 }
 
 tr.suhv-my-team {
-	background-color: bisque;
+	background-color: #F4D4D4;
 }
 
 tr:hover {
@@ -91,27 +90,15 @@ th.suhv-opponent {
 	width: 40%;
 }
 
-
 td.suhv-win, td.suhv-lose, td.suhv-draw, td.suhv-result {
 	color: white;
 	text-align: center;
 	font-weight: bold;
 	border: 0px solid white;
-	border-top-width: 1px;
 	border-bottom-width: 1px;
 }
 
-td.suhv-win a {
-	color: black;
-	text-decoration: underline;
-}
-
-td.suhv-lose a {
-	color: #ed8600;
-	text-decoration: underline;
-}
-
-td.suhv-draw a, td.suhv-result a {
+td.suhv-win a, td.suhv-lose a, td.suhv-draw a, td.suhv-result a {
 	color: white;
 	text-decoration: underline;
 }
@@ -124,8 +111,8 @@ td.suhv-home {
 	font-weight: bold;
 }
 td.suhv-win {
-	background: #ed8600;
-    text-align: center;
+	background-color: #090;
+	text-align: center;
 }
 
 
@@ -134,7 +121,7 @@ td.suhv-draw {
 }
 
 td.suhv-lose {
-	background-color: black;
+	background-color: #D82423;
 	text-align: center;
 }
 
@@ -144,10 +131,10 @@ td.suhv-result {
 }
 
 td.suhv-activ {
-	background-color: bisque;
+	background-color: #ffff99;
 	color: #000099;
 	text-align: center;
-	border: 0px dotted #ed8600;
+	border: 0px dotted #D82423;
 	border-bottom-width: 2px;
 }
 
@@ -278,8 +265,12 @@ Table
 
 
 .match-detail{
+	max-width: 1280px;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
 	text-align:center;
-	border: 0px dotted black; /* #ed8600; */
+	border: 1px solid #D62221;
 	margin: 3px;
 	padding: 3px;
 }
@@ -292,7 +283,7 @@ Table
 .match-headline {
 	margin:5px;
 	text-align:center;
-	color: black;
+	color: #D82423;
 }
 
 .match-datetime{
@@ -307,18 +298,19 @@ Table
   justify-content: space-between; /* switched from default (flex-start, see below) */
 }
 
+
 .match-team-count {
 	vertical-align: middle;
 	white-space: nowrap;
     text-align: center;
     margin: 10px;
     font-size: 3em;
-    line-height: 80%;
+    line-height:100%;
     width:30%;
 }
 
 .match-team-count-add {
-    font-size: 0.4em;
+    font-size: 0.6em;
     margin-left: 3px;
 }
 
@@ -355,16 +347,19 @@ Table
 
 }
 
+body {
+	background:none;
+}
+
 .livematch-detail{
 	margin-top: 40px;
-	max-width: 900px;
+	max-width: 1440px;
 	display: block;
     margin-left: auto;
     margin-right: auto;
 	text-align:center;
 	padding: 3px;
-	font-size: 11px;
-
+	font-size: 18px;
 }
 
 .livematch-info {
@@ -384,11 +379,12 @@ Table
 }
 
 .livematch-result {
-  display: flex;              /* establish flex container */
-  flex-direction: row;            /* default value; can be omitted */
-  flex-wrap: nowrap;              /* default value; can be omitted */
-  justify-content: space-between; /* switched from default (flex-start, see below) */
-  color:black;
+	display: flex;              /* establish flex container */
+	flex-direction: row;            /* default value; can be omitted */
+	flex-wrap: nowrap;              /* default value; can be omitted */
+	justify-content: space-between; /* switched from default (flex-start, see below) */
+	color:black;
+	font-family: 'Roboto', sans-serif;
 }
 
 .livematch-result ul {
@@ -411,13 +407,13 @@ Table
 
 .livematch-team-count {
 	vertical-align: middle;
+	min-height: 400px;
 	padding-top: 30px;
 	white-space: nowrap;
     text-align: center;
     margin: 10px;
-    font-size: 7em;
-    line-height:100%;
-    width:30%;
+    font-size: 12em;
+    width:auto;
     color:black;
 }
 
@@ -431,7 +427,7 @@ Table
 .livematch-team-count-add {
     font-size: 0.6em;
     margin-left: 3px;
-    font-size: 0.25em;
+    font-size: 0.1em;
 }
 
 .livematch-team-home {
@@ -445,15 +441,17 @@ Table
 }
 
 .livematch-team-guest img {
-    max-height: 150px;
-	width: auto;
+    max-height: 250px;
+	width: 250px;
 	margin: 40px;
+	image-rendering: auto;
 }
 
 .livematch-team-home img {
-    max-height: 150px;
-	width: auto;
+    max-height: 250px;
+	width: 250px;
 	margin: 40px;
+    image-rendering: auto;
 }
 
 .livematch-location {
@@ -463,12 +461,12 @@ Table
 
 .livematch-homeplayers{
 	text-align: left;
-	min-height: 100px;
+	min-height: 400px;
 
 }
 .livematch-guestplayers{
 	text-align: left;
-	min-height: 100px;
+	min-height: 400px;
 }
 
 .livematch-promo {
@@ -484,21 +482,16 @@ Table
 	width:20%;
     margin-left: auto;
     margin-right: 20px;
-    visibility: hidden;
 }
 
 .livematch-promo-middle {
 	width:40%;
-	margin-left: auto;
-    margin-right: auto;
-    visibility: hidden;
 }
 
 .livematch-promo-right {
 	width:20%;
 	margin-right: auto;
 	margin-left: 20px;
-	visibility: hidden;
 }
  
 

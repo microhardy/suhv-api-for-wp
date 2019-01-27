@@ -3,21 +3,21 @@
  * Admin Page for SUHV API-2
  * 
  * @author Thomas Hardegger / based on Code form Jérôme Meier
- * @version  10.01.2018
+ * @version  09.01.2019
  * STATUS: Reviewed
 */
 /*
 Plugin Name: SUHV API-2 Schnittstelle für WordPress
 Plugin URI: www.churunihockey.ch
 Description: Nutzt da neu API 2.0 von Swissunihockey.ch Basiert auf Lösung von Jérôme Meier http://www.schwarzpunkt.ch 2012
-Version: 1.57
+Version: 1.70
 Text Domain: SUHV-API-2
 Author: Thomas Hardegger
 Author URI: www.churunihockey.ch
 License: GPL2
 
 ----------------------------------------------------------------------------------------
-Copyright 2015 Thomas Hardegger (email : webmaster@churunihockey.ch)
+Copyright 2015 Thomas Hardegger (email : websupport@churunihockey.ch)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License, version 2, as 
@@ -51,6 +51,17 @@ V1.51  29.10.2017  Smaller effect on Club-Games if Swissunihockey API fails over
 V1.53  08.11.2017  Clean Log - fix wp_enqueue_scripts calls
 V1.56  20.11.2017  Gamedetails of directcppointsments at current weekend [suhv-api-team-get-gamedetails]
 V1.57  10.01.2018  Standby-Result now "vs."
+V1.60  21.01.2018  Install a cron aktivation for sending result mails
+V1.61  24.02.2018  CurrentGameDetails for support Home-Games
+V1.62  25.03.2018  Add highresolution clublogos to Home-Game-Screen
+V1.63  22.06.2018  Add Ajax for Home-Games
+V1.64  01.09.2018  fix count on Teamtable (PHP 7.2)
+V1.65  19.09.2018  fix https converting on clublogos
+V1.66  28.09.2018  fix morgen/tomorrow on direkt games
+V1.67  30.09.2018  fix mail and set cronlog.txt off - if not churunihocky
+V1.68  27.10.2018  fix clean leagues replacements
+V1.70  09.01.2019  make loops for group A + B on ranking tables (Junior-Games)
+                   sample https://api-v2.swissunihockey.ch/api/rankings?&season=2018&league=12&game_class=34&group=Gruppe+26 
 *******************************************************************************/
 
 // Sicherstellen, dass keine Infos ausgegeben werden wenn direkt aufgerufen
@@ -83,9 +94,9 @@ global $wpdb;
 /* ------------------------------------------------------------------------------------ */
 // Administrationsbereich (Backend)
 /* ------------------------------------------------------------------------------------ */
-if ( is_admin() )
+if ( is_admin() ) {
 	require_once SUHV_API_WP_PLUGIN_PATH . 'admin/suhv_api_wp_admin.php';
-
+}
 
 /* ------------------------------------------------------------------------------------ */
 // Besucherbereich (Frontend)
@@ -116,5 +127,76 @@ if ( ! is_admin() ){ // Alles wird nur im Frontend ausgeführt
  }
  
 } // End if ( ! is_admin() )
+
+function log_me($message) {
+      if ( WP_DEBUG === true ) {
+          if ( is_array($message) || is_object($message) ) {
+              error_log( print_r($message, true) );
+          } else {
+                error_log( $message );
+          }
+      }
+  }
+
+ //****************************************
+ // add custom interval
+function cron_add_5minutes( $schedules ) {
+  // Adds once every minute to the existing schedules.
+    $schedules['every5minutes'] = array(
+      'interval' => 60*5,
+      'display' => __( 'Once Every 5 Minutes' )
+    );
+    log_me('new schedule insert every5minutes');
+    return $schedules;
+}
+
+add_filter( 'cron_schedules', 'cron_add_5minutes' );
+
+// ADD Cron task
+ function my_cronjob_suhv_action () {
+    // code to execute on cron run
+   date_default_timezone_set("Europe/Paris");
+   //wp_cache_clear_cache();
+   
+   if (substr_count( $_SERVER['SERVER_NAME'] ,"churunihockey")>=1) {
+     $myfile = fopen("cronlog.txt", "a+") or die("Unable to open file!");
+     $txt = $_SERVER['SERVER_NAME']." start: ".date("d.m.Y - H:i:s")."\n";
+     fwrite($myfile, $txt);
+     fclose($myfile);
+   }
+
+   $Suhv_WP_instance = new Suhv_WP();  
+   $Suhv_WP_instance->api_club_getGames_Mails();
+   $timevalue = 'cronjob running - at '.date("d.m.Y - H:i:s");
+   log_me($timevalue);
+
+ } 
+
+// END Add Cron
+ 
+//****************************************
+
+register_activation_hook(__FILE__, 'my_activation');
+
+function my_activation() {
+    if (! wp_next_scheduled ( 'my_mail_event' )) {
+     wp_schedule_event(time(), 'every5minutes', 'my_mail_event');
+    }
+    log_me('new cron hook set suhv');
+}
+
+add_action('my_mail_event', 'my_cronjob_suhv_action');
+
+//****************************************
+
+register_deactivation_hook(__FILE__, 'my_deactivation');
+
+function my_deactivation() {
+  wp_clear_scheduled_hook('my_mail_event');
+  log_me('deaktivate cron hook suhv');
+}
+
+//****************************************
+
 
 ?>

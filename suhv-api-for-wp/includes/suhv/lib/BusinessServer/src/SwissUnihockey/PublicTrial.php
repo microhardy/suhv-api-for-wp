@@ -6,18 +6,10 @@
  * here, so that calls can be transparent for the rest of the code. 
  * 
  */
-
-/*** Changes ******************************************************************
-V1.61  24.02.2018  CurrentGameDetails for support Home-Games
-*/
 class SwissUnihockey_Public {
     public function __construct($base_url='https://api-v2.swissunihockey.ch/api', 
         $key=null, $secret=null)
     {
-        $plugin_options = get_option('SUHV_WP_plugin_options');
-        $key = $plugin_options['SUHV_api_key'];
-        $secret = $plugin_options['SUHV_api_secret'];
-
         $this->base_url = $base_url; 
         $this->key = $key; 
         $this->secret = $secret; 
@@ -162,28 +154,16 @@ class SwissUnihockey_Public {
     /** 
      * Retrieves all games of a club.
      */
-    public function clubGames($season, $club_id, $team_id, $mode, $context=array())
+    public function clubGames($season, $club_id, $context=array())
     {
-        $context['mode'] = $mode;
+        $context['mode'] = 'club';
         $context['season'] = $season;
         $context['club_id'] = $club_id;
-        $context['team_id'] = $team_id;
-        //echo "<br>context: mode ".$context['mode']." - context: page ".$context['page'];
+        
         $json = $this->get('/games', $context);
         return $json; 
     }
     
-    /** 
-     * Retrieves list of all leagues
-     * Extra T. Hardegger
-     */
-    public function leagues($season)
-    {
-        $context['season'] = $season;
-
-        $json = $this->get('/leagues', $context);
-        return $json; 
-    }
     /** 
      * Retrieves the rankings (Rangliste) data.
      * 
@@ -194,16 +174,11 @@ class SwissUnihockey_Public {
      *  * group: A group id.
      *  * view: 'full' or 'short' - how much information is returned.
      */
-    public function rankings($season, $club_id, $team_id, $mode, $context=array())
+    public function rankings($context=array())
     {
-        if ($mode != NULL) $context['mode'] = $mode;
-        if ($team_id != NULL) $context['team_id'] = $team_id;
-        $context['season'] = $season;
-        $context['club_id'] = $club_id;
         $json = $this->get('/rankings', $context);
         return $json; 
     }
-
 
     /**
      * Lineup for a game.
@@ -245,35 +220,6 @@ class SwissUnihockey_Public {
         $json = $this->get($url, $context);
         return $json; 
     }
-
-    /** 
-     * Summary for a game.
-     *
-     * Parameters:
-     *  * game_id: A game id.
-     */
-    public function gameDetailsSummary($game_id, $context=array()) 
-    {
-        $url = '/games/'.$game_id."/summary";
-        
-        $json = $this->get($url, $context);
-        return $json; 
-    }
-
-     /** 
-     * Events for Hometeam of a game.
-     *
-     * Parameters:
-     *  * game_id: A game id.
-     */
-    public function gameDetailsTeam($game_id, $context=array()) 
-    {
-        $url = '/game_events/'.$game_id;
-        
-        $json = $this->get($url, $context);
-        return $json; 
-    }
-    
     
     /** 
      * Timeline for a cup. 
