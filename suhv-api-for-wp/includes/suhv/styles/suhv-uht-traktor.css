@@ -1,0 +1,144 @@
+@CHARSET "utf-8";
+
+.suhv-round-link a {
+	float:right;
+}
+
+.suhv-round-anchor a {
+   display: block;
+   position: relative;
+   top: -10px;
+   visibility: hidden;
+}
+
+
+table.suhv-table {
+	width: 100%;
+	margin-bottom: 20px;
+	border: 0px solid #999;
+}
+
+table.suhv-table th {
+	border: 0;
+	text-align: left;
+	font-weight: bold;
+}
+
+
+table.suhv-table td.suhv-points, table.suhv-table td.suhv-diff, table.suhv-table th.suhv-points, table.suhv-table  th.suhv-diff {
+	text-align: right;
+}
+
+table.suhv-table td.suhv-ties, table.suhv-table td.suhv-defeats{
+	text-align: center;
+}
+
+table.suhv-table th.suhv-ties, table.suhv-table th.suhv-defeats {
+	text-align: center;
+}
+
+
+table.suhv-table td.suhv-scored, table.suhv-table  th.suhv-scored {
+	text-align: center;
+}
+
+table.suhv-table th, 
+table.suhv-table td {
+	padding: 4px 2px;
+}
+
+tr.alt {
+
+}
+
+tr.suhv-result {
+	text-align: center;
+}
+
+.suhv-played-games th.suhv-home, 
+.suhv-played-games th.suhv-away {
+	width: 25%;
+}
+
+.suhv-planned-games-full th.suhv-home, 
+.suhv-planned-games-full th.suhv-away {
+	width: 25%;
+}
+
+table.suhv-table th.suhv-result {
+	 width: 15%;
+     text-align: center;
+}
+
+th.suhv-date {
+	width: 20%;
+}
+
+th.suhv-place {
+	width: 20%;
+}
+
+th.suhv-opponent {
+	width: 40%;
+}
+
+td.suhv-win, td.suhv-lose, td.suhv-draw, td.suhv-result {
+	color: white;
+	text-align: center;
+	font-weight: bold;
+	border: 0px solid white;
+	border-bottom-width: 1px;
+}
+
+td.suhv-win a, td.suhv-lose a, td.suhv-draw a, td.suhv-result a {
+	color: white;
+	text-decoration: underline;
+}
+
+td.suhv-scored {
+	text-align: center;
+}
+
+td.suhv-home {
+	font-weight: bold;
+}
+td.suhv-win {
+	background-color: #090;
+	text-align: center;
+}
+
+
+td.suhv-draw {
+	background-color: #999;
+}
+
+td.suhv-lose {
+	background-color: #D82423;
+	text-align: center;
+}
+
+td.suhv-result {
+	color: #666666;
+	text-align: center;
+}
+
+td.suhv-activ {
+	background-color: #ffff99;
+	color: #000099;
+	text-align: center;
+	border: 0px dotted #D82423;
+	border-bottom-width: 2px;
+}
+
+td.suhv-activ a {
+	color: #000099;
+	text-decoration: underline;
+}
+
+td.suhv-wait {
+    font-size: 100%;
+}
+
+tr.suhv-bar td {
+	border-bottom: 1px solid #666;
+}

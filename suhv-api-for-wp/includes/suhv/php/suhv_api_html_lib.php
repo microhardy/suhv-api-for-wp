@@ -3,7 +3,7 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version 09.01.2019
+ * @version 25.03.2019
  * STATUS: Reviewed
  */
 
@@ -2422,17 +2422,19 @@ private static function suhvDown() {
             $game_guestDisplay = $game_guestclub;
             $game_league = str_replace ("Junioren", "",$game_league);
             //$game_league = str_replace ("Herren", "",$game_league);
-           
-            if ($game_home_result == $game_guest_result) { $resultClass = 'suhv-draw';} else {$resultClass = 'suhv-result';}
-            if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($club_name,$game_homeclub)>=1)){ 
-              $game_Opponent = $game_guestDisplay; 
-              if ($game_home_result > $game_guest_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
-            }
-            if ((substr_count($game_guestDisplay,$my_club_name)>=1) and (substr_count($club_name,$game_guestclub)>=1)) {
-              $game_Opponent = $game_homeDisplay;
-              if ($game_guest_result > $game_home_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
-            }
 
+	        $resultClass = 'suhv-result';
+            if ($game_home_result == $game_guest_result) { $resultClass = 'suhv-draw';}
+            else {
+	            if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($club_name,$game_homeclub)>=1)){ 
+	              $game_Opponent = $game_guestDisplay; 
+	              if ($game_home_result > $game_guest_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
+	            }
+	            if ((substr_count($game_guestDisplay,$my_club_name)>=1) and (substr_count($club_name,$game_guestclub)>=1)) {
+	              $game_Opponent = $game_homeDisplay;
+	              if ($game_guest_result > $game_home_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
+	            }
+            }
             if ($game_result == "")  { 
               $resultClass = 'suhv-result';
               $items++;

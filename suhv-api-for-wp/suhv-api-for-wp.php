@@ -3,14 +3,14 @@
  * Admin Page for SUHV API-2
  * 
  * @author Thomas Hardegger / based on Code form Jérôme Meier
- * @version  09.01.2019
+ * @version  25.03.2019
  * STATUS: Reviewed
 */
 /*
 Plugin Name: SUHV API-2 Schnittstelle für WordPress
 Plugin URI: www.churunihockey.ch
 Description: Nutzt da neu API 2.0 von Swissunihockey.ch Basiert auf Lösung von Jérôme Meier http://www.schwarzpunkt.ch 2012
-Version: 1.70
+Version: 1.71
 Text Domain: SUHV-API-2
 Author: Thomas Hardegger
 Author URI: www.churunihockey.ch
@@ -62,6 +62,7 @@ V1.67  30.09.2018  fix mail and set cronlog.txt off - if not churunihocky
 V1.68  27.10.2018  fix clean leagues replacements
 V1.70  09.01.2019  make loops for group A + B on ranking tables (Junior-Games)
                    sample https://api-v2.swissunihockey.ch/api/rankings?&season=2018&league=12&game_class=34&group=Gruppe+26 
+V1.71  25.03.2019   fix draw games-style in team-get-playedgames
 *******************************************************************************/
 
 // Sicherstellen, dass keine Infos ausgegeben werden wenn direkt aufgerufen
