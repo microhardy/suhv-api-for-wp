@@ -3,7 +3,7 @@
  * Suhv_WP Klasse
  * 
  * @author Thonmas Hardegger / new API / based on Jérôme Meier, schwarzpunkt meier 2012
- * @version 25.03.2018
+ * @version 03.04.2018
  * @todo Auf neue API umschreiben / die Funktionen bebehalten
  * STATUS: first Review
  */
@@ -25,6 +25,7 @@ class Suhv_WP {
 	private $league_group = "Gruppe 3"; // Gruppe mit Chur U14 / Saison 2016717
 	private $league_round = 90666; // mitChur U14 / Saison 2016717
 	private $player_id = NULL; // Sandro Breu 420235
+	private $game_id = 940355; // Game Derby Chur vs. Malans
 	private $sponsor_name = NULL; // "Churunihockey"
 	private $sponsor_sub  = NULL; // "Der Club für Gross und Klein";
 	private $sponsor_logo = NULL; // "http://www.churunihockey.ch/wp-content/uploads/2013/08/ChurUnihockeyLogoSlide_460x368.png";
@@ -55,6 +56,7 @@ class Suhv_WP {
 
 		add_shortcode ( 'suhv-api-team-get-games', array( &$this, 'api_team_getGames' ) );  
 		add_shortcode ( 'suhv-api-team-get-playedgames', array( &$this, 'api_team_getPlayedGames' ) );
+		add_shortcode ( 'suhv-api-get-directgames', array( &$this, 'api_getDirectGames' ) );  
 		add_shortcode ( 'suhv-api-get-team-table', array( &$this, 'api_getTeamTable' ) );
 		add_shortcode ( 'suhv-api-get-team-rank', array( &$this, 'api_getTeam_Rank' ) );
 	    add_shortcode ( 'suhv-api-nla-team-get-table', array( &$this, 'api_nla_team_getTable' ) );
@@ -166,7 +168,10 @@ class Suhv_WP {
 	  if ( $player_id  != NULL )
  	    $this->player_id = $player_id;
 	}
-
+	private function set_game($game_id = NULL){
+	  if ( $game_id  != NULL )
+ 	    $this->game_id = $game_id;
+	}
 	/* ------------------------------------------------------------------------------------ */
 	// Funktion: Sponsor Werte
 	private function set_sponsor_name($sponsor_name = NULL){
@@ -244,6 +249,10 @@ class Suhv_WP {
 		// Ändert Team, wenn eine Team-ID im Post-Meta-Feld eingegeben wurde.
 		if ( get_post_meta( get_the_ID(), 'SUHV Team ID', true ) != "" ) {
 		 $this->set_team( get_post_meta( get_the_ID(), 'SUHV Team ID', true ) );
+		}
+	    // Ändert Game, wenn eine Game-ID im Post-Meta-Feld eingegeben wurde.
+		if ( get_post_meta( get_the_ID(), 'SUHV Game ID', true ) != "" ) {
+		 $this->set_game( get_post_meta( get_the_ID(), 'SUHV Game ID', true ) );
 		}
 		//Liga
 		// Ändert Liega, wenn eine Liega-ID im Post-Meta-Feld eingegeben wurde.
@@ -375,6 +384,18 @@ class Suhv_WP {
  	    $mode = "team";
  	    $cache = $this->use_cache;
  	    return SwissUnihockey_Api_Public::api_team_getGameDetails($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $game_id, $cache );
+	}
+
+	function api_getDirectGames(){
+		if ( !isset ( $this->club ) ) $this->set_club();
+	//echo "api_getDirectGames";
+		$season = $this->season;
+ 	    $club_ID = $this->club_id;
+ 	    $club_shortname = $this->club_shortname;
+ 	    $game_ID = $this->game_id;
+ 	    $mode = "direct";
+ 	    $cache = $this->use_cache;
+ 	    return SwissUnihockey_Api_Public::api_getDirectGames($season, $club_ID, $club_shortname, $game_ID, $mode, $cache );
 	}
 
 	function api_club_getCupGames(){

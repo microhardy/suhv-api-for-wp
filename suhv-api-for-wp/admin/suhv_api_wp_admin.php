@@ -2,7 +2,7 @@
 /**
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
- * @version 17.11.2018
+ * @version 03.04.2019
  * STATUS: Reviewed
  */
 
@@ -209,12 +209,14 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	
  	public function SUHV_shortcodes_club()
  	{
- 		echo "[suhv-api-club-get-games] <span class='description'>Die nächsten n Spiele des Vereins (Anzahl n Spiele in den Einstellungen festlegen) </span><br>"; 
+ 	echo "[suhv-api-club-get-games] <span class='description'>Die nächsten n Spiele des Vereins (Anzahl n Spiele in den Einstellungen festlegen) </span><br>"; 
     echo "[suhv-api-club-get-cupgames] <span class='description'>Alle Cup-Spiele des NLA-Teams </span><br>"; 
     echo "[suhv-api-club-get-weekend-games start_date=\"17.09.2016\" end_date=\"18.09.2016\"]<span class='description'> Spiele des Clubs am Wochenende</span><br>";
     echo "[suhv-api-club-get-weekend-games]<span class='description'> Spiele des Clubs am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
     echo "[suhv-api-club-get-currentgamedetails]<span class='description'> Details der aktuellen Direktbegegnung</span><br>";
-    echo "Bestimmende Variablen: 'SUHV Club ID'";
+    echo "Bestimmende Variablen: 'SUHV Club ID'<br>";
+    echo "[suhv-api-get-directgames]<span class='description'>Letzte Direktbegegnung</span><br>";
+    echo "Bestimmende Variablen: 'SUHV Game ID'";
 
  	}
  	

@@ -3,7 +3,7 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version 25.03.2019
+ * @version 03.04.2019
  * STATUS: Reviewed
  */
 
@@ -780,6 +780,196 @@ private static function suhvDown() {
 
     return;
   }
+
+/* ---------------------------------------------------------------------------------------------------- */
+  public static function api_getDirectGames($season, $club_ID, $club_shortname, $game_ID, $mode, $cache) {
+    
+    $trans_Factor = 1;
+    $meetings = 5;
+    $my_club_name = $club_shortname;
+    //SwissUnihockey_Api_Public::log_me($my_club_name);
+    $cup = FALSE;
+    $transient = $club_ID.$game_ID."getDirectGames".$season.$mode;
+    $secure_trans = $transient."Secure";
+    $semaphore = $club_ID.$game_ID."getDirectGames-Flag";
+    $value = get_transient( $transient );
+    $flag = get_transient( $semaphore);
+    $linkGame_ID = NULL;
+    $likkGame_ID_before = NULL;
+
+    //echo "Game ID ".$game_ID."<br>";
+
+    if ($flag) $sema_value = "Sema: TRUE"; else  $sema_value = "Sema: FALSE";
+    //SwissUnihockey_Api_Public::log_me($sema_value);
+    
+    if (!$cache) { $value = False; }
+
+    if (SwissUnihockey_Api_Public::suhvDown()){ $value = TRUE;}
+
+    if (($value == False) and ($flag == False)) {
+
+      set_transient( $semaphore, TRUE, 5); // Keep out for 10 seconds - no Mail
+
+      $go =  time();
+      $api_calls = 0;
+      $plugin_options = get_option( 'SUHV_WP_plugin_options' );
+      $tablepress ='';
+      if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress"; 
+
+
+      // SwissUnihockey_Api_Public::log_me(array('function' => 'club_getGames', 'season' => $season, 'club_ID' =>  $club_ID, 'game_ID' =>   $game_ID, 'mode' => $mode));
+
+      $skip = "<br />";
+
+      $html = "";
+      $html_res = "";
+      $html_body = "";
+      $mail_subjekt ="";
+
+      $tage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");
+      $tag = date("w");
+      $wochentag = $tage[$tag];
+
+      $api = new SwissUnihockey_Public(); 
+      $api_calls++;
+      $details = $api->directGames( array(
+        'season'=>$season,
+        'amount'=>$meetings,
+        'game_id'=>$game_ID
+      )); 
+      
+
+      $data = $details->data; 
+      $games_count = $data->context->amount;
+      $games = $data->regions[0]->rows;
+      // SwissUnihockey_Api_Public::log_me("getDirectGames api-calls:". $api_calls." games-count".$games_count);
+      //echo "Games count ".$games_count."<br>";
+
+      $header_DateTime = $data->headers[0]->short;
+      $header_Home = $data->headers[1]->short;
+      $header_Guest = $data->headers[2]->short;
+      $header_Result = $data->headers[3]->text;
+      
+      $entries = $games_count;
+      
+      $transient_games = $transient.$tag;
+      $last_games = get_transient( $transient_games );
+      if ($last_games == FALSE) {
+        $last_games = $games;
+        set_transient( $transient_games, $last_games, 2*55*60 );
+        // echo "<br>Reset Games";60
+      }
+      $loop = FALSE;
+      $tabs = $data->context->tabs;
+      if ($tabs) $loop = TRUE;
+
+      $items = 0;
+      $today = strtotime("now");
+      $startdate = strtotime("-3 days",$today);
+      $cTime = (SwissUnihockey_Api_Public::cacheTime() / 60)*$trans_Factor;
+
+      if (!$cache) {
+         $view_cache = "<br> cache = off / Games: ".$games_count." Club: ".$my_club_name; 
+        } else {$view_cache ="";
+      }
+      
+      
+      if ((substr_count($games[0]->cells[2]->text[0],$my_club_name)>=1)) $match_tile =  $games[0]->cells[2]->text[0]." vs ".$games[0]->cells[1]->text[0];
+      else $match_tile = $games[0]->cells[1]->text[0]." vs ".$games[0]->cells[2]->text[0];
+
+      $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
+      $html_head .= "<caption>".$data->title.": ".$match_tile."</caption>";
+      $html_head .= "<thead><tr><th class=\"suhv-date\">"."Datum,Zeit".
+      "</th><th class=\"suhv-opponent\">".$header_Home.
+      "</th><th class=\"suhv-opponent\">".$header_Guest."</th>".
+      "</th><th class=\"suhv-opponent\">".$header_Result."</th>";
+
+      error_reporting(E_ALL & ~E_NOTICE);
+      while ($loop) {
+      $i = $games_count-1;
+      do {
+            $game_id = $games[$i]->id;
+            $game_detail_link = "https://www.swissunihockey.ch/de/game-detail?game_id=".$game_id;
+            $game_date_time = $games[$i]->cells[0]->text[0];
+            $game_homeclub = $games[$i]->cells[1]->text[0]; 
+            $game_guestclub = $games[$i]->cells[2]->text[0]; 
+            $game_result = $games[$i]->cells[3]->text[0];
+            $splitresult = explode(':',$game_result);
+            $home_result = $splitresult[0];
+            $guest_result = $splitresult[1];
+            $new_result = $game_result;
+
+            $game_homeDisplay = $game_homeclub;
+            $game_guestDisplay = $game_guestclub;
+            
+            $homeClass ="suhv-place";
+            $resultHomeClass = $homeClass;
+            $resultGuestClass = $homeClass;
+            $resultClass = "suhv-draw";
+
+            if ($home_result > $guest_result){ 
+              $resultHomeClass = 'suhv-home';
+              $resultGuestClass = 'suhv-guest';
+              if ((substr_count($game_homeclub,$my_club_name)>=1)) $resultClass = 'suhv-win'; else $resultClass = 'suhv-lose';
+            }
+            if ($guest_result > $home_result) { 
+              $resultHomeClass = 'suhv-guest';
+              $resultGuestClass = 'suhv-home';
+              if ((substr_count($game_guestclub,$my_club_name)>=1)) $resultClass = 'suhv-win'; else $resultClass = 'suhv-lose';
+            }
+            
+            if (($items <= $games_count)) {
+                $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">".str_replace(".20",".",$game_date_time).
+                "</td><td class=\"".$resultHomeClass."\">".$game_homeclub.
+                "</td><td class=\"".$resultGuestClass."\">".$game_guestclub.
+                "</td><td class=\"".$resultClass."\">"."<a href=\"".$game_detail_link."\" title=\"Spieldetails\" >".$game_result."</a>";
+                $html_body .= "</td></tr>";
+            }
+            else {
+              $loop = FALSE;
+            }
+            $items++;
+            $i--; 
+            $linkGame_ID_before = $linkGame_ID;
+         } while (($i >= 0) and ($loop));
+
+         $loop = FALSE; 
+        
+      } // end While
+        // Report all errors
+      error_reporting(E_ALL);
+      $html_head .= $html_res;
+      $html_head .= "</tr></thead><tbody>";
+      $html .= $html_head;
+      $html .= $html_body;
+      $html .= "</tbody>";
+      $html .= "</table>";
+      $stop =  time();
+      $secs = ($stop- $go);
+
+      set_transient( $transient, $html, SwissUnihockey_Api_Public::cacheTime()*$trans_Factor );
+      set_transient( $transient_games, $last_games, 2*60*60 );
+      if (($secs<=10) and isset($data))  {
+       $safe_html = str_replace (" min.)"," min. cache value)",$html);
+       set_transient( $secure_trans, $safe_html, 12*3600); 
+      }
+    } //end If
+    else { 
+        $htmlpos = strpos($value,"</table>");
+        $len = strlen($value);
+        if (($htmlpos) and ($len > 300)) { 
+          $html = $value; // Abfrage war OK
+          //SwissUnihockey_Api_Public::log_me("API Cache OK pos: ".$htmlpos." len: ".$len);
+        }
+        else {
+          $value = get_transient( $secure_trans ); // letzte gute Version holen bei Time-Out der API 2.0 von Swissunihockey
+          //SwissUnihockey_Api_Public::log_me("API Cache Restore!");
+          $html = $value; 
+        }
+    }
+    return $html;
+  }
+
 
 /* ---------------------------------------------------------------------------------------------------- */
   public static function api_club_getCupGames($season, $club_ID, $club_shortname, $team_ID, $mode, $cache) {
