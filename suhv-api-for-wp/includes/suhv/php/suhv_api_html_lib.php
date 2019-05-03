@@ -3,7 +3,7 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version 03.04.2019
+ * @version 12.04.2019
  * STATUS: Reviewed
  */
 
@@ -2553,10 +2553,10 @@ private static function suhvDown() {
       if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress";
       
       // echo "<br>".$season."<br>".$clubId;
-
+      // do not start on 'page' => 1
       $api = new SwissUnihockey_Public(); 
       $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
-         'page' => 1
+     
       )); 
 
 
@@ -2789,7 +2789,7 @@ private static function suhvDown() {
         if ($data->slider->next == NULL) { $loop = FALSE; }// only this loop
         else {
           $page++; 
-          if ($page > 10) $loop = FALSE; // Don't Loop always.
+          if ($page > 15) $loop = FALSE; // Don't Loop always.
 
           $api = new SwissUnihockey_Public(); 
           $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
@@ -3106,7 +3106,7 @@ private static function suhvDown() {
     $value = get_transient( $transient );
     // $value = FALSE;
    
-    $maxloop = 20;
+    $maxloop = 25;
     $loopcnt = 1;
     $trans_Factor = 12;
     $ActivRound = "";

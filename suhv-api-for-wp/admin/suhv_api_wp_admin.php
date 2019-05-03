@@ -2,7 +2,7 @@
 /**
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
- * @version 03.04.2019
+ * @version 12.04.2019
  * STATUS: Reviewed
  */
 
@@ -215,7 +215,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     echo "[suhv-api-club-get-weekend-games]<span class='description'> Spiele des Clubs am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
     echo "[suhv-api-club-get-currentgamedetails]<span class='description'> Details der aktuellen Direktbegegnung</span><br>";
     echo "Bestimmende Variablen: 'SUHV Club ID'<br>";
-    echo "[suhv-api-get-directgames]<span class='description'>Letzte Direktbegegnung</span><br>";
+    echo "[suhv-api-get-directgames]<span class='description'> Letzte Direktbegegnung</span><br>";
     echo "Bestimmende Variablen: 'SUHV Game ID'";
 
  	}
