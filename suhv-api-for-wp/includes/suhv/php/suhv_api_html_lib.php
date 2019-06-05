@@ -3,7 +3,7 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version 12.04.2019
+ * @version 05.06.2019
  * STATUS: Reviewed
  */
 
@@ -2893,7 +2893,10 @@ private static function suhvDown() {
 	      	if ($data->regions[$reg]->text == "") $capt = true; 
 	      }
 	    
-	      $entries = count($rankings);
+	      if (isset($rankings))
+          $entries = count($rankings); 
+        else 
+          $entries = 1;
 
 	      if (!$cache) {
 	         $view_cache = "<br> cache = off / Team-ID: ".$team_ID; 
@@ -3152,10 +3155,13 @@ private static function suhvDown() {
       $round_Title = $data->slider->text;
       $games = $data->regions[0]->rows;
       $game_location_name = $games[0]->cells[1]->text[0]; 
+      $game_map_x = 0;
+      $game_map_y = 0;
 
-      $game_map_x = $games[0]->cells[1]->link->x;
-      $game_map_y = $games[0]->cells[1]->link->y;
-
+      if (isset($games[0]->cells[1]->link->x)) {
+        $game_map_x = $games[0]->cells[1]->link->x;
+        $game_map_y = $games[0]->cells[1]->link->y;
+      }
 
       $cTime = (SwissUnihockey_Api_Public::cacheTime() / 60)*$trans_Factor;
 
