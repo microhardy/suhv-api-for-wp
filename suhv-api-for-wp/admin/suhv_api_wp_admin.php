@@ -2,7 +2,7 @@
 /**
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
- * @version 12.04.2019
+ * @version 12.11.2019
  * STATUS: Reviewed
  */
 
@@ -13,7 +13,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	
   public function __construct()
  	{
- 	 $this->register_settings_and_fields();
+ 	  $this->register_settings_and_fields();
  		$this->options = get_option( 'SUHV_WP_plugin_options' );
  		if (($this->options['SUHV_api_key'] == "" ) or ($this->options['SUHV_api_secret'] == ""))
  		 add_action('admin_notices', array( $this, 'admin_notice_api_key' ));
@@ -40,7 +40,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     <h2>Einstellungen &#8250; SUHV API</h2>
     <form method='post' action='options.php'>
      <?php 
- 				 settings_fields( 'SUHV_WP_plugin_options' ); // WP Security hidden Fields
+ 				  settings_fields( 'SUHV_WP_plugin_options' ); // WP Security hidden Fields
  					do_settings_sections( __FILE__ );
  				?>
     <h3>Schnelleinstieg</h3>
@@ -64,6 +64,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  		add_settings_field( 'SUHV_default_team_id', 'SUHV Team ID', array( $this, 'SUHV_default_team_id_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_default_club_shortname', 'SUHV Club Shortname', array( $this, 'SUHV_default_club_shortname_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_css_file', 'SUHV CSS File laden', array( $this, 'SUHV_css_file_setting' ), __FILE__,  'SUHV_main_section');
+    add_settings_field( 'SUHV_language_file', 'SUHV language', array( $this, 'SUHV_language_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_css_tablepress', 'SUHV Tablepress-Support', array( $this, 'SUHV_css_tablepress_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_cache', 'SUHV Cache aktivieren', array( $this, 'SUHV_cache_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_long_cache', 'SUHV Long Cache', array( $this, 'SUHV_long_cache_setting' ), __FILE__,  'SUHV_main_section');
@@ -172,6 +173,26 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
       //echo "<select>";
       foreach ($css_files as $option) {
         echo '<option value="' . $option . '" id="' . $option . '"', $this->options['SUHV_css_file'] == $option ? ' selected="selected"' : '', '>', $option , '</option>';
+      }
+      echo "</select>";
+
+  }
+
+  // Default language File ?
+  public function SUHV_language_setting()
+  {    
+      $filesearch = SUHV_API_WP_PLUGIN_PATH."includes/suhv/language/*.json";
+      $fpath = SUHV_API_WP_PLUGIN_PATH."includes/suhv/language/";
+      $len = strlen($fpath);
+      $language_files[]="- default -";
+      $files=glob($filesearch);
+      foreach ($files as $file) {
+        $language_files[]= substr($file,$len);
+      }
+      echo "<select name='SUHV_WP_plugin_options[SUHV_language_file]' value='" . $this->options['SUHV_language_file'] . "' />";
+      //echo "<select>";
+      foreach ($language_files as $option) {
+        echo '<option value="' . $option . '" id="' . $option . '"', $this->options['SUHV_language_file'] == $option ? ' selected="selected"' : '', '>', $option , '</option>';
       }
       echo "</select>";
 

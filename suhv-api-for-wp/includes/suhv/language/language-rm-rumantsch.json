@@ -1,0 +1,95 @@
+{
+      "Info":{
+      "Sprache": "RhaetoRomanic",
+      "Datum": "12.11.2019",
+      "Version": "V 1.0"
+   },
+
+      "Games": {
+      "Datum / Zeit": "data / temp",
+      "Zeit": "data, temp",
+      "Ort": "lieu",
+      "Liga / Gruppe": "liga / gruppa",
+      "Heimteam": "squadra indigena",
+      "Gastteam": "squadra estra",
+      "Heim": "domicil",
+      "Gast": "giast",
+      "Gegner": "adversari",
+      "Resultat": "resultat"
+   },
+
+   "ClubGames": {
+      "Datum / Zeit": "data / temp",
+      "Zeit": "data, temp",
+      "Ort": "lieu",
+      "Liga / Gruppe": "liga / gruppa",
+      "Heimteam": "domicil ",
+      "Gastteam": "giast",
+      "Heim": "domicil ",
+      "Gast": "giast",
+      "Resultat": "res."
+   },
+ 
+   "TeamTable": {
+      "Rg.": "plaz",
+      "Rang": "plaz",
+      "Team": "team",
+      "Sp": "gieus",
+      "Spiele": "gieus",
+      "S": "victorias",
+      "Siege": "victorias",
+      "SnV": "victorias suenter prolungaziun",
+      "Siege nach Verlängerung": "victoria tenor prorogaziun",
+      "NnV": "terradas suenter prolungaziun",
+      "Niederlagen nach Verlängerung": "terradas suenter prolungaziun",
+      "N": "terrada",
+      "Niederlagen": "terrada",
+      "T": "gols",
+      "Tore": "gols",
+      "Torverhältnis": "relaziun da gols",
+      "TD": "differenza da gols",
+      "Tordifferenz": "differenza da gols",
+      "P": "puncts",
+      "Punkte": "puncts",
+      "Spiele unentschieden": "gieus finir pari"
+   },
+
+   "TeamRank": {
+      "Rg.": "plaz",
+      "Team": "team",
+      "Sp": "G",
+      "S": "V",
+      "SnV": "VtP",
+      "NnV": "TtP",
+      "N": "T",
+      "T": "G",
+      "TD": "DG",
+      "P": "pts."
+   },
+
+   "Days": {
+      "0": "dumengia",
+      "1": "glindesdi",
+      "2": "mardi",
+      "3": "mesemna",
+      "4": "gievgia",
+      "5": "venderdi",
+      "6": "sonda"
+   },
+
+   "Replacements": {
+      "Spielübersicht": "survista da gieus",
+      "Saison": "stagiun",
+      "Tabelle": "tabella",
+      "Zur aktuellen Runde": "tar la runda actuala",
+      "Spiele vom": "gieus da la",
+      "Spiele vom Wochenende": "gieus da la fin d’emna",
+      "Liga-Spiele vom Wochenende": "gieus da liga da la fin d’emna",
+      "bis": "fin",
+      "per": "per",
+      "Spieldetails": "detagls dal gieu",
+      "Runde": "runda",
+      "Direktbegegnungen" : "scuntrada directamain"
+   }
+ 
+}

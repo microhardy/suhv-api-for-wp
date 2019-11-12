@@ -3,7 +3,7 @@
  * Suhv_WP Klasse
  * 
  * @author Thonmas Hardegger / new API / based on Jérôme Meier, schwarzpunkt meier 2012
- * @version 03.04.2018
+ * @version 12.11.2019
  * @todo Auf neue API umschreiben / die Funktionen bebehalten
  * STATUS: first Review
  */
@@ -14,6 +14,8 @@ if ( !class_exists( 'Suhv_WP' ) ) {
 	
 class Suhv_WP {
 	private $options; // WordPress Options Array
+	private $language_path = NULL; // languege folder
+    private $language_data = array(); // languege data
 	private $season; // Saison
 	private $club_id = 423403; // Chur Unihockey
 	private $club_shortname = "Chur"; // Shortname
@@ -96,20 +98,38 @@ class Suhv_WP {
 		if (isset( $this->options['SUHV_css_file'] )) 
 		  if (substr_count($this->options['SUHV_css_file'],".css")>0) {
 		    $this->css_path = SUHV_API_WP_PLUGIN_URL . "includes/suhv/styles/".$this->options['SUHV_css_file'];
-		    //SwissUnihockey_Api_Public::log_me($this->css_path);
+		    // SwissUnihockey_Api_Public::log_me("CSS:".$this->css_path);
  		    add_action( 'wp_enqueue_scripts', array( $this, 'my_scripts_suhv' ) );
  	      }
+
+ 	     // Language verlinken wenn selektiert in Admin
+	    if (isset( $this->options['SUHV_language_file'] )) 
+	      if (substr_count($this->options['SUHV_language_file'],".json")>0) {
+	        $this->language_path = SUHV_API_WP_PLUGIN_PATH . "includes/suhv/language/".$this->options['SUHV_language_file'];
+	      }
+	    else $this->language_path = SUHV_API_WP_PLUGIN_PATH . "includes/suhv/language/default.json";
+	    $data = file_get_contents($this->language_path);
+	    if ($data === false) {
+            SwissUnihockey_Api_Public::log_me("ERROR read".$this->language_path);
+        }
+	    $this->language_data = json_decode($data);
+	    set_transient( 'SUHV_language_codes',$this->language_data,0);
+	    //SwissUnihockey_Api_Public::log_me("language FULL:".$this->language_path);
+	    //SwissUnihockey_Api_Public::log_me("language FILE:".$this->options['SUHV_language_file']);
+	    //SwissUnihockey_Api_Public::log_me(array($this->language_data));
+
  		// aktuelle Saison ermitteln
         $this->season = date('Y');
 	    if (date('m') < 6) {
 		  $this->season = $this->season - 1;
         }
-        // SwissUnihockey_Api_Public::log_me($this->options);
+        //SwissUnihockey_Api_Public::log_me($this->options);
 	    if(isset($this->options['SUHV_cache']) == 1) {
         	 $this->use_cache = TRUE; }
         else { $this->use_cache = False;}
         	 
     }	
+	
 	/* ------------------------------------------------------------------------------------ */
     public function my_scripts_suhv() {
     /*** Register global styles & scripts.*/
@@ -117,6 +137,8 @@ class Suhv_WP {
       wp_enqueue_style('suhv-api-style-css');
   
     }
+
+
 	/* ------------------------------------------------------------------------------------ */
 	// SUHV-Club erstellen
 	private function set_club( $club_id = NULL ){
@@ -337,9 +359,7 @@ class Suhv_WP {
      echo '<pre style="clear: both; width: 80%; padding: 2% 10%; margin: 0 auto; background-color: rgb(234,90,90)"><strong>Logdaten des SUHV Frameworks</strong><br>----------------------------<br>', 
      print_r( SuhvApiManager::getInstance()->getLog() ), '</pre>';
     }
-
- 	/* ------------------------------------------------------------------------------------ */
-
+   
 	// *********************************************************************************************
 	//
 	// API 2.0

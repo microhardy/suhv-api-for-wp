@@ -1,0 +1,95 @@
+{
+   "Info":{
+      "Sprache": "German",
+      "Datum": "12.11.2019",
+      "Version": "V 1.0"
+   },
+
+   "Games": {
+      "Datum / Zeit": "Datum / Zeit",
+      "Zeit": "Datum, Zeit",
+      "Ort": "Ort",
+      "Liga / Gruppe": "Liga / Gruppe",
+      "Heimteam": "Heimteam",
+      "Gastteam": "Gastteam",
+      "Heim": "Heim",
+      "Gast": "Gast",
+      "Gegner": "Gegner",
+      "Resultat": "Resultat"
+   },
+
+   "ClubGames": {
+      "Datum / Zeit": "Datum / Zeit",
+      "Zeit": "Datum, Zeit",
+      "Ort": "Ort",
+      "Liga / Gruppe": "Liga / Gruppe",
+      "Heimteam": "Heimteam",
+      "Gastteam": "Gastteam",
+      "Heim": "Heim",
+      "Gast": "Gast",
+      "Resultat": "Res."
+   },
+ 
+   "TeamTable": {
+      "Rg.": "Rg.",
+      "Rang": "Rang",
+      "Team": "Team",
+      "Sp": "Sp",
+      "Spiele": "Spiele",
+      "S": "S",
+      "Siege": "Siege",
+      "SnV": "SnV",
+      "Siege nach Verlängerung": "Siege nach Verlängerung",
+      "NnV": "NnV",
+      "Niederlagen nach Verlängerung": "Niederlagen nach Verlängerung",
+      "N": "N",
+      "Niederlagen": "Niederlagen",
+      "T": "T",
+      "Tore": "Tore",
+      "Torverhältnis": "Torverhältnis",
+      "TD": "TD",
+      "Tordifferenz": "Tordifferenz",
+      "P": "Punkte",
+      "Punkte": "Punkte",
+      "Spiele unentschieden": "Spiele unentschieden"
+   },
+
+   "TeamRank": {
+      "Rg.": "Rg.",
+      "Team": "Team",
+      "Sp": "Sp",
+      "S": "S",
+      "SnV": "SnV",
+      "NnV": "NnV",
+      "N": "N",
+      "T": "T",
+      "TD": "TD",
+      "P": "P"
+   },
+
+   "Days": {
+      "0": "Sonntag",
+      "1": "Montag",
+      "2": "Dienstag",
+      "3": "Mittwoch",
+      "4": "Donnerstag",
+      "5": "Freitag",
+      "6": "Samstag"
+   },
+
+   "Replacements": {
+      "Spielübersicht": "Spielübersicht",
+      "Saison": "Saison",
+      "Tabelle": "Tabelle",
+      "Zur aktuellen Runde": "Zur aktuellen Runde",
+      "Spiele vom": "Spiele vom",
+      "Spiele vom Wochenende": "Spiele vom Wochenende",
+      "Liga-Spiele vom Wochenende": "Liga-Spiele vom Wochenende",
+      "bis": "bis",
+      "per": "per",
+      "Spieldetails": "Spieldetails",
+      "Runde": "Runde",
+      "Direktbegegnungen" : "Direktbegegnungen"
+   }
+ 
+}

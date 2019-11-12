@@ -1,0 +1,95 @@
+{
+   "Info":{
+      "Sprache": "Italian",
+      "Datum": "12.11.2019",
+      "Version": "V 1.0"
+   },
+
+   "Games": {
+      "Datum / Zeit": "Data / ora",
+      "Zeit": "Data, ora",
+      "Ort": "Villaggio",
+      "Liga / Gruppe": "Lega / Gruppo",
+      "Heimteam": "Squadra di casa",
+      "Gastteam": "Squadra ospite",
+      "Heim": "Casa",
+      "Gast": "Ospite",
+      "Gegner": "Avversario",
+      "Resultat": "Risultato"
+   },
+
+   "ClubGames": {
+      "Datum / Zeit": "Data / ora",
+      "Zeit": "Data, ora",
+      "Ort": "Villaggio",
+      "Liga / Gruppe": "Lega / Gruppo",
+      "Heimteam": "Casa",
+      "Gastteam": "Ospite",
+      "Heim": "Casa",
+      "Gast": "Ospite",
+      "Resultat": "Ris."
+   },
+ 
+   "TeamTable": {
+      "Rg.": "Rg.",
+      "Rang": "Rango",
+      "Team": "Squadra",
+      "Sp": "Giochi",
+      "Spiele": "Giochi",
+      "S": "Vittorie",
+      "Siege": "Vittorie",
+      "SnV": "Vds",
+      "Siege nach Verlängerung": "Vittorie dopo i tempi supplementari",
+      "NnV": "Sds",
+      "Niederlagen nach Verlängerung": "Sconfitte dopo i tempi supplementari",
+      "N": "Perdite",
+      "Niederlagen": "Perdite",
+      "T": "Goal",
+      "Tore": "Goal",
+      "Torverhältnis": "Bilancio di goal",
+      "TD": "Goal differenza",
+      "Tordifferenz": "Goal differenza",
+      "P": "Punti",
+      "Punkte": "Punti",
+      "Spiele unentschieden": "Giochi non deciso"
+   },
+
+   "TeamRank": {
+      "Rg.": "Rg.",
+      "Team": "Squadra",
+      "Sp": "G",
+      "S": "V",
+      "SnV": "Vds",
+      "NnV": "Sds",
+      "N": "P",
+      "T": "G",
+      "TD": "Gd",
+      "P": "Pti."
+   },
+
+   "Days": {
+      "0": "domenica",
+      "1": "lunedi",
+      "2": "martedi",
+      "3": "mercoledi",
+      "4": "giovedi",
+      "5": "venderdi",
+      "6": "sabato"
+   },
+
+   "Replacements": {
+      "Spielübersicht": "Panoramica del gioco",
+      "Saison": "Periodo",
+      "Tabelle": "Tabella",
+      "Zur aktuellen Runde": "Al round attuale",
+      "Spiele vom": "Giochi da",
+      "Spiele vom Wochenende": "Giochi del fine settimana",
+      "Liga-Spiele vom Wochenende": "Partite di campionato del fine settimana",
+      "bis": "fino",
+      "per": "per",
+      "Spieldetails": "Dettagli del gioco",
+      "Runde": "Round",
+      "Direktbegegnungen" : "Scontri diretti"
+   }
+ 
+}

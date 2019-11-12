@@ -3,12 +3,13 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version 05.06.2019
+ * @version 12.11.2019
  * STATUS: Reviewed
  */
 
 
 class SwissUnihockey_Api_Public {
+
 
 private static function cacheTime() {
         
@@ -18,6 +19,21 @@ private static function cacheTime() {
   $cacheValue = array(1*$cbase,6*$cbase,6*$cbase,3*$cbase,3*$cbase,2*$cbase,1*$cbase);
   return($cacheValue[$tag]);
 }
+
+/* ------------------------------------------------------------------------------------ */
+// Language
+private static function translate($group,$value) {
+      $data = get_transient( 'SUHV_language_codes');
+      //SwissUnihockey_Api_Public::log_me($data->$group->$value);
+      return $data->$group->$value;
+    }
+
+private static function language_group($group) {
+      $data = get_transient( 'SUHV_language_codes');
+      //SwissUnihockey_Api_Public::log_me(array($data->$group));
+      return $data->$group;
+    }
+/* ------------------------------------------------------------------------------------ */
 
 private static function nearWeekend() {
                // So Mo Di (Mi=4) Do Fr Sa //
@@ -40,9 +56,11 @@ private static function clean_league($game_league) {
     $game_league = str_replace ("Juniorinnen", "",$game_league);
     $game_league = str_replace ("/-innen ", "",$game_league);
     $game_league = str_replace ("Herren Aktive", "",$game_league);
+    // $game_league = str_replace ("Herren", "",$game_league);
     $game_league = str_replace ("Aktive", "",$game_league);
     $game_league = str_replace ("Schweizer", "",$game_league);
     $game_league = str_replace ("Damen Supercup","Damen NLA",$game_league);
+    // $game_league = str_replace ("Damen", "",$game_league);
 
     return($game_league);
 }
@@ -81,7 +99,7 @@ private static function suhvDown() {
                 $message = "API Access via HTTP not OK <br />";
                 $message .= $url."<br /><br />";
                 $message .= "Check now: https://www.churunihockey.ch//wp-content/plugins/suhv-api-for-wp/includes/suhv/php/testAPI.php";
-                $checkmail = wp_mail( "logs@teamchur.com", "HTTP Response Check: HTTPCODE ".$httpcode, $message, $mailheaders);
+                $checkmail = wp_mail( "logs@hardegger.com", "HTTP Response Check: HTTPCODE ".$httpcode, $message, $mailheaders);
                 set_transient( $transientMail, TRUE, 60*60); // nur alle 60 Min. ein Down Mail
               }
             }
@@ -144,9 +162,9 @@ private static function suhvDown() {
       $html_body = "";
       $mail_subjekt ="";
 
-      $tage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");
+      $tage = SwissUnihockey_Api_Public::language_group('Days');
       $tag = date("w");
-      $wochentag = $tage[$tag];
+      $wochentag = $tage->$tag;
 
       $api = new SwissUnihockey_Public(); 
       $api_calls++;
@@ -171,12 +189,14 @@ private static function suhvDown() {
       }
 
       $data = $details->data; 
-      $header_DateTime = $data->headers[0]->text;
-      $header_Location = $data->headers[1]->text;
-      $header_Leage = $data->headers[2]->text;
-      $header_Home = $data->headers[3]->text;
-      $header_Guest = $data->headers[4]->text;
-      $header_Result = $data->headers[5]->text;
+
+      $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+
+      $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
+      $header_Leage = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+      $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
+      $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[5]->text);
       $Cpos = strripos($my_club_name,'Chur');
       if (!is_bool($Cpos)) { $header_Result = "Res.";}
       $club_name = $data->title;
@@ -207,10 +227,11 @@ private static function suhvDown() {
          $view_cache = "<br> cache = off / Display: ".$n_Games." Club: ".$my_club_name; 
         } else {$view_cache ="";
       }
-      
+      $title = str_replace ("Spielübersicht", SwissUnihockey_Api_Public::translate("Replacements","Spielübersicht"),$data->title);
+      $title = str_replace ("Saison", SwissUnihockey_Api_Public::translate("Replacements","Saison"),$title);
       $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
-      $html_head .= "<caption>".$data->title."<br>".$wochentag.strftime(" - %H:%M")."  (".$cTime." min.)".$view_cache."</caption>";
-      $html_head .= "<thead><tr><th class=\"suhv-date\">"."Datum,<br>Zeit".
+      $html_head .= "<caption>".$title."<br>".$wochentag.strftime(" - %H:%M")."  (".$cTime." min.)".$view_cache."</caption>";
+      $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
       "</th><th class=\"suhv-place\">".$header_Location.
       "</th><th class=\"suhv-opponent\">".$header_Home.
       "</th><th class=\"suhv-opponent\">".$header_Guest."</th>";
@@ -473,8 +494,7 @@ private static function suhvDown() {
       $tablepress ='';
       if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress"; 
 
-
-      SwissUnihockey_Api_Public::log_me(array('function' => 'club_getGames_Mails', 'season' => $season, 'club_ID' =>  $club_ID, 'team_ID' =>   $team_ID, 'mode' => $mode));
+      //SwissUnihockey_Api_Public::log_me(array('function' => 'club_getGames_Mails', 'season' => $season, 'club_ID' =>  $club_ID, 'team_ID' =>   $team_ID, 'mode' => $mode));
 
       $mailheaders = 'From: Spielresultate <'.$e_Mail_From.'>' . "\r\n";
       $mailheaders .= "MIME-Version: 1.0\r\n";
@@ -486,9 +506,9 @@ private static function suhvDown() {
       $html_body = "";
       $mail_subjekt ="";
 
-      $tage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");
+      $tage = SwissUnihockey_Api_Public::language_group('Days');
       $tag = date("w");
-      $wochentag = $tage[$tag];
+      $wochentag = $tage->$tag;
 
       $api = new SwissUnihockey_Public(); 
       $api_calls++;
@@ -826,9 +846,9 @@ private static function suhvDown() {
       $html_body = "";
       $mail_subjekt ="";
 
-      $tage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");
+      $tage = SwissUnihockey_Api_Public::language_group('Days');
       $tag = date("w");
-      $wochentag = $tage[$tag];
+      $wochentag = $tage->$tag;
 
       $api = new SwissUnihockey_Public(); 
       $api_calls++;
@@ -844,12 +864,12 @@ private static function suhvDown() {
       $games = $data->regions[0]->rows;
       // SwissUnihockey_Api_Public::log_me("getDirectGames api-calls:". $api_calls." games-count".$games_count);
       //echo "Games count ".$games_count."<br>";
+      $title = str_replace ("Direktbegegnungen", SwissUnihockey_Api_Public::translate("Replacements","Direktbegegnungen"),$data->title);
+      $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->short);
+      $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->short);
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->short);
+      $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
 
-      $header_DateTime = $data->headers[0]->short;
-      $header_Home = $data->headers[1]->short;
-      $header_Guest = $data->headers[2]->short;
-      $header_Result = $data->headers[3]->text;
-      
       $entries = $games_count;
       
       $transient_games = $transient.$tag;
@@ -878,8 +898,8 @@ private static function suhvDown() {
       else $match_tile = $games[0]->cells[1]->text[0]." vs ".$games[0]->cells[2]->text[0];
 
       $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
-      $html_head .= "<caption>".$data->title.": ".$match_tile."</caption>";
-      $html_head .= "<thead><tr><th class=\"suhv-date\">"."Datum,Zeit".
+      $html_head .= "<caption>".$title.": ".$match_tile."</caption>";
+      $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
       "</th><th class=\"suhv-opponent\">".$header_Home.
       "</th><th class=\"suhv-opponent\">".$header_Guest."</th>".
       "</th><th class=\"suhv-opponent\">".$header_Result."</th>";
@@ -894,6 +914,8 @@ private static function suhvDown() {
             $game_homeclub = $games[$i]->cells[1]->text[0]; 
             $game_guestclub = $games[$i]->cells[2]->text[0]; 
             $game_result = $games[$i]->cells[3]->text[0];
+
+            $Cpos = strripos($my_club_name,'Chur');
             $splitresult = explode(':',$game_result);
             $home_result = $splitresult[0];
             $guest_result = $splitresult[1];
@@ -1019,9 +1041,9 @@ private static function suhvDown() {
       $html_body = "";
       $mail_subjekt ="";
 
-      $tage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");
+      $tage = SwissUnihockey_Api_Public::language_group('Days');
       $tag = date("w");
-      $wochentag = $tage[$tag];
+      $wochentag = $tage->$tag;
 
       $api = new SwissUnihockey_Public(); 
       $api_calls++;
@@ -1046,13 +1068,13 @@ private static function suhvDown() {
       }
 
       $data = $details->data; 
-      $header_DateTime = $data->headers[0]->text;
-      $header_Location = $data->headers[1]->text;
-      $header_Leage = $data->headers[2]->text;
-      $header_Home = $data->headers[3]->text;
-      $header_Guest = $data->headers[4]->text;
-      $header_Result = $data->headers[5]->text;
-      $header_Result = "Res.";
+      $header_DateTime = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[0]->text);
+      $header_Location = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[1]->text);
+      $header_Leage = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[2]->text);
+      $header_Home = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[3]->text);
+      $header_Guest = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[4]->text);
+      $header_Result = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[5]->text);
+      //$header_Result = "Res.";
       $club_name = $data->title;
       $games = $data->regions[0]->rows;
       $attributes = $data->regions[0]->rows[0]->cells;
@@ -1085,7 +1107,7 @@ private static function suhvDown() {
       
       $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
       //$html_head .= "<caption>".$data->title."<br>".$wochentag.strftime(" - %H:%M")."  (".$cTime." min.)".$view_cache."</caption>";
-      $html_head .= "<thead><tr><th class=\"suhv-date\">"."Datum,<br>Zeit".
+      $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
       "</th><th class=\"suhv-place\">".$header_Location.
       "</th><th class=\"suhv-opponent\">".$header_Home.
       "</th><th class=\"suhv-opponent\">".$header_Guest."</th>";
@@ -1302,7 +1324,7 @@ private static function suhvDown() {
     $end_date_us = strtotime($date_parts[2]."-".$date_parts[1]."-".$date_parts[0]);
     //echo "<br>end:", date("d.m.Y", $end_date_us) . "<br>";
     $weekend = FALSE;
-    $date_description = "Spiele vom ".$start_date;
+    $date_description = "Spiele vom";
     if (strpos($start_date,"2015")>0) {
       $weekend = TRUE;
       $weekendDays = SwissUnihockey_Api_Public::nearWeekend();
@@ -1336,13 +1358,14 @@ private static function suhvDown() {
       if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress";
       $n_Games = 40;
 
-      $tage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");
+      $tage = SwissUnihockey_Api_Public::language_group('Days');
       $tag = date("w");
-      $wochentag = $tage[$tag];
+      $wochentag = $tage->$tag;
+
       $tag = date("w",$start_date_us);
-      $start_tag = $tage[$tag];
+      $start_tag = $tage->$tag;
       $tag = date("w",$end_date_us);
-      $end_tag = $tage[$tag];
+      $end_tag = $tage->$tag;
 
       $api = new SwissUnihockey_Public(); 
       $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
@@ -1363,13 +1386,14 @@ private static function suhvDown() {
       }
 
       $data = $details->data; 
-      $header_DateTime = $data->headers[0]->text;
-      $header_Location = $data->headers[1]->text;
-      $header_Leage = $data->headers[2]->text;
-      $header_Home = $data->headers[3]->text;
-      $header_Guest = $data->headers[4]->text;
-      $header_Result = $data->headers[5]->text;
+      $header_DateTime = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[0]->text);
+      $header_Location = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[1]->text);
+      $header_Leage = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[2]->text);
+      $header_Home = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[3]->text);
+      $header_Guest = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[4]->text);
+      $header_Result = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[5]->text);
       //$header_Result = "Res.";
+
       $club_name = $data->title;
       $games = $data->regions[0]->rows;
       $attributes = $data->regions[0]->rows[0]->cells;
@@ -1387,12 +1411,16 @@ private static function suhvDown() {
       $startdate = strtotime("-1 days",$start_date_us);
       $cTime = (SwissUnihockey_Api_Public::cacheTime() / 60)*$trans_Factor;
       $homeClass ="suhv-place";
+
+      $date_description = SwissUnihockey_Api_Public::translate("Replacements",$date_description);
+      $Spielevom = SwissUnihockey_Api_Public::translate("Replacements","Spiele vom");
+      $bis = SwissUnihockey_Api_Public::translate("Replacements","bis");
       $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
       if ($weekend) 
-        $html_head .= "<caption>".$date_description." ".$start_tag." ".$start_date." bis ".$end_tag." ".$end_date."</caption>";
+        $html_head .= "<caption>".$date_description." ".$start_tag." ".$start_date." ".$bis." ".$end_tag." ".$end_date."</caption>";
       else
-        $html_head .= "<caption>"."Spiele vom ".$start_tag." ".$start_date." bis ".$end_tag." ".$end_date."</caption>";
-      $html_head .= "<thead><tr><th class=\"suhv-date\">"."Datum,<br>Zeit".
+        $html_head .= "<caption>".$Spielevom." ".$start_tag." ".$start_date." ".$bis." ".$end_tag." ".$end_date."</caption>";
+      $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
       "</th><th class=\"suhv-place\">".$header_Location.
       "</th><th class=\"suhv-opponent\">".$header_Home.
       "</th><th class=\"suhv-opponent\">".$header_Guest."</th>";
@@ -1640,13 +1668,14 @@ private static function suhvDown() {
       if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress";
       $n_Games = 40;
 
-      $tage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");
+      $tage = SwissUnihockey_Api_Public::language_group('Days');
       $tag = date("w");
-      $wochentag = $tage[$tag];
+      $wochentag = $tage->$tag;
+
       $tag = date("w",$start_date_us);
-      $start_tag = $tage[$tag];
+      $start_tag = $tage->$tag;
       $tag = date("w",$end_date_us);
-      $end_tag = $tage[$tag];
+      $end_tag = $tage->$tag;
 
       $api = new SwissUnihockey_Public(); 
       $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
@@ -1667,13 +1696,14 @@ private static function suhvDown() {
       }
 
       $data = $details->data; 
-      $header_DateTime = $data->headers[0]->text;
-      $header_Location = $data->headers[1]->text;
-      $header_Leage = $data->headers[2]->text;
-      $header_Home = $data->headers[3]->text;
-      $header_Guest = $data->headers[4]->text;
-      $header_Result = $data->headers[5]->text;
+      $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+      $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
+      $header_Leage = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+      $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
+      $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[5]->text);
       //$header_Result = "Res.";
+
       $club_name = $data->title;
       $games = $data->regions[0]->rows;
       $attributes = $data->regions[0]->rows[0]->cells;
@@ -1696,7 +1726,7 @@ private static function suhvDown() {
         $html_head .= "<caption>".$date_description.date(" d.m.Y")." - Filter: ".$gametype."</caption>";
       else
         $html_head .= "<caption>"."Spiele vom ".$start_tag." ".$start_date." bis ".$end_tag." ".$end_date."</caption>";
-      $html_head .= "<thead><tr><th class=\"suhv-date\">"."Datum Zeit".
+      $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
       "</th><th class=\"suhv-place\">".$header_Location.
       "</th><th class=\"suhv-opponent\">".$header_Home." / ".$header_Guest."</th>";
       if ($live_games) $html_head .= "</th><th class=\"suhv-livegames\">"."Game-Screen-Link"."</th>";
@@ -2203,11 +2233,11 @@ private static function suhvDown() {
                   "<div class=\"livematch-team-guest".$guest_class."\">"."<img title=\"".$game_guestclub."\" alt=\"".$game_guestclub."\" src=\"".$guest_logo."\" ><br /><div class=\"livematch-guestplayers\">".$awayGoals."</div></div>\n".
                 "</div>\n".
                // "<div class=\"livematch-location\">".$game_maplink.$game_location." / ".$game_location_name."</a></div>".
-                "<div class=\"livematch-promo\">\n".
+               // "<div class=\"livematch-promo\">\n".
                   // "<div class=\"livematch-promo-left\"><img src=\"".$promo_left."\"></div>\n". //
-                  "<div class=\"livematch-promo-middle\"><img src=\"".$promo_middle."\"></div>\n".
+               //   "<div class=\"livematch-promo-middle\"><img src=\"".$promo_middle."\"></div>\n".
                   // "<div class=\"livematch-promo-right\"><img src=\"".$promo_right."\"></div>\n". //
-                "</div>\n".
+               // "</div>\n".
                "</div></div>\n";
                $loop = FALSE; // nur das aktuelle Game
                }
@@ -2339,13 +2369,14 @@ private static function suhvDown() {
       if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress";
       $n_Games = 40;
 
-      $tage = array("Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag");
+      $tage = SwissUnihockey_Api_Public::language_group('Days');
       $tag = date("w");
-      $wochentag = $tage[$tag];
+      $wochentag = $tage->$tag;
+
       $tag = date("w",$start_date_us);
-      $start_tag = $tage[$tag];
+      $start_tag = $tage->$tag;
       $tag = date("w",$end_date_us);
-      $end_tag = $tage[$tag];
+      $end_tag = $tage->$tag;
 
       if ($game_id == NULL) {
 
@@ -2371,13 +2402,14 @@ private static function suhvDown() {
     // SwissUnihockey_Api_Public::log_me($details);
 
         $data = $details->data; 
-        $header_DateTime = $data->headers[0]->text;
-        $header_Location = $data->headers[1]->text;
+        $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+        $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
         // $header_Leage = $data->headers[2]->text;
-        $header_Home = $data->headers[2]->text;
-        $header_Guest = $data->headers[3]->text;
-        $header_Result = $data->headers[4]->text;
+        $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+        $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
+        $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
         //$header_Result = "Res.";
+
         $club_name = $data->title;
         $games = $data->regions[0]->rows;
         $attributes = $data->regions[0]->rows[0]->cells;
@@ -2557,26 +2589,30 @@ private static function suhvDown() {
       $api = new SwissUnihockey_Public(); 
       $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
      
-      )); 
-
+      ));  
 
       $data = $details->data; 
-      $header_DateTime = $data->headers[0]->text;
-      $header_Location = $data->headers[1]->text;
-      $header_Home = $data->headers[2]->text;
-      $header_Guest = $data->headers[3]->text;
+      $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+      $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
+      $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
       $header_Guest = "Gegner";
-      $header_Result = $data->headers[4]->text;
-      $header_Result = "Resultat";
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$header_Guest);
+      $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
+      //$header_Result = "Resultat";
+
       $club_name = $data->title;
       $games = $data->regions[0]->rows;
       $attributes = $data->regions[0]->rows[0]->cells;
       
       $homeClass ="suhv-place";
       $entries = count($games);
+
+      $title = str_replace ("Spielübersicht", SwissUnihockey_Api_Public::translate("Replacements","Spielübersicht"),$data->title);
+      $title = str_replace ("Saison", SwissUnihockey_Api_Public::translate("Replacements","Saison"),$title);
       $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
-      $html_head .= "<caption>".$data->title."</caption>";
-      $html_head .= "<thead><tr><th class=\"suhv-date\">"."Datum, Zeit".
+      $html_head .= "<caption>".$title."</caption>";
+      $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
       "</th><th class=\"suhv-place\">".$header_Location.
       "</th><th class=\"suhv-opponent\">".$header_Guest."</th>";
 
@@ -2608,23 +2644,20 @@ private static function suhvDown() {
             $game_maplink = "<a href=\"https://maps.google.ch/maps?q=".$game_map_y.",".$game_map_x."\""." target=\"_blank\" title= \"".$game_location_name."\">";
        
             $game_homeDisplay = $game_homeclub;
-
             $game_guestDisplay = $game_guestclub;
             $game_league = str_replace ("Junioren", "",$game_league);
-            //$game_league = str_replace ("Herren", "",$game_league);
-
 	        $resultClass = 'suhv-result';
+            
+	        if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($club_name,$game_homeclub)>=1)){ 
+	            $game_Opponent = $game_guestDisplay; 
+	            if ($game_home_result > $game_guest_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
+	        }
+	        if ((substr_count($game_guestDisplay,$my_club_name)>=1) and (substr_count($club_name,$game_guestclub)>=1)){
+	            $game_Opponent = $game_homeDisplay;
+	            if ($game_guest_result > $game_home_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
+	        }
             if ($game_home_result == $game_guest_result) { $resultClass = 'suhv-draw';}
-            else {
-	            if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($club_name,$game_homeclub)>=1)){ 
-	              $game_Opponent = $game_guestDisplay; 
-	              if ($game_home_result > $game_guest_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
-	            }
-	            if ((substr_count($game_guestDisplay,$my_club_name)>=1) and (substr_count($club_name,$game_guestclub)>=1)) {
-	              $game_Opponent = $game_homeDisplay;
-	              if ($game_guest_result > $game_home_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
-	            }
-            }
+
             if ($game_result == "")  { 
               $resultClass = 'suhv-result';
               $items++;
@@ -2708,33 +2741,36 @@ private static function suhvDown() {
       )); 
       $data = $details->data; 
 
-      SwissUnihockey_Api_Public::log_me(array('function' => 'league_team_getGames', 'season' => $season, 'club_ID' => $club_ID, 'team_ID' => $team_ID , 'mode' => $mode));
+      //SwissUnihockey_Api_Public::log_me(array('function' => 'league_team_getGames', 'season' => $season, 'club_ID' => $club_ID, 'team_ID' => $team_ID , 'mode' => $mode));
 
 
       $loop = FALSE;
       $tabs = $data->context->tabs;
       if ($tabs = "on") $loop = TRUE;
+      $page = $data->context->page; 
 
-      $page = $data->context->page;
-      $header_DateTime = $data->headers[0]->text;
-      $header_Location = $data->headers[1]->text;
-      $header_Home = $data->headers[2]->text;
-      $header_Guest = $data->headers[3]->text;
+      $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+      $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
+      $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
       $header_Guest = "Gegner";
-      $header_Result = $data->headers[4]->text;
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$header_Guest);
+      $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
+
       $club_name = $data->title;
       $games = $data->regions[0]->rows;
       $attributes = $data->regions[0]->rows[0]->cells;
   
-
+      $title = str_replace ("Spielübersicht", SwissUnihockey_Api_Public::translate("Replacements","Spielübersicht"),$data->title);
+      $title = str_replace ("Saison", SwissUnihockey_Api_Public::translate("Replacements","Saison"),$title);
       $html .= "<table class=\"suhv-table".$tablepress."\">\n";
-      $html .= "<caption>".$data->title."</caption>";
-      $html .= "<thead><tr><th class=\"suhv-date\">"."Datum, Zeit";
+      $html .= "<caption>".$title."</caption>";
+      $html .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime;
       $html .= "</th><th class=\"suhv-opponent\">".$header_Guest;
       $html .= "</th><th class=\"suhv-location\">".$header_Location;
       //$game_result = $games[0]->cells[4]->text[0];
       //if ($game_result != "")  
-      //   $html .= "</th><th class=\"suhv-result\">".$header_Result."</th></tr></thead>";
+      $html .= "</th><th class=\"suhv-result\">".""."</th></tr></thead>";
       $html .= "</th></tr></thead>";
       $html .= "<tbody>";
 
@@ -2852,28 +2888,28 @@ private static function suhvDown() {
       $smallTable = FALSE;
       if ($headerCount < 11) $smallTable = TRUE;
       
-      $header_Rank = $data->headers[0]->text;
-      $header_Team = $data->headers[2]->text;
-      $header_Sp = $data->headers[3]->text;
-      $header_S = $data->headers[4]->text;
+      $header_Rank = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[0]->text);
+      $header_Team =SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[2]->text);
+      $header_Sp = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[3]->text);
+      $header_S = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[4]->text);
       if ($smallTable) {
-        $header_U = $data->headers[5]->text;
-        $header_N = $data->headers[6]->text;
-        $header_T = $data->headers[7]->text;
-        $header_T = "Tore";
-        $header_TD = $data->headers[8]->text;
-        $header_P = $data->headers[9]->text;
-        $header_P = "Pt.";
+        $header_U = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[5]->text);
+        $header_N = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[6]->text);
+        $header_T = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[7]->text);
+        // $header_T = "Tore";
+        $header_TD = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[8]->text);
+        $header_P = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[9]->text);
+        //$header_P = "Pt.";
       }
       else{
-        $header_SnV = $data->headers[5]->text;
-        $header_NnV = $data->headers[6]->text;
-        $header_N = $data->headers[7]->text;
-        $header_T = $data->headers[8]->text;
-        $header_T = "Tore";
-        $header_TD = $data->headers[9]->text;
-        $header_P = $data->headers[10]->text;
-        $header_P = "Pt.";
+        $header_SnV = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[5]->text);
+        $header_NnV = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[6]->text);
+        $header_N = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[7]->text);
+        $header_T = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[8]->text);
+        //$header_T = "Tore";
+        $header_TD = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[9]->text);
+        $header_P = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[10]->text);
+        //$header_P = "Pt.";
       }
       $Table_title = $data->title;
       //* $rankings = $data->regions[0]->rows;
@@ -2903,27 +2939,52 @@ private static function suhvDown() {
 	        } else {$view_cache ="";
 	      }
 	     
+        $title = str_replace ("Tabelle", SwissUnihockey_Api_Public::translate("Replacements","Tabelle"),$data->title);
+        $title = str_replace ("per", SwissUnihockey_Api_Public::translate("Replacements","per"),$title);
+        $title_rank = "Rang";
+        $title_team = "Team";
+        $title_games = "Spiele";
+        $titel_wins = "Siege";
+        $title_ties = "Siege nach Verlängerung"; 
+        $title_defeats = "Niederlagen nach Verlängerung";
+        $title_lost = "Niederlagen";
+        $title_scored = "Torverhältnis";
+        $title_diff = "Tordifferenz";
+        $title_points = "Punkte";
+        $title_even = "Spiele unentschieden";
+        $title_rank= SwissUnihockey_Api_Public::translate("TeamTable",$title_rank);
+        $title_team = SwissUnihockey_Api_Public::translate("TeamTable",$title_team);
+        $title_games = SwissUnihockey_Api_Public::translate("TeamTable",$title_games);
+        $titel_wins = SwissUnihockey_Api_Public::translate("TeamTable",$titel_wins);      
+        $title_ties = SwissUnihockey_Api_Public::translate("TeamTable",$title_ties);
+        $title_defeats = SwissUnihockey_Api_Public::translate("TeamTable",$title_defeats);
+        $title_lost = SwissUnihockey_Api_Public::translate("TeamTable",$title_lost);
+        $title_scored = SwissUnihockey_Api_Public::translate("TeamTable",$title_scored);
+        $title_diff = SwissUnihockey_Api_Public::translate("TeamTable",$title_diff);
+        $title_points = SwissUnihockey_Api_Public::translate("TeamTable",$title_points);
+        $title_even = SwissUnihockey_Api_Public::translate("TeamTable",$title_even);
+
 	      $html .= "<table class=\"suhv-table ".$tablepress."\">";
-	      if ($capt) $html .= "<caption>".$data->title.$view_cache."</caption>";
+	      if ($capt) $html .= "<caption>".$title.$view_cache."</caption>";
 	      $html .= "<thead>".       
-	        "<tr><th class=\"suhv-rank\"><abbr title=\"Rang\">".$header_Rank."</abbr>".
-	        "</th><th class=\"suhv-team\"><abbr title=\"Team\">".$header_Team."</abbr>".
-	        "</th><th class=\"suhv-games\"><abbr title=\"Spiele\">".$header_Sp."</abbr>".
-	        "</th><th class=\"suhv-wins\"><abbr title=\"Siege\">".$header_S."</abbr>";
+	        "<tr><th class=\"suhv-rank\"><abbr title=\"".$title_rank."\">".$header_Rank."</abbr>".
+	        "</th><th class=\"suhv-team\"><abbr title=\"".$title_team."\">".$header_Team."</abbr>".
+	        "</th><th class=\"suhv-games\"><abbr title=\"".$title_games."\">".$header_Sp."</abbr>".
+	        "</th><th class=\"suhv-wins\"><abbr title=\"".$titel_wins."\">".$header_S."</abbr>";
 	      if ($smallTable) {
-	        $html .= "</th><th class=\"suhv-even\"><abbr title=\"Spiele unentschieden\">".$header_U."</abbr>".
-	        "</th><th class=\"suhv-lost\"><abbr title=\"Niederlagen\">".$header_N."</abbr>".
-	        "</th><th class=\"suhv-scored\"><abbr title=\"Torverhältnis\">".$header_T."</abbr>".
-	        "</th><th class=\"suhv-diff\"><abbr title=\"Tordifferenz\">".$header_TD."</abbr>".
-	        "</th><th class=\"suhv-points\"><abbr title=\"Punkte\">".$header_P."</abbr>";
+	        $html .= "</th><th class=\"suhv-even\"><abbr title=\"".$title_even."\">".$header_U."</abbr>".
+	        "</th><th class=\"suhv-lost\"><abbr title=\"".$title_lost."\">".$header_N."</abbr>".
+	        "</th><th class=\"suhv-scored\"><abbr title=\"".$title_scored."\">".$header_T."</abbr>".
+	        "</th><th class=\"suhv-diff\"><abbr title=\"".$title_diff."\">".$header_TD."</abbr>".
+	        "</th><th class=\"suhv-points\"><abbr title=\"".$title_points."\">".$header_P."</abbr>";
 	      }
 	      else{
-	        $html .= "</th><th class=\"suhv-ties\"><abbr title=\"Siege nach Verlängerung\">".$header_SnV."</abbr>".
-	        "</th><th class=\"suhv-defeats\"><abbr title=\"Niederlagen nach Verlängerung\">".$header_NnV."</abbr>".
-	        "</th><th class=\"suhv-lost\"><abbr title=\"Niederlagen\">".$header_N."</abbr>".
-	        "</th><th class=\"suhv-scored\"><abbr title=\"Torverhältnis\">".$header_T."</abbr>".
-	        "</th><th class=\"suhv-diff\"><abbr title=\"Tordifferenz\">".$header_TD."</abbr>".
-	        "</th><th class=\"suhv-points\"><abbr title=\"Punkte\">".$header_P."</abbr>";
+	        $html .= "</th><th class=\"suhv-ties\"><abbr title=\"".$title_ties."\">".$header_SnV."</abbr>".
+	        "</th><th class=\"suhv-defeats\"><abbr title=\"".$title_defeats."\">".$header_NnV."</abbr>".
+	        "</th><th class=\"suhv-lost\"><abbr title=\"".$title_lost."\">".$header_N."</abbr>".
+	        "</th><th class=\"suhv-scored\"><abbr title=\"".$title_scored."\">".$header_T."</abbr>".
+	        "</th><th class=\"suhv-diff\"><abbr title=\"".$title_diff."\">".$header_TD."</abbr>".
+	        "</th><th class=\"suhv-points\"><abbr title=\"".$title_points."\">".$header_P."</abbr>";
 	      }
 	      $html .= "</th></tr></thead>";
 	      $html .= "<tbody>";
@@ -3025,12 +3086,13 @@ private static function suhvDown() {
       )); 
 
       $data = $details->data; 
-     
-      $header_Rank = $data->headers[0]->text;
-      $header_Rank = "Rang";
-      $header_Team = $data->headers[2]->text;
-      $header_P = $data->headers[9]->text; // Points
-      $header_P = "Punkte";
+
+      $header_Rank = SwissUnihockey_Api_Public::translate('TeamRank',$data->headers[0]->text);
+      //$header_Rank = "Rang";
+      $header_Team = SwissUnihockey_Api_Public::translate('TeamRank',$data->headers[2]->text);
+      $header_P = SwissUnihockey_Api_Public::translate('TeamRank',$data->headers[9]->text); // Points
+      //$header_P = "Punkte";
+
       $Table_title = $data->title;
       //* $rankings = $data->regions[0]->rows;
       if (isset($data->regions[0]->rows)) {
@@ -3047,9 +3109,10 @@ private static function suhvDown() {
         } else {$view_cache ="";
       }
      
-
+      $title = str_replace ("Tabelle", SwissUnihockey_Api_Public::translate("Replacements","Tabelle"),$data->title);
+      $title = str_replace ("per", SwissUnihockey_Api_Public::translate("Replacements","per"),$title);
       $html .= "<table class=\"suhv-table".$tablepress."\">";
-      $html .= "<caption>".$data->title.$view_cache."</caption>";
+      $html .= "<caption>".$title.$view_cache."</caption>";
       $html .= "<thead>".
            "<tr><th class=\"suhv-rank\">".$header_Rank.
            "</th><th class=\"suhv-team\">".$header_Team.
@@ -3095,10 +3158,7 @@ private static function suhvDown() {
     else { $html = $value; }
     return $html;
    
-      
   }
-
-
 
 /* ---------------------------------------------------------------------------------------------------- */
  public static function api_league_getGames($season, $league, $game_class, $group, $round, $mode, $cache) {
@@ -3145,13 +3205,16 @@ private static function suhvDown() {
       if ($data->slider->next <> NULL) $loop = TRUE;
 
       $round = $data->context->round;
-      $header_DateTime = $data->headers[0]->text;
-      $header_Location = $data->headers[1]->text;
-      $header_Home = $data->headers[2]->text;
-      $header_Home = "Heimteam";
-      $header_Guest = $data->headers[6]->text;
-      $header_Guest = "Gastteam";
-      $header_Result = $data->headers[7]->text;
+
+      $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+      $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
+      $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+      //$header_Home = "Heimteam";
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[6]->text);
+      //$header_Guest = "Gastteam";
+      $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[7]->text);
+
+
       $round_Title = $data->slider->text;
       $games = $data->regions[0]->rows;
       $game_location_name = $games[0]->cells[1]->text[0]; 
@@ -3169,23 +3232,27 @@ private static function suhvDown() {
      
       $ActivRound = trim(substr($round_Title,0,strpos($round_Title,'/')));
       $ActivRound = str_replace(' ', '_', $ActivRound);
-      $html .= '<div class="suhv-round-link"><a id="ActivRound" href="#LastGame">'.__('Zur aktuellen Runde','SUHV-API-2').'</a></div>';
+      $LinkActivRound = SwissUnihockey_Api_Public::translate('Replacements','Zur aktuellen Runde');
+      $RoundTitle = str_replace('Runde',SwissUnihockey_Api_Public::translate('Replacements','Runde'), $round_Title);
+
+      $html .= '<div class="suhv-round-link"><a id="ActivRound" href="#LastGame">'.__($LinkActivRound,'SUHV-API-2').'</a></div>';
+      //$html .= '<div class="suhv-round-link"><a id="ActivRound" href="#LastGame">'.__('Zur aktuellen Runde','SUHV-API-2').'</a></div>';
       $html .= '<div class="suhv-round-anchor"><a id="'.$ActivRound.'"></a></div>';
-      if ($small) { $html .= "<h3>".$round_Title."&nbsp;&nbsp;".$game_maplink.$game_location_name."</a></h3>"; } 
+      if ($small) { $html .= "<h3>".$RoundTitle."&nbsp;&nbsp;".$game_maplink.$game_location_name."</a></h3>"; } 
       else  {
-        $html .= "<h3>".$round_Title."</h3>";
+        $html .= "<h3>".$RoundTitle."</h3>";
       }
       // $html .= "<h3>".$round_Title."&nbsp;&nbsp;".$game_maplink.$game_location_name."</a></h3>";
 
       $html .= "<table class=\"suhv-table suhv-league".$tablepress."\">\n";
       // $html .= "<caption>timestamp: ".strftime("%H:%M")." - caching: ".$cTime." min.</caption>";
       // $html .= "<caption><h3>".$round_Title."  (".$game_maplink.$game_location_name."</a>)</h3></caption>";
-      $html .= "<thead><tr><th class=\"suhv-league suhv-date\">"."Datum, Zeit";
-      if  (!$small) {$html .= "</th><th class=\"suhv-league suhv-place\">".$header_Location;}
+      $html .= "<thead><tr><th class=\"suhv-league suhv-date\">".$header_DateTime;
+      if  (!$small) $html .= "</th><th class=\"suhv-league suhv-place\">".$header_Location;
       $html .= "</th><th class=\"suhv-league suhv-opponent\">".$header_Home;
       $html .= "</th><th class=\"suhv-league suhv-opponent\">".$header_Guest;
-      $html .= "</th><th class=\"suhv-league suhv-result\">".$header_Result."</th></tr></thead>";
-      $html .= "<tbody>";
+      $html .= "</th><th class=\"suhv-league suhv-result\">".$header_Result;
+      $html .= "</th></tr></thead><tbody>";
 
       error_reporting(E_ALL & ~E_NOTICE); 
       $i = 0;
@@ -3217,8 +3284,8 @@ private static function suhvDown() {
               if (!$small) { $html .= "</td><td class=\"suhv-league suhv-place\">".$game_maplink.$game_location_name."</a>"; } 
               $html .= "</td><td class=\"suhv-league suhv-opponent\">".$game_homeclub;
               $html .= "</td><td class=\"suhv-league suhv.opponent\">".$game_guestclub;
-              $html .= "</td><td class=\"suhv-league suhv-result\">".$game_result."</td>";
-              $html .= "</tr>";
+              $html .= "</td><td class=\"suhv-league suhv-result\">".$game_result;
+              $html .= "</td></tr>";
             if ($game_result!="N/A") $LastActivRound = $ActivRound;
             $i++; 
 
@@ -3252,19 +3319,20 @@ private static function suhvDown() {
           $game_maplink = "<a href=\"https://maps.google.ch/maps?q=".$game_map_y.",".$game_map_x."\""." target=\"_blank\" title= \"".$game_location_name."\">";
           $ActivRound = trim(substr($round_Title,0,strpos($round_Title,'/')));
           $ActivRound = str_replace(' ', '_', $ActivRound);
+          $RoundTitle = str_replace('Runde',SwissUnihockey_Api_Public::translate('Replacements','Runde'), $round_Title);
           $html .= '<div class="suhv-round-anchor"><a id="'.$ActivRound.'"></a></div>';
-          if ($small) { $html .= "<h3>".$round_Title."&nbsp;&nbsp;".$game_maplink.$game_location_name."</a></h3>"; } 
+          if ($small) { $html .= "<h3>".$RoundTitle."&nbsp;&nbsp;".$game_maplink.$game_location_name."</a></h3>"; } 
           else  {
-            $html .= "<h3>".$round_Title."</h3>";
+            $html .= "<h3>".$RoundTitle."</h3>";
           }
 
           $html .= "<table class=\"suhv-table suhv-league".$tablepress."\" >\n";
-          $html .= "<thead><tr><th class=\"suhv-league suhv-date\" >"."Datum, Zeit";
+          $html .= "<thead><tr><th class=\"suhv-league suhv-date\" >".$header_DateTime;
           if (!$small) {$html .= "</th><th class=\"suhv-league  suhv-place\" >".$header_Location;}
           $html .= "</th><th class=\"suhv-league suhv-opponent\" >".$header_Home;
           $html .= "</th><th class=\"suhv-league suhv-opponent\" >".$header_Guest;
-          $html .= "</th><th class=\"suhv-league suhv-result\" >".$header_Result."</th></tr></thead>";
-          $html .= "<tbody>";
+          $html .= "</th><th class=\"suhv-league suhv-result\" >".$header_Result;
+          $html .= "</th></tr></thead><tbody>";
            
         } // end else
       } // end While
@@ -3287,7 +3355,6 @@ private static function suhvDown() {
     $weekend = TRUE;
     $weekend_games = FALSE;
     $weekendDays = SwissUnihockey_Api_Public::nearWeekend();
-    $date_description = "Liga-Spiele vom Wochenende";
     $start_date_us = $weekendDays["Freitag"];
     $end_date_us = $weekendDays["Sonntag"];
     $start_date = date("d.m.Y",$start_date_us);
@@ -3338,13 +3405,14 @@ private static function suhvDown() {
           }
       else $nextround = $round;
 
-      $header_DateTime = $data->headers[0]->text;
-      $header_Location = $data->headers[1]->text;
-      $header_Home = $data->headers[2]->text;
-      $header_Home = "Heimteam";
-      $header_Guest = $data->headers[6]->text;
-      $header_Guest = "Gastteam";
-      $header_Result = $data->headers[7]->text;
+      $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+      $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
+      $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+      //$header_Home = "Heimteam";
+      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[6]->text);
+      //$header_Guest = "Gastteam";
+      $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[7]->text);
+
       $round_Title = $data->slider->text;
       $games = $data->regions[0]->rows;
       $game_location_name = $games[0]->cells[1]->text[0]; 
@@ -3382,12 +3450,14 @@ private static function suhvDown() {
           $html .= "<h3>".$round_Title."</h3>";
         }
         // $html .= "<h3>".$round_Title."&nbsp;&nbsp;".$game_maplink.$game_location_name."</a></h3>";
-
+        $date_description = SwissUnihockey_Api_Public::translate("Replacements","Liga-Spiele vom Wochenende");
+        $Spielevom = SwissUnihockey_Api_Public::translate("Replacements","Spiele vom");
+        $bis = SwissUnihockey_Api_Public::translate("Replacements","bis");
         $html .= "<table class=\"suhv-table suhv-league".$tablepress."\">\n";
         if ($weekend) 
-          $html_head .= "<caption>".$date_description." ".$start_date." bis ".$end_date."</caption>";
+          $html_head .= "<caption>".$date_description." ".$start_date." ".$bis." ".$end_date."</caption>";
         else
-          $html_head .= "<caption>"."Spiele vom ".$start_date." bis ".$end_date."</caption>";
+          $html_head .= "<caption>".$Spielevom." ".$start_date." ".$bis." ".$end_date."</caption>";
         $html .= "<thead><tr><th class=\"suhv-league suhv-date\">"."Datum, Zeit";
         if  (!$small) {$html .= "</th><th class=\"suhv-league suhv-place\">".$header_Location;}
         $html .= "</th><th class=\"suhv-league suhv-opponent\">".$header_Home;
@@ -3437,8 +3507,8 @@ private static function suhvDown() {
               if (!$small) { $html .= "</td><td class=\"suhv-league suhv-place\">".$game_maplink.$game_location_name."</a>"; } 
               $html .= "</td><td class=\"suhv-league suhv-opponent\">".$game_homeclub;
               $html .= "</td><td class=\"suhv-league suhv.opponent\">".$game_guestclub;
-              $html .= "</td><td class=\"suhv-league suhv-result\">".$game_result."</td>";
-              $html .= "</tr>";
+              $html .= "</td><td class=\"suhv-league suhv-result\">".$game_result;
+              $html .= "</td></tr>";
               if ($game_result!="N/A") $LastActivRound = $ActivRound;
             }
             else $i = $entries; // exit
@@ -3460,7 +3530,7 @@ private static function suhvDown() {
             'season' => $season, 'league' => $league, 'game_class' => $game_class, 'round' => $nextround, 'mode' => $mode, 'group' => $group, 
           )); 
 
-         SwissUnihockey_Api_Public::log_me(array('function' => 'league_getWeekend_sub', 'season' => $season, 'league' => $league, 'game_class' => $game_class, 'group' => $group, 'round' => $nextround, 'mode' => $mode));
+         //SwissUnihockey_Api_Public::log_me(array('function' => 'league_getWeekend_sub', 'season' => $season, 'league' => $league, 'game_class' => $game_class, 'group' => $group, 'round' => $nextround, 'mode' => $mode));
 
           $data = $details->data; 
           if (isset($data->slider->next->set_in_context->round)) 
@@ -3507,8 +3577,8 @@ private static function suhvDown() {
             if (!$small) {$html .= "</th><th class=\"suhv-league  suhv-place\" >".$header_Location;}
             $html .= "</th><th class=\"suhv-league suhv-opponent\" >".$header_Home;
             $html .= "</th><th class=\"suhv-league suhv-opponent\" >".$header_Guest;
-            $html .= "</th><th class=\"suhv-league suhv-result\" >".$header_Result."</th></tr></thead>";
-            $html .= "<tbody>";
+            $html .= "</th><th class=\"suhv-league suhv-result\" >".$header_Result;
+            $html .= "</th></tr></thead><tbody>";
           }
         } // end else
       } // end While
