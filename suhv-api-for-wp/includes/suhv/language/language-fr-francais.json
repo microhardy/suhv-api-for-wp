@@ -2,7 +2,7 @@
    "Info":{
       "Sprache": "French",
       "Datum": "12.11.2019",
-      "Version": "V 1.0"
+      "Version": "V 1.81"
    },
 
    "Games": {
@@ -51,6 +51,7 @@
       "Tordifferenz": "Différence de buts",
       "P": "Points",
       "Punkte": "Points",
+      "U": "U",
       "Spiele unentschieden": "Matsches dessiner"
    },
 

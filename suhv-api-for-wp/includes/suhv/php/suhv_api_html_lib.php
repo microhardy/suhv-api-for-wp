@@ -3,7 +3,7 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version 12.11.2019
+ * @version 14.11.2019
  * STATUS: Reviewed
  */
 
@@ -229,6 +229,7 @@ private static function suhvDown() {
       }
       $title = str_replace ("Spielübersicht", SwissUnihockey_Api_Public::translate("Replacements","Spielübersicht"),$data->title);
       $title = str_replace ("Saison", SwissUnihockey_Api_Public::translate("Replacements","Saison"),$title);
+      $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
       $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
       $html_head .= "<caption>".$title."<br>".$wochentag.strftime(" - %H:%M")."  (".$cTime." min.)".$view_cache."</caption>";
       $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
@@ -380,13 +381,13 @@ private static function suhvDown() {
             }
             if (($items <= $n_Games)) {
               if (($date_of_game > $startdate) and ($linkGame_ID_before != $linkGame_ID)) {  //  and $cup
-                $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">"."<a href=\"".$game_detail_link."\" title=\"Spieldetails\" >".str_replace(".20",".",$game_date).", ".$game_time."</a>".
+                $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">"."<a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >".str_replace(".20",".",$game_date).", ".$game_time."</a>".
                 "</td><td class=\"".$homeClass."\">".$game_maplink.$game_location."</a>".
                 "</td><td class=\"".$resultHomeClass."\">".$game_homeDisplay.
                 "</td><td class=\"".$resultGuestClass."\">".$game_guestDisplay;
                 if (($game_result != "")) {
                   $html_res = "<th class=\"suhv-result\">".$header_Result."</th>"; 
-                  $html_body .= "</td><td class=\"".$resultClass."\"><a href=\"".$game_detail_link."\" title=\"Spieldetails\" >".$game_result."<br>". $game_result_add."</a></td>";
+                  $html_body .= "</td><td class=\"".$resultClass."\"><a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >".$game_result."<br>". $game_result_add."</a></td>";
                 }
                 else  $items++;
                 $html_body .= "</tr>";
@@ -507,6 +508,7 @@ private static function suhvDown() {
       $mail_subjekt ="";
 
       $tage = SwissUnihockey_Api_Public::language_group('Days');
+      $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
       $tag = date("w");
       $wochentag = $tage->$tag;
 
@@ -712,7 +714,7 @@ private static function suhvDown() {
                   $game_telegramm = $details_game->data->regions[0]->rows[0]->cells[2]->text[0].$skip.$details_game->data->regions[0]->rows[0]->cells[2]->text[1];
                   $last_games[$i] = $games[$i];
                   $message = $game_location_name." (".$game_location."): <strong>".$new_result."</strong> ".$game_result_add." im Spiel ".$game_homeclub." vs. ".$game_guestclub.$skip;
-                  $message .= $skip."<a href=\"".$game_detail_link."\" title=\"Spieldetails\" >Matchtelegramm:</a>".$skip.$game_summary.$skip.$game_sumdetail.$skip.$game_telegramm.$skip; 
+                  $message .= $skip."<a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >Matchtelegramm:</a>".$skip.$game_summary.$skip.$game_sumdetail.$skip.$game_telegramm.$skip; 
                   $message .=  $skip."Diese Meldung wurde Dir durch <a href=\"".$site_url."\">".$site_display."</a> zugestellt.".$skip; 
                   SwissUnihockey_Api_Public::log_me('Schluss-Resultat-Mail');
                   $checkmail = wp_mail( $e_Mail_Result, "Schluss-Resultat: ".$game_league." - ".$game_homeclub." vs. ".$game_guestclub.' '.$new_result, $message, $mailheaders);
@@ -944,7 +946,7 @@ private static function suhvDown() {
                 $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">".str_replace(".20",".",$game_date_time).
                 "</td><td class=\"".$resultHomeClass."\">".$game_homeclub.
                 "</td><td class=\"".$resultGuestClass."\">".$game_guestclub.
-                "</td><td class=\"".$resultClass."\">"."<a href=\"".$game_detail_link."\" title=\"Spieldetails\" >".$game_result."</a>";
+                "</td><td class=\"".$resultClass."\">"."<a href=\"".$game_detail_link."\" title=\"".$Spieldetails."\" >".$game_result."</a>";
                 $html_body .= "</td></tr>";
             }
             else {
@@ -1415,6 +1417,7 @@ private static function suhvDown() {
       $date_description = SwissUnihockey_Api_Public::translate("Replacements",$date_description);
       $Spielevom = SwissUnihockey_Api_Public::translate("Replacements","Spiele vom");
       $bis = SwissUnihockey_Api_Public::translate("Replacements","bis");
+      $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
       $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
       if ($weekend) 
         $html_head .= "<caption>".$date_description." ".$start_tag." ".$start_date." ".$bis." ".$end_tag." ".$end_date."</caption>";
@@ -1562,13 +1565,13 @@ private static function suhvDown() {
           
             if (($items <= $n_Games) and ($date_of_game <= $end_date_us)) {
               if (($date_of_game > $startdate) and ($date_of_game <= $end_date_us) and ($linkGame_ID_before != $linkGame_ID) ) {  //   and $cup
-                $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">"."<a href=\"".$game_detail_link."\" title=\"Spieldetails\" >".str_replace(".20",".",$game_date).", ".$game_time."</a>".
+                $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">"."<a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >".str_replace(".20",".",$game_date).", ".$game_time."</a>".
                 "</td><td class=\"".$homeClass."\">".$game_maplink.$game_location."</a>".
                 "</td><td class=\"".$resultHomeClass."\">".$game_homeDisplay.
                 "</td><td class=\"".$resultGuestClass."\">".$game_guestDisplay;
                 if (($game_result != "")) {
                   $html_res = "<th class=\"suhv-result\">".$header_Result."</th>"; 
-                  $html_body .= "</td><td class=\"".$resultClass."\"><a href=\"".$game_detail_link."\" title=\"Spieldetails\" >".$game_result."<br>". $game_result_add."</a></td>";
+                  $html_body .= "</td><td class=\"".$resultClass."\"><a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >".$game_result."<br>". $game_result_add."</a></td>";
                 }
                 else  $items++;
                 $html_body .= "</tr>";
@@ -1702,6 +1705,7 @@ private static function suhvDown() {
       $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
       $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
       $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[5]->text);
+      $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
       //$header_Result = "Res.";
 
       $club_name = $data->title;
@@ -1871,7 +1875,7 @@ private static function suhvDown() {
           
             if (($items <= $n_Games) and ($date_of_game <= $end_date_us) ) {
               if (($date_of_game > $startdate) and ($date_of_game <= $end_date_us) and ($linkGame_ID_before != $linkGame_ID) and $heute and ($home_run or $away)) {  //   and $cup
-                $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">"."<a href=\"".$game_detail_link."\" title=\"Spieldetails\" >".str_replace(".20",".",$game_date).", ".$game_time."</a>".
+                $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">"."<a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >".str_replace(".20",".",$game_date).", ".$game_time."</a>".
                 "</td><td class=\"".$homeClass."\">".$game_location.
                 "</td><td>".$game_homeDisplay." vs ".$game_guestDisplay;
                 if (($game_result != "") and FALSE ) {
@@ -2610,6 +2614,7 @@ private static function suhvDown() {
 
       $title = str_replace ("Spielübersicht", SwissUnihockey_Api_Public::translate("Replacements","Spielübersicht"),$data->title);
       $title = str_replace ("Saison", SwissUnihockey_Api_Public::translate("Replacements","Saison"),$title);
+      $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
       $html_head = "<table class=\"suhv-table suhv-planned-games-full".$tablepress."\">\n";
       $html_head .= "<caption>".$title."</caption>";
       $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
@@ -2672,7 +2677,7 @@ private static function suhvDown() {
                 "</td><td class=\"suhv-opponent\">".$game_Opponent;
                 if (($game_result != "")) {
                   $html_res = "<th class=\"suhv-result\">".$header_Result."</th>"; 
-                  $html_body .= "</td><td class=\"".$resultClass."\"><a href=\"".$game_detail_link."\" title=\"Spieldetails\" >"."<strong>".$game_result."</strong><br>". $game_result_add."</a></td>";
+                  $html_body .= "</td><td class=\"".$resultClass."\"><a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >"."<strong>".$game_result."</strong><br>". $game_result_add."</a></td>";
                 }
                 $html_body .= "</tr>";
             }
