@@ -29,20 +29,24 @@ table.suhv-table th {
 table.suhv-table td {
 }
 
-table.suhv-table td.suhv-points, table.suhv-table td.suhv-diff, table.suhv-table th.suhv-points, table.suhv-table  th.suhv-diff {
+table.suhv-table td.suhv-points, table.suhv-table td.suhv-diff, table.suhv-table td.suhv-ties {
 	text-align: right;
 }
 
-table.suhv-table td.suhv-ties, table.suhv-table td.suhv-defeats{
+table.suhv-table th.suhv-points, table.suhv-table  th.suhv-diff, table.suhv-table th.suhv-ties {
+	text-align: right;
+}
+
+table.suhv-table td.suhv-defeats, table.suhv-table td.suhv-even, table.suhv-table td.suhv-lost {
 	text-align: center;
 }
 
-table.suhv-table th.suhv-ties, table.suhv-table th.suhv-defeats{
+table.suhv-table th.suhv-defeats, table.suhv-table th.suhv-even, table.suhv-table th.suhv-lost {
 	text-align: center;
 }
 
 
-table.suhv-table td.suhv-scored, table.suhv-table  th.suhv-scored {
+table.suhv-table td.suhv-scored, table.suhv-table th.suhv-scored {
 	text-align: center;
 }
 
@@ -91,7 +95,7 @@ th.suhv-opponent {
 	width: 40%;
 }
 
-td.suhv-win, td.suhv-lose, td.suhv-draw, td.suhv-result {
+td.suhv-win, td.suhv-lose, td.suhv-lose, td.suhv-draw, td.suhv-result {
 	color: white;
 	text-align: center;
 	font-weight: bold;
@@ -99,7 +103,7 @@ td.suhv-win, td.suhv-lose, td.suhv-draw, td.suhv-result {
 	border-bottom-width: 1px;
 }
 
-td.suhv-win a, td.suhv-lose a, td.suhv-draw a, td.suhv-result a {
+td.suhv-win a, td.suhv-lose a, td.suhv-lose, td.suhv-draw a, td.suhv-result a {
 	color: white;
 	text-decoration: underline;
 }

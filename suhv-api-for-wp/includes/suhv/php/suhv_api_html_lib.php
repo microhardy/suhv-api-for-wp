@@ -3028,7 +3028,7 @@ private static function suhvDown() {
 	           "</td><td class=\"suhv-games\">".$ranking_Sp.
 	           "</td><td class=\"suhv-wins\">".$ranking_S;
 	           if ($smallTable) {
-	             $html .= "</td><td class=\"suhv-ties\">".$ranking_U.
+	             $html .= "</td><td class=\"suhv-even\">".$ranking_U.
 	             "</td><td class=\"suhv-lost\">".$ranking_N.
 	             "</td><td class=\"suhv-scored\">".$ranking_T.
 	             "</td><td class=\"suhv-diff\">".$ranking_TD.
