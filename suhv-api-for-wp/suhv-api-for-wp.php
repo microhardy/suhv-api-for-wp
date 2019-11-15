@@ -3,14 +3,14 @@
  * Admin Page for SUHV API-2
  * 
  * @author Thomas Hardegger / based on Code form Jérôme Meier
- * @version  14.11.2019
+ * @version  15.11.2019
  * STATUS: Reviewed
 */
 /*
 Plugin Name: SUHV API-2 Schnittstelle für WordPress
 Plugin URI: www.churunihockey.ch
 Description: Nutzt da neu API 2.0 von Swissunihockey.ch Basiert auf Lösung von Jérôme Meier http://www.schwarzpunkt.ch 2012
-Version: 1.81
+Version: 1.82
 Text Domain: SUHV-API-2
 Author: Thomas Hardegger
 Author URI: www.churunihockey.ch
@@ -58,7 +58,7 @@ V1.63  22.06.2018  Add Ajax for Home-Games
 V1.64  01.09.2018  fix count on Teamtable (PHP 7.2)
 V1.65  19.09.2018  fix https converting on clublogos
 V1.66  28.09.2018  fix morgen/tomorrow on direkt games
-V1.67  30.09.2018  fix mail and set cronlog.txt off - if not churunihocky
+V1.67  30.09.2018  fix mail and set cronlog.txt off - if not churunihockey
 V1.68  27.10.2018  fix clean leagues replacements
 V1.70  09.01.2019  make loops for group A + B on ranking tables (Junior-Games)
                    sample https://api-v2.swissunihockey.ch/api/rankings?&season=2018&league=12&game_class=34&group=Gruppe+26 
@@ -68,7 +68,8 @@ V1.73  01.04.2019  Max Loop now 15 pages on team_getGames & and 25 on league_get
 V1.74  09.01.2019  fix PHP 7.2 Array-Count A + B on ranking tables (Junior-Games)
 V1.75  14.10.2019  fix playedGames on draw results
 V1.80  12.11.2019  first multi-language version
-V1.81  12.11.2019  minor language adds: on Gamedetail Link to swissunihockey and U at small Place-GameTable
+V1.81  14.11.2019  minor language adds: on Gamedetail Link to swissunihockey and U at small Place-GameTable
+V1.82  15.11.2019  fix on team_getGames table - extend table classes with functionnames
 *******************************************************************************/
 
 // Sicherstellen, dass keine Infos ausgegeben werden wenn direkt aufgerufen
