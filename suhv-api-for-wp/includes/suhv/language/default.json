@@ -1,8 +1,8 @@
 {
    "Info":{
       "Sprache": "German",
-      "Datum": "12.11.2019",
-      "Version": "V 1.81"
+      "Datum": "18.11.2019",
+      "Version": "V 1.83"
    },
 
    "Games": {
@@ -76,6 +76,12 @@
       "4": "Donnerstag",
       "5": "Freitag",
       "6": "Samstag"
+   },
+
+   "Time":{
+   	  "gestern":"gestern",
+   	  "heute":"heute",
+   	  "morgen":"morgen"
    },
 
    "Replacements": {

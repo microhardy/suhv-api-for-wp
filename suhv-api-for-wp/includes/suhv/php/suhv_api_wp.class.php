@@ -3,7 +3,7 @@
  * Suhv_WP Klasse
  * 
  * @author Thonmas Hardegger / new API / based on Jérôme Meier, schwarzpunkt meier 2012
- * @version 12.11.2019
+ * @version 24.05.2020
  * @todo Auf neue API umschreiben / die Funktionen bebehalten
  * STATUS: first Review
  */
@@ -14,8 +14,8 @@ if ( !class_exists( 'Suhv_WP' ) ) {
 	
 class Suhv_WP {
 	private $options; // WordPress Options Array
-	private $language_path = NULL; // languege folder
-    private $language_data = array(); // languege data
+	private $language_path = SUHV_API_WP_PLUGIN_PATH . "includes/suhv/language/default.json"; // languege folder
+    private $language_data = NULL; // languege data
 	private $season; // Saison
 	private $club_id = 423403; // Chur Unihockey
 	private $club_shortname = "Chur"; // Shortname
@@ -51,7 +51,7 @@ class Suhv_WP {
 		// new API 2
 		add_shortcode ( 'suhv-api-club-get-games', array( &$this, 'api_club_getGames' ) );  // Display next Games of the Club
 
-        add_shortcode ( 'suhv-api-club-get-cupgames', array( &$this, 'api_club_getCupGames' ) );  // Display next Cup-Games of the Club
+        add_shortcode ( 'suhv-api-club-get-cupgames', array( &$this, 'api_club_getCupGames' ) );  //*depreciated Display next Cup-Games of the Club
 
 		add_shortcode ( 'suhv-api-league-get-games', array( &$this, 'api_league_getGames' ) ); // Display all Games of the Leage
 		add_shortcode ( 'suhv-api-league-get-weekend-games', array( &$this, 'api_league_getWeekendGames' ) ); // Display all Games of the Leage of nearest Weekend
@@ -61,9 +61,9 @@ class Suhv_WP {
 		add_shortcode ( 'suhv-api-get-directgames', array( &$this, 'api_getDirectGames' ) );  
 		add_shortcode ( 'suhv-api-get-team-table', array( &$this, 'api_getTeamTable' ) );
 		add_shortcode ( 'suhv-api-get-team-rank', array( &$this, 'api_getTeam_Rank' ) );
-	    add_shortcode ( 'suhv-api-nla-team-get-table', array( &$this, 'api_nla_team_getTable' ) );
-		add_shortcode ( 'suhv-api-get-team-table_nla', array( &$this, 'api_getTeamTable_nla' ) );
-		add_shortcode ( 'suhv-api-get-team-rank_nla', array( &$this, 'api_getTeam_Rank_nla' ) );
+	    add_shortcode ( 'suhv-api-nla-team-get-table', array( &$this, 'api_nla_team_getTable' ) ); //*depreciated
+		add_shortcode ( 'suhv-api-get-team-table_nla', array( &$this, 'api_getTeamTable_nla' ) ); //*depreciated
+		add_shortcode ( 'suhv-api-get-team-rank_nla', array( &$this, 'api_getTeam_Rank_nla' ) ); //*depreciated
 		add_shortcode ( 'suhv-api-club-get-weekend-games', array( &$this, 'api_club_getWeekend_Games' ) );
 		add_shortcode ( 'suhv-api-club-get-weekend-games_for_LiveGames', array( &$this, 'api_club_getWeekend_Games_for_LiveGames' ) );
 		add_shortcode ( 'suhv-api-club-get-currentgamedetails', array( &$this, 'api_club_getCurrentGameDetails' ) );  
@@ -82,6 +82,7 @@ class Suhv_WP {
 		// Action-Hooks
 		add_action ( 'wp_head', array( &$this, 'check_post_meta' ) );
 		add_action ( 'wp_footer', array( &$this, 'suhv_check_update' ) );
+		add_filter( 'cron_schedules', 'cron_add_1minutes' );
  	
 		$this->options = get_option( 'SUHV_WP_plugin_options' );
 		if ( isset( $this->options['SUHV_club_id'] ) ) $this->club_id = $this->options['SUHV_club_id'];
@@ -390,11 +391,17 @@ class Suhv_WP {
 	}
 
     function api_team_getGameDetails($atts){
+    	//*new
 	    extract(shortcode_atts(array(
 	     "start_date" => '17.09.2015',
          "end_date" => '18.09.2015',
          "game_id" => NULL ,
+         "team_id" => NULL ,
         ), $atts));
+        if ( $team_id != NULL )
+		 $this->set_team( $team_id );
+		else
+		 if ( !isset ( $this->team ) ) $this->set_team();
         if ( !isset ( $this->team_id ) ) $this->set_team();
 		if ( !isset ( $this->club_id ) ) $this->set_club();
 		$season = $this->season;
@@ -458,7 +465,15 @@ class Suhv_WP {
  	    return SwissUnihockey_Api_Public::api_league_getWeekend($season, $league_id, $league_class, $league_group, $league_round, $mode, $cache );
 	}
 
-	function api_team_getGames(){
+	function api_team_getGames( $atts ){
+	//new*
+        extract(shortcode_atts(array(
+	     "team_id" => NULL ,
+        ), $atts));
+        if ( $team_id != NULL )
+		 $this->set_team( $team_id );
+		else
+		 if ( !isset ( $this->team ) ) $this->set_team();
 		if ( !isset ( $this->club ) ) $this->set_club();
 		//echo "api_club_getGames";
 		$season = $this->season;
@@ -472,9 +487,17 @@ class Suhv_WP {
 	}
 
     
-	function api_team_getPlayedGames(){
+	function api_team_getPlayedGames( $atts){
+		//new*
+        extract(shortcode_atts(array(
+	     "team_id" => NULL ,
+        ), $atts));
+        //echo " - team:".$team_id;
+        if ( $team_id != NULL )
+         $this->set_team( $team_id );
+        else
+		 if ( !isset ( $this->team ) ) $this->set_team();
 		if ( !isset ( $this->club ) ) $this->set_club();
-
 		//echo "api_club_getGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
@@ -490,7 +513,7 @@ class Suhv_WP {
 		if ( $team_id != NULL )
 		 $this->set_team( $team_id );
 		else
- 		if ( !isset ( $this->team ) ) $this->set_team();
+ 		 if ( !isset ( $this->team ) ) $this->set_team();
  	    if ( !isset ( $this->club ) ) $this->set_club();
  	    $season = $this->season;
  	    $club_ID = $this->club_id;
@@ -502,11 +525,16 @@ class Suhv_WP {
 	}
 
 
-	function api_getTeamTable( $team_id = NULL ){
+	function api_getTeamTable( $atts ){
+	//new*
+		extract(shortcode_atts(array(
+	     "team_id" => NULL ,
+        ), $atts));
+        //echo " - team:".$team_id;
 		if ( $team_id != NULL )
 		 $this->set_team( $team_id );
 		else
- 		if ( !isset ( $this->team ) ) $this->set_team();
+ 		 if ( !isset ( $this->team ) ) $this->set_team();
  	    if ( !isset ( $this->club ) ) $this->set_club();
  	    $season = $this->season;
  	    $club_ID = $this->club_id;
@@ -518,9 +546,14 @@ class Suhv_WP {
 	}
 
 	
-	function api_getTeam_Rank( $team_id = NULL ){
+	function api_getTeam_Rank( $atts ){
+	//new*
+        extract(shortcode_atts(array(
+	     "team_id" => NULL ,
+        ), $atts));
+        // echo " - team:".$team_id;
 		if ( $team_id != NULL )
-		 $this->set_team( $team_id );
+		    $this->set_team( $team_id );
 		else
  		if ( !isset ( $this->team ) ) $this->set_team();
  	    if ( !isset ( $this->club ) ) $this->set_club();
@@ -529,7 +562,7 @@ class Suhv_WP {
  	    $team_ID = $this->team_id;
  	    $mode = "team";
  	    $cache = $this->use_cache;
-        // echo "season: ".$season." - club:".$club_ID." - team:".$team_ID;
+        //echo "season: ".$season." - club:".$club_ID." - team:".$team_ID;
 		return SwissUnihockey_Api_Public::api_getTeamRank($season, $club_ID, $team_ID, $mode, $cache );	
 	}
 
@@ -566,10 +599,10 @@ class Suhv_WP {
 
     function api_club_getWeekend_Games($atts){
 	    extract(shortcode_atts(array(
-	     "start_date" => '17.09.2015',
-         "end_date" => '18.09.2015',
+	     "start_date" => '19.09.2020',
+         "end_date" => '20.09.2020',
         ), $atts));
-        
+     
 		if ( !isset ( $this->club ) ) $this->set_club();
 		$season = $this->season;
  	    $club_ID = $this->club_id;
@@ -577,16 +610,17 @@ class Suhv_WP {
  	    $team_ID = $this->team_id;
  	    $mode = "club";
  	    $cache = $this->use_cache;
+ 	    // echo "season: ".$season." - club:".$club_ID." - team:".$team_ID;
  	    return SwissUnihockey_Api_Public::api_club_getWeekendGames($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $cache );
 	}
 
 	function api_club_getWeekend_Games_for_LiveGames($atts){
 	    extract(shortcode_atts(array(
 	     "away" => NULL ,
-	     "start_date" => '17.09.2015',
-         "end_date" => '18.09.2015',
+	     "start_date" => '19.09.2020',
+         "end_date" => '20.09.2020',
         ), $atts));
-     
+  
 		if ( !isset ( $this->club ) ) $this->set_club();
 		$season = $this->season;
  	    $club_ID = $this->club_id;
@@ -681,7 +715,7 @@ class Suhv_WP {
     function api_reload_processing(){
       if ( !isset ( $this->live_auto_reload ) ) $this->set_live_auto_reload();
       $live_auto_reload = $this->live_auto_reload;
-      if ( $live_auto_reload <= 10) $live_auto_reload = 10;
+      if ( $live_auto_reload <= 9) $live_auto_reload = 20;
       $reload_time = $live_auto_reload*1000;
 	  echo "Last update: ".date("H:i s")."&Prime; auto-reload every ".$live_auto_reload." seconds...";
       $moment = "<img src=\"https://www.churunihockey.ch/picture_library/cu/icons/processing.gif\" title=\"Moment bitte!\">\n"
@@ -702,14 +736,92 @@ function Suhv_WP_init() {
 	 $Suhv_WP = new Suhv_WP(); 	
  }
 
- /*
- //SwissUnihockey_Api_Public::log_me("SUHV Init");
- //$plugin_options = get_option( 'SUHV_WP_plugin_options' );
- //SwissUnihockey_Api_Public::log_me($plugin_options);
- */
 
 add_action('plugins_loaded', 'Suhv_WP_init');
 
+// Add Cron
+
+	function log_cron($message){
+
+	    if ((substr_count( $_SERVER['SERVER_NAME'] ,"churunihockey")>=1) or (substr_count( $_SERVER['SERVER_NAME'] ,"localhost")>=1)) {
+	     date_default_timezone_set("Europe/Paris");
+	     if ( (idate("H") == 7) and ((idate("i") % 25) == 0) ) {
+            $myfile = fopen("cronlog.txt", "w") or die("Unable to open file!");
+            $message = $_SERVER['SERVER_NAME']." Log cleared: ".date("d.m.Y - H:i:s");
+         }
+	     else $myfile = fopen("cronlog.txt", "a+") or die("Unable to open file!");
+	     fwrite($myfile, $message."\n");
+	     fclose($myfile);
+	   }
+	}
+
+
+	 //****************************************
+	 // add custom interval
+	function cron_add_1minutes( $schedules ) {
+	  // Adds once every minute to the existing schedules.
+	    $schedules['every1minutes'] = array(
+	      'interval' => 60*1,
+	      'display' => __( 'Every 1 minutes' )
+	    );
+	    SwissUnihockey_Api_Public::log_me('new schedule insert every1minutes');
+	    SwissUnihockey_Api_Public::log_me($_SERVER['SERVER_NAME']);
+	    return $schedules;
+	}
+
+
+	// ADD Cron task
+	function my_cronjob_suhv_action () {
+	    // code to execute on cron run
+	  date_default_timezone_set("Europe/Paris");
+	   
+	  //log_cron($_SERVER['SERVER_NAME']." - Plugin-Version: ".SUHV_API_WP_VERSION." start: ".date("d.m.Y - H:i:s")." minute:".idate("i")." day:".idate("w"));
+	  $run = false;
+	  $Suhv_WP_instance = new Suhv_WP(); 
+	  if ((idate("i") % 5) == 0) { // only every 5 minutes
+	    $Suhv_WP_instance->api_club_getGames_Mails();
+	    log_cron("GameMail called: ".date("H:i:s"));
+	    $run = true;
+	  }
+	  if ((idate("w") == 0) or (idate("w") >= 4) or ((idate("i") % 10) == 0)) { // on sunday oder saturday - else all 10 minutes
+	    $args = array();
+	    $Suhv_WP_instance->api_club_getCurrentGameDetails($args);
+	    log_cron("LiveGame called: ".date("H:i:s"));
+	    $run = true;
+	  }
+	  if ($run) {
+	    log_cron($_SERVER['SERVER_NAME'].': cronjob running - at '.date("d.m.Y - H:i:s")." minute:".idate("i")." day:".idate("w")." - Plugin-Version: ".SUHV_API_WP_VERSION);
+	  }
+	} 
+
+
+	//****************************************
+
+	register_activation_hook(__FILE__, 'my_activation');
+
+	function my_activation() {
+	    $args = array();
+	    if (! wp_next_scheduled ( 'my_suhv_event', $args )) {
+	     wp_schedule_event(time(), 'every1minutes', 'my_suhv_event', $args );
+	    }
+	    SwissUnihockey_Api_Public::log_me('new cron hook set suhv');
+	}
+
+	add_action('my_suhv_event', 'my_cronjob_suhv_action');
+
+	//****************************************
+
+	register_deactivation_hook(__FILE__, 'my_deactivation');
+
+	function my_deactivation() {
+	  wp_clear_scheduled_hook('my_suhv_event');
+	  SwissUnihockey_Api_Public::log_me('deaktivate cron hook suhv');
+	}
+
+	//****************************************
+
+	// END Add Cron
+	 
 
 } // End if ( !class_exists( 'Suhv_WP' ) )
 else echo "<p class='error suhv'>Es besteht eine Kollision mit einer anderen Klasse welche ebenfalls Suhv_WP heisst!</p>";

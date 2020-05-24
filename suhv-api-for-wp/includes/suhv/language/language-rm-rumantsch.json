@@ -1,8 +1,8 @@
 {
       "Info":{
       "Sprache": "RhaetoRomanic",
-      "Datum": "12.11.2019",
-      "Version": "V 1.81"
+      "Datum": "18.11.2019",
+      "Version": "V 1.83"
    },
 
       "Games": {
@@ -77,6 +77,13 @@
       "5": "venderdi",
       "6": "sonda"
    },
+
+   "Time":{
+        "gestern":"ier",
+        "heute":"oz",
+        "morgen":"damaun"
+   },
+
 
    "Replacements": {
       "Spielübersicht": "survista da gieus",

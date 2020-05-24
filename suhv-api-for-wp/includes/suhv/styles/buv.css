@@ -57,11 +57,11 @@ tr.alt {
 }
 
 tr.suhv-my-team {
-	background-color: #F4D4D4;
+	background-color: inherit;
 }
 
 tr:hover {
-	background-color: #FEE;
+    background-color: #cfe2fd;
 }
 
 table.suhv-planned-games-full thead th {

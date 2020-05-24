@@ -1,8 +1,8 @@
 {
    "Info":{
       "Sprache": "Italian",
-      "Datum": "12.11.2019",
-      "Version": "V 1.81"
+      "Datum": "18.11.2019",
+      "Version": "V 1.83"
    },
 
    "Games": {
@@ -76,6 +76,12 @@
       "4": "giovedi",
       "5": "venderdi",
       "6": "sabato"
+   },
+
+   "Time":{
+        "gestern":"ieri",
+        "heute":"oggi",
+        "morgen":"domani"
    },
 
    "Replacements": {

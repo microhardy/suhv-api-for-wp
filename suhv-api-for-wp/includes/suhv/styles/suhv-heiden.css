@@ -26,10 +26,11 @@ table.suhv-table {
 	margin-bottom: 20px;
 	border: 0px solid #999;
 	table-layout: auto;
+	text-align: left;
 }
 
 table.suhv-table th {
-	background-color: #395ca3; 
+	background-color: #228ae6; 
 	color: white;
 	border: 0;
 	text-align: left;
@@ -37,6 +38,10 @@ table.suhv-table th {
 }
 
 table.suhv-table td {
+}
+
+table.suhv-table caption {
+	text-align: center;
 }
 
 table.suhv-table td.suhv-points, table.suhv-table td.suhv-diff, table.suhv-table td.suhv-ties {
@@ -126,7 +131,7 @@ td.suhv-home {
 	font-weight: bold;
 }
 td.suhv-win {
-	background-color: #395ca3;
+	background-color: #228ae6;
 	text-align: center;
 }
 

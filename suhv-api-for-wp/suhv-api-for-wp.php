@@ -3,14 +3,14 @@
  * Admin Page for SUHV API-2
  * 
  * @author Thomas Hardegger / based on Code form Jérôme Meier
- * @version  15.11.2019
+ * @version  24.05.2020
  * STATUS: Reviewed
 */
 /*
 Plugin Name: SUHV API-2 Schnittstelle für WordPress
 Plugin URI: www.churunihockey.ch
 Description: Nutzt da neu API 2.0 von Swissunihockey.ch Basiert auf Lösung von Jérôme Meier http://www.schwarzpunkt.ch 2012
-Version: 1.82
+Version: 1.90
 Text Domain: SUHV-API-2
 Author: Thomas Hardegger
 Author URI: www.churunihockey.ch
@@ -70,19 +70,25 @@ V1.75  14.10.2019  fix playedGames on draw results
 V1.80  12.11.2019  first multi-language version
 V1.81  14.11.2019  minor language adds: on Gamedetail Link to swissunihockey and U at small Place-GameTable
 V1.82  15.11.2019  fix on team_getGames table - extend table classes with functionnames
+V1.83  20.11.2019  minor language adds: heute, gestern ...
+V1.84  01.12.2019  minor language change: french 
+V1.86  02.12.2019  CurrentGameDetails - cron now every 1 minutes
+V1.87  04.01.2020  CurrentGameDetails - fix calling by game_id
+V1.88  04.01.2020  Mix specified shortcodes with  team_id
+V1.90  24.05.2010  Clean up description - mark some functions as depreciated
 *******************************************************************************/
 
 // Sicherstellen, dass keine Infos ausgegeben werden wenn direkt aufgerufen
 if ( !function_exists( 'add_action' ) ) {
-	echo 'Hallo!  Ich bin ein Plugin. Viel machen kann ich nicht wenn du mich direkt aufrust :)';
+	echo 'Hallo!  Ich bin ein Plugin. Viel machen kann ich nicht wenn du mich direkt aufruftst :)';
 	exit;
 }
 
 /* ------------------------------------------------------------------------------------ */
 // Konstanten
 /* ------------------------------------------------------------------------------------ */
-if ( ! defined( 'SUHV_API_WP_VERSION' ) )
- define('SUHV_API_WP_VERSION', '1.0');
+if ( ! defined( 'SUHV_API_WP_VERSION' ) ) 
+ define('SUHV_API_WP_VERSION', '1.87');
  
 if ( ! defined( 'SUHV_API_WP_PLUGIN_URL' ) )
  define('SUHV_API_WP_PLUGIN_URL', plugin_dir_url( __FILE__ )); // http://www.churunichockey.ch/wp-content/plugins/suhv-api-for-wp/
@@ -136,75 +142,6 @@ if ( ! is_admin() ){ // Alles wird nur im Frontend ausgeführt
  
 } // End if ( ! is_admin() )
 
-function log_me($message) {
-      if ( WP_DEBUG === true ) {
-          if ( is_array($message) || is_object($message) ) {
-              error_log( print_r($message, true) );
-          } else {
-                error_log( $message );
-          }
-      }
-  }
-
- //****************************************
- // add custom interval
-function cron_add_5minutes( $schedules ) {
-  // Adds once every minute to the existing schedules.
-    $schedules['every5minutes'] = array(
-      'interval' => 60*5,
-      'display' => __( 'Once Every 5 Minutes' )
-    );
-    log_me('new schedule insert every5minutes');
-    return $schedules;
-}
-
-add_filter( 'cron_schedules', 'cron_add_5minutes' );
-
-// ADD Cron task
- function my_cronjob_suhv_action () {
-    // code to execute on cron run
-   date_default_timezone_set("Europe/Paris");
-   //wp_cache_clear_cache();
-   
-   if (substr_count( $_SERVER['SERVER_NAME'] ,"churunihockey")>=1) {
-     $myfile = fopen("cronlog.txt", "a+") or die("Unable to open file!");
-     $txt = $_SERVER['SERVER_NAME']." start: ".date("d.m.Y - H:i:s")."\n";
-     fwrite($myfile, $txt);
-     fclose($myfile);
-   }
-
-   $Suhv_WP_instance = new Suhv_WP();  
-   $Suhv_WP_instance->api_club_getGames_Mails();
-   $timevalue = 'cronjob running - at '.date("d.m.Y - H:i:s");
-   log_me($timevalue);
-
- } 
-
-// END Add Cron
- 
-//****************************************
-
-register_activation_hook(__FILE__, 'my_activation');
-
-function my_activation() {
-    if (! wp_next_scheduled ( 'my_mail_event' )) {
-     wp_schedule_event(time(), 'every5minutes', 'my_mail_event');
-    }
-    log_me('new cron hook set suhv');
-}
-
-add_action('my_mail_event', 'my_cronjob_suhv_action');
-
-//****************************************
-
-register_deactivation_hook(__FILE__, 'my_deactivation');
-
-function my_deactivation() {
-  wp_clear_scheduled_hook('my_mail_event');
-  log_me('deaktivate cron hook suhv');
-}
-
-//****************************************
 
 
 ?>

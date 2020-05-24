@@ -1,8 +1,8 @@
 {
    "Info":{
       "Sprache": "French",
-      "Datum": "12.11.2019",
-      "Version": "V 1.81"
+      "Datum": "01.12.2019",
+      "Version": "V 1.84"
    },
 
    "Games": {
@@ -78,8 +78,14 @@
       "6": "Samedi"
    },
 
+   "Time": {
+        "gestern": "hier",
+        "heute": "aujourd’hui",
+        "morgen":"demain"
+   },
+
    "Replacements": {
-      "Spielübersicht": "Récapitulatif du match",
+      "Spielübersicht": "Jeux actuels",
       "Saison": "Saison",
       "Tabelle": "Tableau",
       "Zur aktuellen Runde": "A propos du tour actuel",
