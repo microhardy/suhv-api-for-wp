@@ -5,7 +5,7 @@
  * @author Thonmas Hardegger / new API / based on Jérôme Meier, schwarzpunkt meier 2012
  * @version 24.05.2020
  * @todo Auf neue API umschreiben / die Funktionen bebehalten
- * STATUS: first Review
+ * STATUS: reviewed
  */
 
 class SuhvException extends RuntimeException {}

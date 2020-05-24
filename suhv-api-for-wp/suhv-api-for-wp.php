@@ -74,8 +74,8 @@ V1.83  20.11.2019  minor language adds: heute, gestern ...
 V1.84  01.12.2019  minor language change: french 
 V1.86  02.12.2019  CurrentGameDetails - cron now every 1 minutes
 V1.87  04.01.2020  CurrentGameDetails - fix calling by game_id
-V1.88  04.01.2020  Mix specified shortcodes with  team_id
-V1.90  24.05.2010  Clean up description - mark some functions as depreciated
+V1.88  04.01.2020  Mix specified shortcodes with team_id
+V1.90  24.05.2010  Clean up description - some functions as depreciated
 *******************************************************************************/
 
 // Sicherstellen, dass keine Infos ausgegeben werden wenn direkt aufgerufen

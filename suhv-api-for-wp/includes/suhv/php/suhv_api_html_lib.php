@@ -4,7 +4,7 @@
  * 
  * @author Thomas Hardegger 
  * @version 24.05.2020
- * STATUS: Reviewed
+ * STATUS: reviewed
  */
 
 

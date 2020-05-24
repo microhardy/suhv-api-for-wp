@@ -3,7 +3,7 @@
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
  * @version 24.05.2020
- * STATUS: Reviewed
+ * STATUS: reviewed
  */
 
 if ( !class_exists( 'Suhv_WP_Options' ) ) {
