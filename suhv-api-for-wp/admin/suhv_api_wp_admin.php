@@ -2,7 +2,7 @@
 /**
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
- * @version 24.05.2020
+ * @version 27.12.2020
  * STATUS: reviewed
  */
 
@@ -230,10 +230,10 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	
  	public function SUHV_shortcodes_club()
  	{
- 	echo "[suhv-api-club-get-games] <span class='description'>Die nächsten n Spiele des Vereins (Anzahl n Spiele in den Einstellungen festlegen) </span><br>"; 
+ 	echo "[suhv-api-club-get-games <span class='description'>club_id=\"423403\"] Die nächsten n Spiele des Vereins (Anzahl n Spiele in den Einstellungen festlegen) </span><br>"; 
     echo "[suhv-api-club-get-cupgames]* <span class='description'>Alle Cup-Spiele des NLA-Teams (*depreciated/nicht mehr verwenden)</span><br>"; 
     echo "[suhv-api-club-get-weekend-games start_date=\"19.09.2020\" end_date=\"20.09.2020\"]<span class='description'> Spiele des Clubs am Wochenende</span><br>";
-    echo "[suhv-api-club-get-weekend-games]<span class='description'> Spiele des Clubs am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
+    echo "[suhv-api-club-get-weekend-games <span class='description'>club_id=\"423403\"] Spiele des Clubs am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
     echo "[suhv-api-club-get-currentgamedetails]<span class='description'> Details der aktuellen Direktbegegnung</span><br>";
     echo "Bestimmende Variablen: 'SUHV Club ID'<br>";
     echo "[suhv-api-get-directgames]<span class='description'> Letzte Direktbegegnung</span><br>";
@@ -244,16 +244,16 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	public function SUHV_shortcodes_team()
  	{
  		echo "[suhv-api-team-get-games] <span class='description'>Nächste Spiele des Teams</span><br>"; 
-    echo "[suhv-api-team-get-games] <span class='description'>team_id=\"429283\"]  (new)</span><br>";
+    echo "[suhv-api-team-get-games <span class='description'>team_id=\"429283\"]</span><br>";
  		echo "[suhv-api-team-get-playedgames] <span class='description'>Gespielte Spiele des Teams</span><br>";
-    echo "[suhv-api-team-get-playedgames team_id=\"429283\"] <span class='description'>(new)</span><br>";
+    echo "[suhv-api-team-get-playedgames team_id=\"429283\"] <span class='description'></span><br>";
     echo "[suhv-api-team-get-gamedetails] <span class='description'>Details der Direktbegegnungen des Teams am aktuellen Wochenende <strong>(Mittwoch bis Dienstag)</strong></span><br>";
     echo "[suhv-api-team-get-gamedetails game_id=\"963116\"] <span class='description'>Details der Direktbegegnung des Spiels mit ID</span><br>";
     echo "[suhv-api-team-get-gamedetails team_id=\"429283\"] <span class='description'>Details der Direktbegegnung des Teams (new)</span><br>";
  		echo "[suhv-api-get-team-table] <span class='description'>Tabelle des Teams</span><br>"; 
-    echo "[suhv-api-get-team-table team_id=\"429283\"] <span class='description'>(new)</span><br>";
+    echo "[suhv-api-get-team-table team_id=\"429283\"] <span class='description'></span><br>";
  		echo "[suhv-api-get-team-rank] <span class='description'>Rangliste in Liga des Teams</span><br>";	
-    echo "[suhv-api-get-team-rank team_id=\"429283\"] <span class='description'>(new)</span><br>";
+    echo "[suhv-api-get-team-rank team_id=\"429283\"] <span class='description'></span><br>";
  		echo "[suhv-api-nla-team-get-table] <span class='description'>Tabelle des NLA Teams (*depreciated/nicht mehr verwenden)</span><br>"; 
  		echo "[suhv-api-get-team-table_nla] <span class='description'>Tabelle des NLA Teams (*depreciated/nicht mehr verwenden)</span><br>"; 
     echo "[suhv-api-get-team-rank_nla] <span class='description'>Rangliste des NLA Teams (*depreciated/nicht mehr verwenden)</span><br>";
