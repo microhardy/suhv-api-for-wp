@@ -51,6 +51,8 @@
       "Tordifferenz": "differenza da gols",
       "P": "puncts",
       "Punkte": "puncts",
+      "Punktquotient": "Punctquotient",
+      "PQ": "PQ",
       "U": "U",
       "Spiele unentschieden": "gieus finir pari"
    },
@@ -65,6 +67,7 @@
       "N": "T",
       "T": "G",
       "TD": "DG",
+      "PQ": "PQ",
       "P": "pts."
    },
 

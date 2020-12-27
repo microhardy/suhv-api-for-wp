@@ -3,7 +3,7 @@
  * Suhv_WP Klasse
  * 
  * @author Thonmas Hardegger / new API / based on Jérôme Meier, schwarzpunkt meier 2012
- * @version 24.05.2020
+ * @version 13.09.2020
  * @todo Auf neue API umschreiben / die Funktionen bebehalten
  * STATUS: reviewed
  */
@@ -599,8 +599,8 @@ class Suhv_WP {
 
     function api_club_getWeekend_Games($atts){
 	    extract(shortcode_atts(array(
-	     "start_date" => '19.09.2020',
-         "end_date" => '20.09.2020',
+	     "start_date" => '01.09.2015',
+         "end_date" => '02.09.2015',
         ), $atts));
      
 		if ( !isset ( $this->club ) ) $this->set_club();
@@ -617,8 +617,8 @@ class Suhv_WP {
 	function api_club_getWeekend_Games_for_LiveGames($atts){
 	    extract(shortcode_atts(array(
 	     "away" => NULL ,
-	     "start_date" => '19.09.2020',
-         "end_date" => '20.09.2020',
+	     "start_date" => '01.09.2015',
+         "end_date" => '02.09.2015',
         ), $atts));
   
 		if ( !isset ( $this->club ) ) $this->set_club();

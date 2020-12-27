@@ -51,6 +51,8 @@
       "Tordifferenz": "Tordifferenz",
       "P": "Punkte",
       "Punkte": "Punkte",
+      "Punktquotient": "Punktquotient",
+      "PQ": "PQ",
       "U": "U",
       "Spiele unentschieden": "Spiele unentschieden"
    },
@@ -65,6 +67,7 @@
       "N": "N",
       "T": "T",
       "TD": "TD",
+      "PQ": "PQ",
       "P": "P"
    },
 
