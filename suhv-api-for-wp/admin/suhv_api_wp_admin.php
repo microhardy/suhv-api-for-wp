@@ -2,7 +2,7 @@
 /**
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
- * @version 27.12.2020
+ * @version 29.12.2020
  * STATUS: reviewed
  */
 
@@ -230,10 +230,11 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	
  	public function SUHV_shortcodes_club()
  	{
- 	echo "[suhv-api-club-get-games <span class='description'>club_id=\"423403\"] Die nächsten n Spiele des Vereins (Anzahl n Spiele in den Einstellungen festlegen) </span><br>"; 
+ 	echo "[suhv-api-club-get-games<span class='description'>] Die nächsten n Spiele des Vereins (Anzahl n Spiele in den Einstellungen festlegen) </span><br>"; 
+    echo "[suhv-api-club-get-games <span class='description'>club_id=\"423403\"] Optional \"club_id\" z.B. für anderen Club</span><br>"; 
     echo "[suhv-api-club-get-cupgames]* <span class='description'>Alle Cup-Spiele des NLA-Teams (*depreciated/nicht mehr verwenden)</span><br>"; 
     echo "[suhv-api-club-get-weekend-games start_date=\"19.09.2020\" end_date=\"20.09.2020\"]<span class='description'> Spiele des Clubs am Wochenende</span><br>";
-    echo "[suhv-api-club-get-weekend-games <span class='description'>club_id=\"423403\"] Spiele des Clubs am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
+    echo "[suhv-api-club-get-weekend-games <span class='description'>club_id=\"423403\"] Spiele des Clubs oder Club mit ID am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
     echo "[suhv-api-club-get-currentgamedetails]<span class='description'> Details der aktuellen Direktbegegnung</span><br>";
     echo "Bestimmende Variablen: 'SUHV Club ID'<br>";
     echo "[suhv-api-get-directgames]<span class='description'> Letzte Direktbegegnung</span><br>";

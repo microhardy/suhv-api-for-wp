@@ -3,7 +3,7 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version 14.09.2020
+ * @version 29.12.2020
  * STATUS: reviewed
  */
 
@@ -1397,7 +1397,8 @@ private static function suhvDown() {
       $header_Result = SwissUnihockey_Api_Public::translate('ClubGames',$data->headers[5]->text);
       //$header_Result = "Res.";
 
-      $club_name = $data->title;
+      $club_name = str_replace("Spielübersicht ","",$data->title);
+      $club_name = substr($club_name,0,strpos($club_name,",")); // ohne Saison...
       $games = $data->regions[0]->rows;
       $attributes = $data->regions[0]->rows[0]->cells;
       
@@ -1421,9 +1422,9 @@ private static function suhvDown() {
       $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
       $html_head = "<table class=\"suhv-table suhv-club-getWeekendGames".$tablepress."\">\n";
       if ($weekend) 
-        $html_head .= "<caption>".$date_description." ".$start_tag." ".$start_date." ".$bis." ".$end_tag." ".$end_date."</caption>";
+        $html_head .= "<caption>".$club_name."</br>".$date_description." ".$start_tag." ".$start_date." ".$bis." ".$end_tag." ".$end_date."</caption>";
       else
-        $html_head .= "<caption>".$Spielevom." ".$start_tag." ".$start_date." ".$bis." ".$end_tag." ".$end_date."</caption>";
+        $html_head .= "<caption>".$club_name."</br>".$Spielevom." ".$start_tag." ".$start_date." ".$bis." ".$end_tag." ".$end_date."</caption>";
       $html_head .= "<thead><tr><th class=\"suhv-date\">".$header_DateTime.
       "</th><th class=\"suhv-place\">".$header_Location.
       "</th><th class=\"suhv-opponent\">".$header_Home.

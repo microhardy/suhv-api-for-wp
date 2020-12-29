@@ -613,7 +613,7 @@ class Suhv_WP {
          "end_date" => '02.09.2015',
          "club_id" => NULL ,
         ), $atts));
-        echo "weekend - club:".$club_id;
+        //echo "weekend - club:".$club_id;
         if ( $club_id != NULL )
          $this->set_club( $club_id );
         else
