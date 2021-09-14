@@ -3,17 +3,17 @@
  * Admin Page for SUHV API-2
  * 
  * @author Thomas Hardegger / based on Code form Jérôme Meier
- * @version  29.12.2020
+ * @version  14.09.2021
  * STATUS: Reviewed
 */
 /*
 Plugin Name: SUHV API-2 Schnittstelle für WordPress
 Plugin URI: www.churunihockey.ch
 Description: Nutzt da neu API 2.0 von Swissunihockey.ch Basiert auf Lösung von Jérôme Meier http://www.schwarzpunkt.ch 2012
-Version: 2.10
+Version: 2.13
 Text Domain: SUHV-API-2
 Author: Thomas Hardegger
-Author URI: www.churunihockey.ch
+Author URI: suhv.churunihockey.ch
 License: GPL2
 
 ----------------------------------------------------------------------------------------
@@ -81,6 +81,8 @@ V1.92  13.09.2020  fix WeekendGames
 V2.00  14.09.2020  Support RankingTablle 2020 Version (gSP,SoW Spiele ohne Wertung, P=> neu PQ Punktequotient) api_getTeamRank & api_getTeamTable / revoke API Shutdown-Test
 V2.01  27.12.2020  Mix specified shortcodes with club_id
 V2.10  29.12.2020  Add Clubname in Caption on Weekendgames
+V2.11  27.08.2021  Change Contact to thomas@hardegger.com
+V2.13  14.09.2021  fix on team ranking tables (column shift)
 *******************************************************************************/
 
 // Sicherstellen, dass keine Infos ausgegeben werden wenn direkt aufgerufen
@@ -93,7 +95,7 @@ if ( !function_exists( 'add_action' ) ) {
 // Konstanten
 /* ------------------------------------------------------------------------------------ */
 if ( ! defined( 'SUHV_API_WP_VERSION' ) ) 
- define('SUHV_API_WP_VERSION', '2.10');
+ define('SUHV_API_WP_VERSION', '2.13');
  
 if ( ! defined( 'SUHV_API_WP_PLUGIN_URL' ) )
  define('SUHV_API_WP_PLUGIN_URL', plugin_dir_url( __FILE__ )); // http://www.churunichockey.ch/wp-content/plugins/suhv-api-for-wp/

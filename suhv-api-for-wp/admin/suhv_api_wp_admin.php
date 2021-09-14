@@ -2,7 +2,7 @@
 /**
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
- * @version 29.12.2020
+ * @version 29.08.2021
  * STATUS: reviewed
  */
 
@@ -44,7 +44,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  					do_settings_sections( __FILE__ );
  				?>
     <h3>Schnelleinstieg</h3>
-    <p>Für eine ausführliche Beschreibung des Plugins besuche die <a href='http://suhv.churunihockey.ch' title='Swiss Unihockey API 2.0 für WordPress'>Plugin-Website</a> von <a href='mailto:websupport@churunihockey.ch' title='websupport'>Thomas Hardegger</a></p>
+    <p>Für eine ausführliche Beschreibung des Plugins besuche die <a href='http://suhv.churunihockey.ch' title='Swiss Unihockey API 2.0 für WordPress'>Plugin-Website</a> von <a href='mailto:thomas@hardegger.com' title='API Support'>Thomas Hardegger</a></p>
      <?php 
  					do_settings_sections( __FILE__ . "_description" );
  				?>

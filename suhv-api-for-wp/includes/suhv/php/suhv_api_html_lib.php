@@ -3,7 +3,7 @@
  * Classes that return HTML Code from SUHV Classes like SuhvClub or SuhvTeam
  * 
  * @author Thomas Hardegger 
- * @version 29.12.2020
+ * @version 14.09.2021
  * STATUS: reviewed
  */
 
@@ -95,7 +95,7 @@ private static function suhvDown() {
               $transientMail = "suhv-api-http-check-Mail";
               $mailOK = get_transient( $transientMail );
               if (!$mailOK) {
-                $mailheaders = 'From: API-Check <'.'webmaster@churunihockey.ch'.'>' . "\r\n";
+                $mailheaders = 'From: API-Check <'.'thomas@hardegger.com'.'>' . "\r\n";
                 $mailheaders .= "MIME-Version: 1.0\r\n";
                 $mailheaders .= "Content-Type: text/html; charset=UTF-8\r\n";
                 $message = "API Access via HTTP not OK <br />";
@@ -2918,28 +2918,31 @@ private static function suhvDown() {
       $headerCount = count($data->headers);
       //echo "<br> HEADER-Count".$headerCount;
       $smallTable = FALSE;
-      if ($headerCount < 11) $smallTable = TRUE;
+      if ($headerCount < 13) $smallTable = TRUE;
       
       $header_Rank = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[0]->text);
       $header_Team =SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[2]->text);
       $header_Sp = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[3]->text);
-      $header_S = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[6]->text);
       if ($smallTable) {
-        $header_U = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[5]->text);
-        $header_N = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[6]->text);
-        $header_T = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[7]->text);
+        $header_S = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[5]->text);
+        $header_U = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[6]->text);
+        $header_N = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[7]->text);
+        $header_T = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[8]->text);
         // $header_T = "Tore";
-        $header_TD = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[8]->text);
-        $header_P = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[9]->text);
+        $header_TD = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[9]->text);
+        $header_PQ = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[10]->text);
+        $header_P = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[11]->text);
         //$header_P = "Pt.";
       }
       else{
-        $header_SnV = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[7]->text);
-        $header_NnV = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[8]->text);
-        $header_N = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[9]->text);
-        $header_T = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[10]->text);
+        $header_S = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[5]->text);
+        $header_SnV = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[6]->text);
+        $header_NnV = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[7]->text);
+        $header_N = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[8]->text);
+        $header_T = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[9]->text);
         //$header_T = "Tore";
-        $header_TD = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[11]->text);
+        $header_TD = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[10]->text);
+        $header_PQ = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[11]->text);
         $header_P = SwissUnihockey_Api_Public::translate('TeamTable',$data->headers[12]->text);
         //$header_P = "Pt.";
       }
@@ -2976,6 +2979,7 @@ private static function suhvDown() {
         $title_rank = "Rang";
         $title_team = "Team";
         $title_games = "Spiele";
+        $title_SoW = "Spiele ohne Wertung";
         $titel_wins = "Siege";
         $title_ties = "Siege nach Verlängerung"; 
         $title_defeats = "Niederlagen nach Verlängerung";
@@ -3010,6 +3014,7 @@ private static function suhvDown() {
 	        "</th><th class=\"suhv-lost\"><abbr title=\"".$title_lost."\">".$header_N."</abbr>".
 	        "</th><th class=\"suhv-scored\"><abbr title=\"".$title_scored."\">".$header_T."</abbr>".
 	        "</th><th class=\"suhv-diff\"><abbr title=\"".$title_diff."\">".$header_TD."</abbr>".
+          "</th><th class=\"suhv-points\"><abbr title=\"".$title_pointsquotient."\">".$header_PQ."</abbr>".
 	        "</th><th class=\"suhv-points\"><abbr title=\"".$title_points."\">".$header_P."</abbr>";
 	      }
 	      else{
@@ -3018,7 +3023,8 @@ private static function suhvDown() {
 	        "</th><th class=\"suhv-lost\"><abbr title=\"".$title_lost."\">".$header_N."</abbr>".
 	        "</th><th class=\"suhv-scored\"><abbr title=\"".$title_scored."\">".$header_T."</abbr>".
 	        "</th><th class=\"suhv-diff\"><abbr title=\"".$title_diff."\">".$header_TD."</abbr>".
-	        "</th><th class=\"suhv-points\"><abbr title=\"".$title_pointsquotient."\">".$header_P."</abbr>";
+	        "</th><th class=\"suhv-points\"><abbr title=\"".$title_pointsquotient."\">".$header_PQ."</abbr>".
+          "</th><th class=\"suhv-points\"><abbr title=\"".$title_points."\">".$header_P."</abbr>";
 	      }
 	      $html .= "</th></tr></thead>";
 	      $html .= "<tbody>";
@@ -3033,20 +3039,23 @@ private static function suhvDown() {
 	           $ranking_Rank = $data->regions[$reg]->rows[$i]->cells[0]->text[0];
 	           $ranking_Team = $data->regions[$reg]->rows[$i]->cells[2]->text[0];
 	           $ranking_Sp = $data->regions[$reg]->rows[$i]->cells[3]->text[0];
-	           $ranking_S = $data->regions[$reg]->rows[$i]->cells[6]->text[0];
 	           if ($smallTable) {
-	             $ranking_U = $data->regions[$reg]->rows[$i]->cells[5]->text[0];
-	             $ranking_N = $data->regions[$reg]->rows[$i]->cells[6]->text[0];
-	             $ranking_T = $data->regions[$reg]->rows[$i]->cells[7]->text[0];
-	             $ranking_TD = $data->regions[$reg]->rows[$i]->cells[8]->text[0];
-	             $ranking_P = $data->regions[$reg]->rows[$i]->cells[9]->text[0];
+               $ranking_S = $data->regions[$reg]->rows[$i]->cells[5]->text[0];
+	             $ranking_U = $data->regions[$reg]->rows[$i]->cells[6]->text[0];
+	             $ranking_N = $data->regions[$reg]->rows[$i]->cells[7]->text[0];
+	             $ranking_T = $data->regions[$reg]->rows[$i]->cells[8]->text[0];
+	             $ranking_TD = $data->regions[$reg]->rows[$i]->cells[9]->text[0];
+               $ranking_PQ = $data->regions[$reg]->rows[$i]->cells[10]->text[0];
+	             $ranking_P = $data->regions[$reg]->rows[$i]->cells[11]->text[0];
 	           }
 	           else{
-	             $ranking_SnV = $data->regions[$reg]->rows[$i]->cells[7]->text[0];
-	             $ranking_NnV = $data->regions[$reg]->rows[$i]->cells[8]->text[0];
-	             $ranking_N = $data->regions[$reg]->rows[$i]->cells[9]->text[0];
-	             $ranking_T = $data->regions[$reg]->rows[$i]->cells[10]->text[0];
-	             $ranking_TD = $data->regions[$reg]->rows[$i]->cells[11]->text[0];
+               $ranking_S = $data->regions[$reg]->rows[$i]->cells[5]->text[0];
+	             $ranking_SnV = $data->regions[$reg]->rows[$i]->cells[6]->text[0];
+	             $ranking_NnV = $data->regions[$reg]->rows[$i]->cells[7]->text[0];
+	             $ranking_N = $data->regions[$reg]->rows[$i]->cells[8]->text[0];
+	             $ranking_T = $data->regions[$reg]->rows[$i]->cells[9]->text[0];
+	             $ranking_TD = $data->regions[$reg]->rows[$i]->cells[10]->text[0];
+               $ranking_PQ = $data->regions[$reg]->rows[$i]->cells[11]->text[0];
 	             $ranking_P = $data->regions[$reg]->rows[$i]->cells[12]->text[0];
 	           }
 	           if ($team_ID == $ranking_TeamID) { $tr_class = 'suhv-my-team';} else {$tr_class = '';}
@@ -3054,21 +3063,24 @@ private static function suhvDown() {
 	           $html .= "<tr class=\"".$tr_class.($i % 2 == 1 ? ' alt' : '')."\">".
 	           "<td class=\"suhv-rank\">".$ranking_Rank.
 	           "</td><td class=\"suhv-team\">".$ranking_Team.
-	           "</td><td class=\"suhv-games\">".$ranking_Sp.
-	           "</td><td class=\"suhv-wins\">".$ranking_S;
+	           "</td><td class=\"suhv-games\">".$ranking_Sp;
 	           if ($smallTable) {
-	             $html .= "</td><td class=\"suhv-even\">".$ranking_U.
+	             $html .= "</td><td class=\"suhv-wins\">".$ranking_S.
+               "</td><td class=\"suhv-even\">".$ranking_U.
 	             "</td><td class=\"suhv-lost\">".$ranking_N.
 	             "</td><td class=\"suhv-scored\">".$ranking_T.
 	             "</td><td class=\"suhv-diff\">".$ranking_TD.
+               "</td><td class=\"suhv-points\">".$ranking_PQ.
 	             "</td><td class=\"suhv-points\">".$ranking_P;
 	           }
 	           else{
-	             $html .= "</td><td class=\"suhv-ties\">".$ranking_SnV.
+	             $html .= "</td><td class=\"suhv-wins\">".$ranking_S.
+               "</td><td class=\"suhv-ties\">".$ranking_SnV.
 	             "</td><td class=\"suhv-defeats\">".$ranking_NnV.
 	             "</td><td class=\"suhv-lost\">".$ranking_N.
 	             "</td><td class=\"suhv-scored\">".$ranking_T.
 	             "</td><td class=\"suhv-diff\">".$ranking_TD.
+               "</td><td class=\"suhv-points\">".$ranking_PQ.
 	             "</td><td class=\"suhv-points\">".$ranking_P;
 	           }
 	           $html .= "</td></tr>"; 
