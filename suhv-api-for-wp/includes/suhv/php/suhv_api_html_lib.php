@@ -229,18 +229,11 @@ private static function suhvDown() {
         $view_cache = "<br> cache = off / Display: ".$n_Games." Club:".$my_club_name ." / Page:".$page; 
         } else {$view_cache ="";
       }
-      $title = str_replace ("Spielübersicht", SwissUnihockey_Api_Public::translate("Replacements","Spielübersicht"),$data->title);
-      $title = str_replace ("Saison", SwissUnihockey_Api_Public::translate("Replacements","Saison"),$title);
+      
       $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
-			//      $html_head = "<table class=\"suhv-table suhv-planned-games-full\">\n";
-			$html_head = "<div class=\"suhvIncludes twoRight\">\n\t<table class=\"table nobr\">\n";
-			//      $html_head .= "<caption>".$data->title."<br>".$wochentag.strftime(" - %H:%M")."  (".$cTime." min.)".$view_cache."</caption>";
-			//      $html_head .= "<thead><tr><th class=\"suhv-date\">"."Datum,<br>Zeit".
-			//      "</th><th class=\"suhv-place\">".$header_Location.
-			//      "</th><th class=\"suhv-opponent\">".$header_Home.
-			//      "</th><th class=\"suhv-opponent\">".$header_Guest."</th>";
-
-			$latestDateOfGame = strtotime("1970-01-01");
+      $html_head = "<div class=\"suhvIncludes twoRight\">\n\t<table class=\"table nobr\">\n";
+      
+      $latestDateOfGame = strtotime("1970-01-01");
 
       error_reporting(E_ALL & ~E_NOTICE);
       while ($loop) {
@@ -383,7 +376,7 @@ private static function suhvDown() {
             if (($game_date=="heute") and ((substr_count($game_result,"*")!=0) or (substr_count($game_result,"-")!=0)))  {
               $resultClass = 'suhv-activ';
               if (substr_count($game_result,"-")!=0) {
-                $game_result = "❓";
+                $game_result = "?";
                 $resultClass .= ' suhv-wait';
               }
             } 
@@ -396,24 +389,27 @@ private static function suhvDown() {
             if ($game_date=="morgen") $game_date = $morgen;
             if ($game_date=="gestern") $game_date = $gestern;
             if (($items <= $n_Games)) {
-              if (($date_of_game > $startdate) and ($linkGame_ID_before != $linkGame_ID)) {  //  and $cup
-                /*
-                $html_body .= "<tr". ($i % 2 == 1 ? ' class="alt"' : '') . "><td class=\"suhv-datetime\">"."<a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >".str_replace(".20",".",$game_date).", ".$game_time."</a>".
-                "</td><td class=\"".$homeClass."\">".$game_maplink.$game_location."</a>".
-                "</td><td class=\"".$resultHomeClass."\">".$game_homeDisplay.
-                "</td><td class=\"".$resultGuestClass."\">".$game_guestDisplay;
-                if (($game_result != "")) {
-                  $html_res = "<th class=\"suhv-result\">".$header_Result."</th>"; 
-                  $html_body .= "</td><td class=\"".$resultClass."\"><a href=\"".$game_detail_link."\" title=\"".$Gamedetails."\" >".$game_result."<br>". $game_result_add."</a></td>";
-                }
-                else  $items++;
-                $html_body .= "</tr>";
-                */
-                $html_body .= "\n<tr><td>" . $game_time . "</td><td>" . $game_homeDisplay . "</td><td>:</td><td>" . $game_guestDisplay . "</td><td>" . $game_maplink . $gameLocationLinkTitle . "</a></td></tr>";
-							
 
+              
+              preg_match("/([0-9]{1,2}):([0-9]{1,2})/", $game_time, $match);
+              $game_hour    = $match[1];
+              $game_minutes = $match[2];
+  
+              $mytimestamp = strtotime("+" . $game_hour . "hours", $date_of_game);
+              $mytimestamp = strtotime("+" . $game_minutes . "minutes", $mytimestamp);
+
+              if (($mytimestamp >= $startdate) and ($linkGame_ID_before != $linkGame_ID)) { //  and $cup
+                if ($latestDateOfGame != $date_of_game) {
+                  $latestDateOfGame = $date_of_game;
+                  $html_body .= "\n<tr class='suhvFatRow'>";
+                  $tag = date("w", $date_of_game);
+                  $html_body .= "\n\t<td colspan='5'>" . $tage->$tag . ", " . str_replace(".20", ".", $game_date) . "</td>";
+                  //$html_body .= "\n\t<td colspan='5'>".str_replace(".20",".",$game_date)."</td>";
+                  $html_body .= "\n    </tr>";
+                }
+                $html_body .= "\n<tr><td>" . $game_time . "</td><td>" . $game_homeDisplay . "</td><td>:</td><td>" . $game_guestDisplay . "</td><td>" . $game_maplink . $gameLocationLinkTitle . "</a></td></tr>";
                 // $cup = FALSE; // cup only
-               }
+              }
             }
             else {
               $loop = FALSE;
@@ -445,7 +441,7 @@ private static function suhvDown() {
       $html .= $html_body;
       // $html .= "</tbody>";
       // $html .= "</table>";
-      $html .= "</table></div>";
+      $html .= "\n</table></div>";
 
       $stop =  time();
       $secs = ($stop- $go);
@@ -4365,16 +4361,8 @@ private static function suhvDown() {
 
 					$mytimestamp = strtotime("+" . $game_hour . "hours", $date_of_game);
 					$mytimestamp = strtotime("+" . $game_minutes . "minutes", $mytimestamp);
-
-
-					//                    $html_body .= "\n<!-- " . strtotime($game_time) . " " . $game_time . " if (" . $mytimestamp . " >= " . $startdate . ")--><!-- " . date("Y-m-d H:i:s", $mytimestamp) . " >= " . date("Y-m-d H:i:s", $startdate) . "-->";
-					if (($mytimestamp >= $startdate) and ($linkGame_ID_before != $linkGame_ID)) { //  and $cup
-						//                        $html_body .= "<!--  ok -->";
-
-						//    $html_body .= "\n\t<td colspan='4'>".$tage[date('w', $date_of_game)].", ".str_replace(".20",".",$game_date)."</td>";
-
-						//$html_body .= "\n<tr><td>".date('d.m', $date_of_game)."</td><td>".$game_time."</td><td>".$game_homeDisplay."</td><td>:</td><td>".$game_guestDisplay."</td></tr>";
-
+                    
+                    if (($mytimestamp >= $startdate) and ($linkGame_ID_before != $linkGame_ID)) { //  and $cup
 						$html_body .= "\n" . date('d.m', $date_of_game) . "&nbsp;" . $game_time . "&nbsp;" . $game_homeDisplay . "&nbsp;:&nbsp;" . $game_guestDisplay . "<br>";
 						$echoedGames++;
 					}
