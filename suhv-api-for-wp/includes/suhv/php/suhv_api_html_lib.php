@@ -50,18 +50,19 @@ private static function nearWeekend() {
   return($weekendDays);
 }
 
-private static function clean_league($game_league) {
+private static function clean_league($game_league, $game_group="") {
 
-    $game_league = str_replace ("Junioren", "",$game_league);
+    $game_league = str_replace(" Regional", " (".$game_group.") ", $game_league);
+//    $game_league = str_replace ("Junioren", "",$game_league);
     $game_league = str_replace ("Juniorinnen", "",$game_league);
     $game_league = str_replace ("/-innen ", "",$game_league);
     $game_league = str_replace ("Herren Aktive", "",$game_league);
     // $game_league = str_replace ("Herren", "",$game_league);
     $game_league = str_replace ("Aktive", "",$game_league);
     $game_league = str_replace ("Schweizer", "",$game_league);
+    $game_league = str_replace ("Mobiliar Unihockey Cup", "Cup",$game_league);
     $game_league = str_replace ("Damen Supercup","Damen NLA",$game_league);
     // $game_league = str_replace ("Damen", "",$game_league);
-
     return($game_league);
 }
 
@@ -352,7 +353,7 @@ private static function suhvDown() {
                   }
               }
 
-			  $game_league = SwissUnihockey_Api_Public::clean_league($game_league);
+			  $game_league = SwissUnihockey_Api_Public::clean_league($game_league, $game_group);
 
               if ($game_home_result == $game_guest_result) { $resultClass = 'suhv-draw';} else {$resultClass = 'suhv-result';}
 
@@ -3964,15 +3965,8 @@ private static function suhvDown() {
 					$team_two       = $my_club_name . " II";
 					$league_short   = "U14/U17";
 
-
 					$game_group = str_replace("Gruppe", "Gr.", $game_group);
-					$game_leage = str_replace(" Regional", "(".$game_group.")", $game_leage);
-					$game_leage = str_replace("Junioren U", "U", $game_leage);
-					$game_leage = str_replace("Juniorinnen", "", $game_leage);
-					$game_leage = str_replace("Herren Aktive", "", $game_leage);
-					$game_leage = str_replace("Aktive", "", $game_leage);
-					$game_leage = str_replace("Schweizer", "", $game_leage);
-					$game_leage = str_replace("Mobiliar Unihockey Cup", "Cup", $game_leage);
+                    $game_leage = SwissUnihockey_Api_Public::clean_league($game_leage, $game_group);
 
 					$homeClass = "suhv-place";
 					if ($game_home_result == $game_guest_result) {
@@ -4303,14 +4297,9 @@ private static function suhvDown() {
 						}
 					}
 				}
-
-				$game_group = str_replace("Gruppe ", "Gr.", $game_group);
-				$game_leage = str_replace(" Regional", " (".$game_group.")", $game_leage);
-				$game_leage = str_replace("Junioren U", "U", $game_leage);
-				$game_leage = str_replace("Juniorinnen ", "", $game_leage);
-				$game_leage = str_replace("Herren Aktive ", "", $game_leage);
-				$game_leage = str_replace("Aktive ", "", $game_leage);
-				$game_leage = str_replace("Schweizer ", "", $game_leage);
+                
+                $game_group = str_replace("Gruppe", "Gr.", $game_group);
+                $game_leage = SwissUnihockey_Api_Public::clean_league($game_leage, $game_group);
 
 				$homeClass = "suhv-place";
 				if ($game_home_result == $game_guest_result) {
