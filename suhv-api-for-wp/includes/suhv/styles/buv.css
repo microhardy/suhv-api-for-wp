@@ -51,7 +51,6 @@ table.suhv-table td {
 	padding: 8px;
 }
 
-
 tr.alt {
 	background-color: #f4f4f4;
 }
@@ -64,12 +63,7 @@ tr:hover {
 	background-color: #FEE;
 }
 
-table.suhv-planned-games-full thead th {
-	background-color: #000000; 
-	font-size: 16px;
-	color: #ffffff;
-}
-	
+
 .suhv-played-games th.suhv-home, 
 .suhv-played-games th.suhv-away {
 	width: 25%;
@@ -79,7 +73,6 @@ table.suhv-planned-games-full thead th {
 .suhv-planned-games-full th.suhv-away {
 	width: 25%;
 }
-
 
 th.suhv-result {
 	width: 15%;
@@ -120,24 +113,18 @@ td.suhv-home {
 	font-weight: bold;
 }
 td.suhv-win {
-	/* background-color: #090; */
-	/* background-color: #999; */
+	background-color: #090;
 	text-align: center;
-	color: #666666;
 }
 
 
 td.suhv-draw {
-	/* background-color: #999; */
-	text-align: center;
-	color: #666666;
+	background-color: #999;
 }
 
 td.suhv-lose {
-	/* background-color: #D82423; */
-	/*  background-color: #999; */
+	background-color: #D82423;
 	text-align: center;
-	color: #666666;
 }
 
 td.suhv-result {
@@ -164,11 +151,6 @@ td.suhv-wait {
 
 tr.suhv-bar td {
 	border-bottom: 1px solid #666;
-}
-
-td.suhv-league.suhv-result {
-	background-color: #999; 
-	text-align: center;
 }
 
 /** suhv - Displays
@@ -281,77 +263,4 @@ Table
 }
 .sponsor-name{
   width: 50%;float:left; text-align: center; min-width: 240px;
-}
-
-
-.match-detail{
-	text-align:center;
-	border: 2px solid #D62221;
-	margin: 3px;
-	padding: 3px;
-}
-
-.match-info {
-	text-align:center;
-	font-size: 1.2em;
-}
-
-.match-headline {
-	margin:5px;
-	text-align:center;
-	color: #D82423;
-}
-
-.match-datetime{
-	margin:3px;
-	font-size: 0.8em;
-}
-
-.match-result {
-  display: flex;                  /* establish flex container */
-  flex-direction: row;            /* default value; can be omitted */
-  flex-wrap: nowrap;              /* default value; can be omitted */
-  justify-content: space-between; /* switched from default (flex-start, see below) */
-}
-
-.match-team-home {
- margin-left: auto;
-}
-.match-team-home img {
-	width: auto;
-}
-
-.match-team-count {
-	vertical-align: middle;
-	white-space: nowrap;
-    text-align: center;
-    margin: 10px;
-    font-size: 3em;
-    line-height:100%;
-    width:30%;
-}
-
-.match-team-count-add {
-    font-size: 0.6em;
-    margin-left: 3px;
-}
-
-.match-team-guest {
-	margin-right: auto;
-}
-
-.match-team-guest img {
-	width: auto;
-}
-
-.match-location {
-	margin:5px;
-    font-size: 0.75em;
-}
-
-@media screen and (max-width: 600px) {
-.match-team-guest img {
-	width: 50%;
-}
-
 }

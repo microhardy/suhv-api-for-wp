@@ -3,10 +3,24 @@
  * Suhv_WP Klasse
  * 
  * @author Thonmas Hardegger / new API / based on Jérôme Meier, schwarzpunkt meier 2012
- * @version 16.11.2017
+ * @version 27.10.2016
  * @todo Auf neue API umschreiben / die Funktionen bebehalten
  * STATUS: first Review
  */
+
+
+// function that runs when shortcode is called
+function wpb_demo_shortcode() { 
+  
+// Things that you want to do.
+$message = 'Hello world!'; 
+  
+// Output needs to be return
+return $message;
+}
+// register shortcode
+add_shortcode('greeting', 'wpb_demo_shortcode');
+
 
 class SuhvException extends RuntimeException {}
  
@@ -16,7 +30,6 @@ class Suhv_WP {
 	private $options; // WordPress Options Array
 	private $season; // Saison
 	private $club_id = 423403; // Chur Unihockey
-	private $club_shortname = "Chur"; // Shortname
 	private $team_id = 429283; // Herren NLA-Team or change by pagevar
 	private $team_id_nla = 429283; // keep it - Herren NLA-Team 
 	private $league_id = 21; // Leage-ID "Junioren/-innen U14/U17 Vollmeisterschaft" / Saison 2016717
@@ -30,20 +43,24 @@ class Suhv_WP {
 	private $sponsor_link = NULL; // "http:/www.churunihockey.ch";
 	private $sponsor_link_title = NULL; // "www.churunihockey";
 	private $use_cache = True;
-	private $css_path = NULL;
+	private $css_file = NULL;
 
-    
+
 		
-	public function __construct()  {
+	public function Suhv_WP() {
+		
 		/* ------------------------------------------------------------------------------------ */
 		// new API 2
+		add_shortcode ( 'suhv-api-greeting', array( &$this, 'api_greeting' ) );  // Display a greeting
+
 		add_shortcode ( 'suhv-api-club-get-games', array( &$this, 'api_club_getGames' ) );  // Display next Games of the Club
+		add_shortcode ( 'suhv-api-club-get-playedgames', array( &$this, 'api_club_getPlayedGames' ) );
+		add_shortcode ( 'suhv-api-club-get-homegames', array( &$this, 'api_club_getHomeGames' ) );  // Display next HomeGames of the Club
 
         add_shortcode ( 'suhv-api-club-get-cupgames', array( &$this, 'api_club_getCupGames' ) );  // Display next Cup-Games of the Club
 
 		add_shortcode ( 'suhv-api-league-get-games', array( &$this, 'api_league_getGames' ) ); // Display all Games of the Leage
 		add_shortcode ( 'suhv-api-league-get-weekend-games', array( &$this, 'api_league_getWeekendGames' ) ); // Display all Games of the Leage of nearest Weekend
-
 		add_shortcode ( 'suhv-api-team-get-games', array( &$this, 'api_team_getGames' ) );  
 		add_shortcode ( 'suhv-api-team-get-playedgames', array( &$this, 'api_team_getPlayedGames' ) );
 		add_shortcode ( 'suhv-api-get-team-table', array( &$this, 'api_getTeamTable' ) );
@@ -52,7 +69,8 @@ class Suhv_WP {
 		add_shortcode ( 'suhv-api-get-team-table_nla', array( &$this, 'api_getTeamTable_nla' ) );
 		add_shortcode ( 'suhv-api-get-team-rank_nla', array( &$this, 'api_getTeam_Rank_nla' ) );
 		add_shortcode ( 'suhv-api-club-get-weekend-games', array( &$this, 'api_club_getWeekend_Games' ) );
-		add_shortcode ( 'suhv-api-team-get-gamedetails', array( &$this, 'api_team_getGameDetails' ) );  
+		add_shortcode ( 'suhv-api-club-get-mini-games', array( &$this, 'api_club_getMiniGames' ) );
+		add_shortcode ( 'suhv-api-club-get-mini-results', array( &$this, 'api_club_getMiniResults' ) );
 		add_shortcode ( 'suhv-api-get-player', array( &$this, 'api_get_Player' ) );
 
 		// for testing & debug
@@ -69,51 +87,39 @@ class Suhv_WP {
  	
 		$this->options = get_option( 'SUHV_WP_plugin_options' );
 		if ( isset( $this->options['SUHV_club_id'] ) ) $this->club_id = $this->options['SUHV_club_id'];
-		if ( isset( $this->options['SUHV_default_club_shortname'] ) ) $this->club_shortname = $this->options['SUHV_default_club_shortname'];
 		if ( ( isset( $this->options['SUHV_default_team_id'] ) ) && ( $this->options['SUHV_default_team_id'] != "" ) )	{ $this->team_id = $this->options['SUHV_default_team_id']; $this->team_id_nla = $this->team_id;}
 		if ( isset( $this->options['SUHV_league_id'] ) ) $this->league_id = $this->options['SUHV_league_id'];
 		if ( isset( $this->options['SUHV_round_id'] ) ) $this->league_round = $this->options['SUHV_round_id'];
 		if ( isset( $this->options['SUHV_class_id'] ) ) $this->league_class = $this->options['SUHV_class_id'];
 		if ( isset( $this->options['SUHV_group_id'] ) ) $this->league_group = $this->options['SUHV_group_id'];
-
+	
 		/* ------------------------------------------------------------------------------------ */
 		// Stylesheet verlinken wenn selektiert in Admin
 		if (isset( $this->options['SUHV_css_file'] )) 
 		  if (substr_count($this->options['SUHV_css_file'],".css")>0) {
-		    $this->css_path = SUHV_API_WP_PLUGIN_URL . "includes/suhv/styles/".$this->options['SUHV_css_file'];
-		    //SwissUnihockey_Api_Public::log_me($this->css_path);
- 		    add_action( 'wp_enqueue_scripts', array( $this, 'my_scripts_suhv' ) );
+		    $css_path = SUHV_API_WP_PLUGIN_URL . "includes/suhv/styles/".$this->options['SUHV_css_file'];
+		    //SwissUnihockey_Api_Public::log_me($css_path);
+ 		    wp_enqueue_style( "suhv-api", $css_path);
  	      }
  		// aktuelle Saison ermitteln
         $this->season = date('Y');
-	    if (date('m') < 6) {
+	    if (date('m') < 5) {
 		  $this->season = $this->season - 1;
         }
+		
         // SwissUnihockey_Api_Public::log_me($this->options);
 	    if(isset($this->options['SUHV_cache']) == 1) {
         	 $this->use_cache = TRUE; }
         else { $this->use_cache = False;}
         	 
     }	
-	/* ------------------------------------------------------------------------------------ */
-    public function my_scripts_suhv() {
-    /*** Register global styles & scripts.*/
-      wp_register_style('suhv-api-style-css', $this->css_path);
-      wp_enqueue_style('suhv-api-style-css');
-  
-    }
+
 	/* ------------------------------------------------------------------------------------ */
 	// SUHV-Club erstellen
 	private function set_club( $club_id = NULL ){
 		if ( $club_id != NULL )
 		  $this->club_id = $club_id;
 		// echo "<p class='error suhv'>Club ".$this->club_id."<br></p>";
-		
-	}
-
-	private function set_club_shortname( $club_shortname = NULL ){
-		if ( $club_shortname != NULL )
-		  $this->club_shortname = $club_shortname;
 		
 	}
 	
@@ -154,6 +160,12 @@ class Suhv_WP {
  	    $this->player_id = $player_id;
 	}
 
+	// Funktion: SUHV Season erstellen
+	private function set_season($season = NULL){
+	  if ( $season  != NULL )
+ 	    $this->season = $season;
+	}
+
 	/* ------------------------------------------------------------------------------------ */
 	// Funktion: Sponsor Werte
 	private function set_sponsor_name($sponsor_name = NULL){
@@ -184,10 +196,6 @@ class Suhv_WP {
 		if ( get_post_meta( get_the_ID(), 'SUHV Club ID', true ) != "" ) {
 			$this->set_club( get_post_meta( get_the_ID(), 'SUHV Club ID', true ) );
 		}
-			// Ändert Club-Shortname, wenn ein Club-Shortname im Post-Meta-Feld eingegeben wurde.
-		if ( get_post_meta( get_the_ID(), 'SUHV Club Shortname', true ) != "" ) {
-			$this->set_club_shortname( get_post_meta( get_the_ID(), 'SUHV Club Shortname', true ) );
-		}
 		// Ändert Team, wenn eine Team-ID im Post-Meta-Feld eingegeben wurde.
 		if ( get_post_meta( get_the_ID(), 'SUHV Team ID', true ) != "" ) {
 		 $this->set_team( get_post_meta( get_the_ID(), 'SUHV Team ID', true ) );
@@ -212,6 +220,10 @@ class Suhv_WP {
 		// Ändert Player-ID, wenn eine Player-ID im Post-Meta-Feld eingegeben wurde.
 		if ( get_post_meta( get_the_ID(), 'SUHV Player ID', true ) != "" ) {
 		  $this->set_player( get_post_meta( get_the_ID(), 'SUHV Player ID', true ) );
+		}
+		// Ändert Season, wenn eine Season im Post-Meta-Feld eingegeben wurde.
+		if ( get_post_meta( get_the_ID(), 'SUHV Season', true ) != "" ) {
+		  $this->set_season( get_post_meta( get_the_ID(), 'SUHV Season', true ) );
 		}
 		//Sponsor
 		// Ändert den Sponsorwert, wenn ein Sponsor-Wert im Post-Meta-Feld eingegeben wurde.
@@ -257,44 +269,61 @@ class Suhv_WP {
 	// API 2.0
 	//
 	//
+	function api_greeting(){
+ 	    return "<p>greeting from SUHV API 2.0</p>";
+	}
+
 	function api_club_getGames(){
 		if ( !isset ( $this->club ) ) $this->set_club();
 		//echo "api_club_getGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
- 	    $club_shortname = $this->club_shortname;
  	    $team_ID = $this->team_id;
  	    $mode = "club";
  	    $cache = $this->use_cache;
- 	    return SwissUnihockey_Api_Public::api_club_getGames($season, $club_ID, $club_shortname,  $team_ID, $mode, $cache );
+ 	    return SwissUnihockey_Api_Public::api_club_getGames($season, $club_ID,  $team_ID, $mode, $cache );
 	}
 
-    function api_team_getGameDetails($atts){
-	    extract(shortcode_atts(array(
-	     "start_date" => '17.09.2015',
-         "end_date" => '18.09.2015',
-        ), $atts));
-        if ( !isset ( $this->team_id ) ) $this->set_team();
-		if ( !isset ( $this->club_id ) ) $this->set_club();
+	function api_club_getPlayedGames(){
+		if ( !isset ( $this->club ) ) $this->set_club();
+		//echo "api_club_getPlayedGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
- 	    $club_shortname = $this->club_shortname;
  	    $team_ID = $this->team_id;
- 	    $mode = "team";
+ 	    $mode = "club";
  	    $cache = $this->use_cache;
- 	    return SwissUnihockey_Api_Public::api_team_getGameDetails($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $cache );
+ 	    return SwissUnihockey_Api_Public::api_club_getPlayedGames($season, $club_ID,  $team_ID, $mode, $cache );
 	}
 
 	function api_club_getCupGames(){
 		if ( !isset ( $this->club ) ) $this->set_club();
-	    //echo "api_club_getCupGames";
+		//echo "api_club_getCupGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
- 	    $club_shortname = $this->club_shortname;
  	    $team_ID = $this->team_id;
  	    $mode = "club";
  	    $cache = $this->use_cache;
- 	    return SwissUnihockey_Api_Public::api_club_getCupGames($season, $club_ID, $club_shortname, $team_ID, $mode, $cache );
+ 	    return SwissUnihockey_Api_Public::api_club_getCupGames($season, $club_ID,  $team_ID, $mode, $cache );
+	}
+
+	function api_club_getMiniGames(){
+		if ( !isset ( $this->club ) ) $this->set_club();
+		$season = $this->season;
+ 	    $club_ID = $this->club_id;
+ 	    $team_ID = $this->team_id;
+ 	    $mode = "club";
+ 	    $cache = $this->use_cache;
+ 	    return SwissUnihockey_Api_Public::api_club_getMiniGames($season, $club_ID,  $team_ID, $mode, $cache );
+	}
+
+	function api_club_getMiniResults(){
+		if ( !isset ( $this->club ) ) $this->set_club();
+		$season = $this->season;
+ 	    $club_ID = $this->club_id;
+ 	    $team_ID = $this->team_id;
+ 	    $mode = "club";
+ 	    $cache = $this->use_cache;
+ 	    return SwissUnihockey_Api_Public::api_club_getMiniResults($season, $club_ID,  $team_ID, $mode, $cache );
 	}
 
     function api_league_getGames(){
@@ -313,7 +342,7 @@ class Suhv_WP {
 
     function api_league_getWeekendGames(){
 		if ( !isset ( $this->club ) ) $this->set_club();
-	echo "api_league_getWeekendGames";
+		//echo "api_league_getWeekendGames";
 		$season = $this->season;
 		$league_id = $this->league_id;
  	    $league_class = $this->league_class;
@@ -327,30 +356,40 @@ class Suhv_WP {
 
 	function api_team_getGames(){
 		if ( !isset ( $this->club ) ) $this->set_club();
-		//echo "api_club_getGames";
+		//echo "api_team_getGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
- 	    $club_shortname = $this->club_shortname;
  	    $team_ID = $this->team_id;
  	    $mode = "team";
  	    $cache = $this->use_cache;
  	    //echo "season: ".$season." - club:".$club_ID." - team:".$team_ID;
- 	    return SwissUnihockey_Api_Public::api_team_getGames($season, $club_ID, $club_shortname, $team_ID, $mode, $cache );
+ 	    return SwissUnihockey_Api_Public::api_team_getGames($season, $club_ID,  $team_ID, $mode, $cache );
+	}
+
+    
+	function api_team_getHomeGames(){
+		if ( !isset ( $this->club ) ) $this->set_club();
+		//echo "api_team_getHomeGames";
+		$season = $this->season;
+ 	    $club_ID = $this->club_id;
+ 	    $team_ID = $this->team_id;
+ 	    $mode = "team";
+ 	    $cache = $this->use_cache;
+ 	    //echo "season: ".$season." - club:".$club_ID." - team:".$team_ID;
+ 	    return SwissUnihockey_Api_Public::api_team_getHomeGames($season, $club_ID,  $team_ID, $mode, $cache );
 	}
 
     
 	function api_team_getPlayedGames(){
 		if ( !isset ( $this->club ) ) $this->set_club();
-
 		//echo "api_club_getGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
- 	    $club_shortname = $this->club_shortname;
  	    $team_ID = $this->team_id;
  	    $mode = "team";
  	    $cache = $this->use_cache;
  	    //echo "season: ".$season." - club:".$club_ID." - team:".$team_ID;
- 	    return SwissUnihockey_Api_Public::api_team_getPlayedGames($season, $club_ID, $club_shortname, $team_ID, $mode, $cache );
+ 	    return SwissUnihockey_Api_Public::api_team_getPlayedGames($season, $club_ID,  $team_ID, $mode, $cache );
 	}
 
 	function api_getNLATable( $team_id = NULL ){
@@ -441,11 +480,10 @@ class Suhv_WP {
 		//echo "api_club_getGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
- 	    $club_shortname = $this->club_shortname;
  	    $team_ID = $this->team_id;
  	    $mode = "club";
  	    $cache = $this->use_cache;
- 	    return SwissUnihockey_Api_Public::api_club_getWeekendGames($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $cache );
+ 	    return SwissUnihockey_Api_Public::api_club_getWeekendGames($season, $club_ID,  $team_ID, $mode, $start_date, $end_date, $cache );
 	}
 
 	function api_get_Player ($player_id = NULL ){
@@ -477,7 +515,6 @@ class Suhv_WP {
 
 	function api_show_vars(){
 		echo 'Club-ID: '.$this->club_id.'<br>';
-		echo 'Club-Shortname: '.$this->club_id.'<br>';
 		echo 'Team-ID '.$this->team_id.'<br>';
 		echo 'Player-ID: '.$this->player_id.'<br>';
 		echo 'Sponsor Name: '.$this->sponsor_name.'<br>';

@@ -95,7 +95,7 @@ th.suhv-opponent {
 td.suhv-win, td.suhv-lose, td.suhv-draw, td.suhv-result {
 	color: white;
 	text-align: center;
-	font-weight: bold;
+	/* font-size: 110%; */
 	border: 0px solid white;
 	border-top-width: 1px;
 	border-bottom-width: 1px;
@@ -275,77 +275,3 @@ Table
 .sponsor-name{
   width: 50%;float:left; text-align: center; min-width: 240px;
 }
-
-
-.match-detail{
-	text-align:center;
-	border: 0px dotted black; /* #ed8600; */
-	margin: 3px;
-	padding: 3px;
-}
-
-.match-info {
-	text-align:center;
-	font-size: 1.2em;
-}
-
-.match-headline {
-	margin:5px;
-	text-align:center;
-	color: black;
-}
-
-.match-datetime{
-	margin:3px;
-	font-size: 0.8em;
-}
-
-.match-result {
-  display: flex;                  /* establish flex container */
-  flex-direction: row;            /* default value; can be omitted */
-  flex-wrap: nowrap;              /* default value; can be omitted */
-  justify-content: space-between; /* switched from default (flex-start, see below) */
-}
-
-.match-team-home {
- margin-left: auto;
-}
-.match-team-home img {
-	width: 80%;
-}
-
-.match-team-count {
-	vertical-align: middle;
-	white-space: nowrap;
-    text-align: center;
-    margin: 10px;
-    font-size: 3em;
-    line-height: 80%;
-    width:30%;
-}
-
-.match-team-count-add {
-    font-size: 0.6em;
-    margin-left: 3px;
-}
-
-.match-team-guest {
-	margin-right: auto;
-}
-
-.match-team-guest img {
-	width: 80%;
-}
-
-.match-location {
-	margin:5px;
-    font-size: 0.75em;
-}
-
-@media screen and (max-width: 600px) {
-.match-team-guest img {
-	width: 50%;
-}
-
-}
-

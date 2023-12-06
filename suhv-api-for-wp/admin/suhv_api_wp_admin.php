@@ -2,7 +2,7 @@
 /**
  * Admin Page for SUHV API
  * @author Thonmas Hardegger / new API 2.0 / based on Jérôme Meier / old API
- * @version 16.11.2017
+ * @version 02.02.2017
  * STATUS: Reviewed
  */
 
@@ -11,7 +11,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	
  	public $options;
  	
-  public function __construct()
+  public function SUHV_WP_Options()
  	{
  	 $this->register_settings_and_fields();
  		$this->options = get_option( 'SUHV_WP_plugin_options' );
@@ -64,10 +64,11 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  		add_settings_field( 'SUHV_default_team_id', 'SUHV Team ID', array( $this, 'SUHV_default_team_id_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_default_club_shortname', 'SUHV Club Shortname', array( $this, 'SUHV_default_club_shortname_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_css_file', 'SUHV CSS File laden', array( $this, 'SUHV_css_file_setting' ), __FILE__,  'SUHV_main_section');
-    add_settings_field( 'SUHV_css_tablepress', 'SUHV Tablepress-Support', array( $this, 'SUHV_css_tablepress_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_cache', 'SUHV Cache aktivieren', array( $this, 'SUHV_cache_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_long_cache', 'SUHV Long Cache', array( $this, 'SUHV_long_cache_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_club_games_limit', 'SUHV Games Limit', array( $this, 'SUHV_club_games_limits_setting' ), __FILE__,  'SUHV_main_section');
+    add_settings_field( 'SUHV_club_mini_games_limit', 'SUHV Mini Games Limit', array( $this, 'SUHV_club_mini_games_limits_setting' ), __FILE__,  'SUHV_main_section');
+    add_settings_field( 'SUHV_club_mini_results_limit', 'SUHV Mini Results Limit', array( $this, 'SUHV_club_mini_results_limits_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_mail_actual_result', 'SUHV Email Actual', array( $this, 'SUHV_mail_actual_result_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_mail_final_result', 'SUHV Email Result', array( $this, 'SUHV_mail_final_result_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_mail_send_from', 'SUHV Email From', array( $this, 'SUHV_mail_send_from_setting' ), __FILE__,  'SUHV_main_section');
@@ -131,7 +132,22 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     echo "<span class='description'> Anzahl n Games in der Club Games Anzeige. (Beispiel: 10)</span>";
  
    }
-  // Mail für Zwischenresultate / Schlussresultate
+
+  public function SUHV_club_mini_games_limits_setting()
+  {
+    echo "<input name='SUHV_WP_plugin_options[SUHV_club_mini_games_limit]' style='width:50px' type='text' value='" . $this->options['SUHV_club_mini_games_limit'] . "' />";
+    echo "<span class='description'> Anzahl n Games in der Club Mini Games Anzeige. (Beispiel: 5)</span>";
+ 
+   }
+
+     public function SUHV_club_mini_results_limits_setting()
+  {
+    echo "<input name='SUHV_WP_plugin_options[SUHV_club_mini_results_limit]' style='width:50px' type='text' value='" . $this->options['SUHV_club_mini_results_limit'] . "' />";
+    echo "<span class='description'> Anzahl n Resultate in der Club Mini Results Anzeige. (Beispiel: 5)</span>";
+ 
+   }
+
+   // Mail für Zwischenresultate / Schlussresultate
   public function SUHV_mail_actual_result_setting()
   {
     echo "<input name='SUHV_WP_plugin_options[SUHV_mail_actual_result]' style='width:300px' type='text' value='" . $this->options['SUHV_mail_actual_result'] . "' />";
@@ -176,12 +192,6 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
 
   }
 
-  // Add Tablepress Class?
-  public function SUHV_css_tablepress_setting()
-  {
-    echo "<label><input name='SUHV_WP_plugin_options[SUHV_css_tablepress]' type='checkbox' value='1' " . checked( 1, $this->options['SUHV_css_tablepress'], false ) . "/> Ja, Tablepress-Class einfügen</label><br>";
-  }
-
   // Default Cache setting?
   public function SUHV_cache_setting()
   {
@@ -190,7 +200,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
 
     public function SUHV_long_cache_setting()
   {
-    echo "<label><input name='SUHV_WP_plugin_options[SUHV_long_cache]' type='checkbox' value='1' " . checked( 1, $this->options['SUHV_long_cache'], false ) . "/>Langzeit-Cache (Falls swissunihockey überlastet)</label><br>";
+    echo "<label><input name='SUHV_WP_plugin_options[SUHV_long_cache]' type='checkbox' value='1' " . checked( 1, $this->options['SUHV_long_cache'], false ) . "/>Langzeit-Cache, kein Update von 16-23 Uhr. (Falls swissunihockey überlastet)</label><br>";
   }
   
  	
@@ -206,6 +216,8 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     echo "[suhv-api-club-get-cupgames] <span class='description'>Alle Cup-Spiele des NLA-Teams </span><br>"; 
     echo "[suhv-api-club-get-weekend-games start_date=\"17.09.2016\" end_date=\"18.09.2016\"]<span class='description'> Spiele des Clubs am Wochenende</span><br>";
     echo "[suhv-api-club-get-weekend-games]<span class='description'> Spiele des Clubs am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
+    echo "[suhv-api-club-get-mini-games]<span class='description'> Nächste paar Spiele des Clubs </span><br>";
+    echo "[suhv-api-club-get-mini-results]<span class='description'> Letze paar Resultate des Clubs</span><br>";
     echo "Bestimmende Variablen: 'SUHV Club ID'";
 
  	}
@@ -213,8 +225,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	public function SUHV_shortcodes_team()
  	{
  		echo "[suhv-api-team-get-games] <span class='description'>Nächste Spiele des Teams</span><br>"; 
- 		echo "[suhv-api-team-get-playedgames] <span class='description'>Gespielte Spiele des Teams</span><br>";
-    echo "[suhv-api-team-get-gamedetails]<span class='description'> Details der Direktbegegnungen des Teams am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
+ 		echo "[suhv-api-team-get-playedgames] <span class='description'>Gespielte Spiele des Teams</span><br>"; 
  		echo "[suhv-api-get-team-table] <span class='description'>Tabelle des Teams</span><br>"; 
  		echo "[suhv-api-get-team-rank] <span class='description'>Rangliste in Liga des Teams</span><br>";	
  		echo "[suhv-api-nla-team-get-table] <span class='description'>Tabelle des NLA Teams</span><br>"; 

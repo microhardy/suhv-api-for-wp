@@ -164,7 +164,8 @@ class SwissUnihockey_Public {
         $context['season'] = $season;
         $context['club_id'] = $club_id;
         $context['team_id'] = $team_id;
-        //echo "<br>context: mode ".$context['mode']." - context: page ".$context['page'];
+        $context['games_per_page'] = 200;
+        // echo "<br>context: mode ".$context['mode']." - context: page ".$context['page'];
         $json = $this->get('/games', $context);
         return $json; 
     }
@@ -241,21 +242,6 @@ class SwissUnihockey_Public {
         $json = $this->get($url, $context);
         return $json; 
     }
-
-        /** 
-     * Summary for a game.
-     *
-     * Parameters:
-     *  * game_id: A game id.
-     */
-    public function gameDetailsSummary($game_id, $context=array()) 
-    {
-        $url = '/games/'.$game_id."/summary";
-        
-        $json = $this->get($url, $context);
-        return $json; 
-    }
-    
     
     /** 
      * Timeline for a cup. 
