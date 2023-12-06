@@ -2680,7 +2680,7 @@ private static function suhvDown() {
 
       error_reporting(E_ALL & ~E_NOTICE);
       while ($loop) {
-      $i = 0;
+        $i = $entries - 1;
       do {
             $game_id = $games[$i]->link->ids[0];
             $game_detail_link = "https://www.swissunihockey.ch/de/game-detail?game_id=".$game_id;
@@ -2736,11 +2736,11 @@ private static function suhvDown() {
               $html_body .= "<td class=\"suhv-opponent\">" . $game_Opponent . "</td></tr>";
   
             } else {
-              $loop = FALSE;
+              //$loop = FALSE;
             }
-            $i++; 
+            $i--; 
 
-         } while (($i < $entries) and ($loop));
+         } while (($i >= 0) and ($loop));
 
          if ($data->slider->next == NULL) { $loop = FALSE; }// only this loop
          else {
