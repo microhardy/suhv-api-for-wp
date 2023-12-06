@@ -11,6 +11,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	
  	public $options;
  	
+  public function SUHV_WP_Options()
   public function __construct()
  	{
  	  $this->register_settings_and_fields();
@@ -69,6 +70,8 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     add_settings_field( 'SUHV_cache', 'SUHV Cache aktivieren', array( $this, 'SUHV_cache_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_long_cache', 'SUHV Long Cache', array( $this, 'SUHV_long_cache_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_club_games_limit', 'SUHV Games Limit', array( $this, 'SUHV_club_games_limits_setting' ), __FILE__,  'SUHV_main_section');
+    add_settings_field( 'SUHV_club_mini_games_limit', 'SUHV Mini Games Limit', array( $this, 'SUHV_club_mini_games_limits_setting' ), __FILE__,  'SUHV_main_section');
+    add_settings_field( 'SUHV_club_mini_results_limit', 'SUHV Mini Results Limit', array( $this, 'SUHV_club_mini_results_limits_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_mail_actual_result', 'SUHV Email Actual', array( $this, 'SUHV_mail_actual_result_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_mail_final_result', 'SUHV Email Result', array( $this, 'SUHV_mail_final_result_setting' ), __FILE__,  'SUHV_main_section');
     add_settings_field( 'SUHV_mail_send_from', 'SUHV Email From', array( $this, 'SUHV_mail_send_from_setting' ), __FILE__,  'SUHV_main_section');
@@ -133,7 +136,22 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
     echo "<span class='description'> Anzahl n Games in der Club Games Anzeige. (Beispiel: 10)</span>";
  
    }
-  // Mail für Zwischenresultate / Schlussresultate
+
+  public function SUHV_club_mini_games_limits_setting()
+  {
+    echo "<input name='SUHV_WP_plugin_options[SUHV_club_mini_games_limit]' style='width:50px' type='text' value='" . $this->options['SUHV_club_mini_games_limit'] . "' />";
+    echo "<span class='description'> Anzahl n Games in der Club Mini Games Anzeige. (Beispiel: 5)</span>";
+ 
+   }
+
+     public function SUHV_club_mini_results_limits_setting()
+  {
+    echo "<input name='SUHV_WP_plugin_options[SUHV_club_mini_results_limit]' style='width:50px' type='text' value='" . $this->options['SUHV_club_mini_results_limit'] . "' />";
+    echo "<span class='description'> Anzahl n Resultate in der Club Mini Results Anzeige. (Beispiel: 5)</span>";
+ 
+   }
+
+   // Mail für Zwischenresultate / Schlussresultate
   public function SUHV_mail_actual_result_setting()
   {
     echo "<input name='SUHV_WP_plugin_options[SUHV_mail_actual_result]' style='width:300px' type='text' value='" . $this->options['SUHV_mail_actual_result'] . "' />";
@@ -212,7 +230,7 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
 
     public function SUHV_long_cache_setting()
   {
-    echo "<label><input name='SUHV_WP_plugin_options[SUHV_long_cache]' type='checkbox' value='1' " . checked( 1, $this->options['SUHV_long_cache'], false ) . "/>Langzeit-Cache (Falls swissunihockey überlastet)</label><br>";
+    echo "<label><input name='SUHV_WP_plugin_options[SUHV_long_cache]' type='checkbox' value='1' " . checked( 1, $this->options['SUHV_long_cache'], false ) . "/>Langzeit-Cache, kein Update von 16-23 Uhr. (Falls swissunihockey überlastet)</label><br>";
   }
   
  	// Default Club Homegame Location
@@ -230,44 +248,46 @@ if ( !class_exists( 'Suhv_WP_Options' ) ) {
  	
  	public function SUHV_shortcodes_club()
  	{
- 	echo "[suhv-api-club-get-games<span class='description'>] Die nächsten n Spiele des Vereins (Anzahl n Spiele in den Einstellungen festlegen) </span><br>"; 
-    echo "[suhv-api-club-get-games <span class='description'>club_id=\"423403\"] Optional \"club_id\" z.B. für anderen Club</span><br>"; 
-    echo "[suhv-api-club-get-cupgames]* <span class='description'>Alle Cup-Spiele des NLA-Teams (*depreciated/nicht mehr verwenden)</span><br>"; 
-    echo "[suhv-api-club-get-weekend-games start_date=\"19.09.2020\" end_date=\"20.09.2020\"]<span class='description'> Spiele des Clubs am Wochenende</span><br>";
-    echo "[suhv-api-club-get-weekend-games <span class='description'>club_id=\"423403\"] Spiele des Clubs oder Club mit ID am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
-    echo "[suhv-api-club-get-currentgamedetails]<span class='description'> Details der aktuellen Direktbegegnung</span><br>";
-    echo "Bestimmende Variablen: 'SUHV Club ID'<br>";
-    echo "[suhv-api-get-directgames]<span class='description'> Letzte Direktbegegnung</span><br>";
-    echo "Bestimmende Variablen: 'SUHV Game ID'";
-
+ 		echo "[suhv-api-club-get-games <span class='description'>] Die nächsten n Spiele des Vereins (Anzahl n Spiele in den Einstellungen festlegen) </span><br>"; 	
+ 		echo "[suhv-api-club-get-games <span class='description'>club_id=\"423403\"] Optional \"club_id\" z.B. für anderen Club</span><br>"; 
+ 		echo "[suhv-api-club-get-cupgames]* <span class='description'>Alle Cup-Spiele des NLA-Teams (*depreciated/nicht mehr verwenden)</span><br>"; 
+ 		echo "[suhv-api-club-get-weekend-games start_date=\"19.09.2020\" end_date=\"20.09.2020\"]<span class='description'> Spiele des Clubs am Wochenende</span><br>";
+ 		echo "[suhv-api-club-get-weekend-games <span class='description'>club_id=\"423403\"] Spiele des Clubs oder Club mit ID am aktuellen Wochenende (Mittwoch bis Dienstag)</span><br>";
+ 		echo "[suhv-api-club-get-currentgamedetails]<span class='description'> Details der aktuellen Direktbegegnung</span><br>";
+ 		echo "[suhv-api-club-get-mini-games]<span class='description'> Nächste paar Spiele des Clubs </span><br>";
+ 		echo "[suhv-api-club-get-mini-results]<span class='description'> Letze paar Resultate des Clubs</span><br>";
+ 		echo "Bestimmende Variablen: 'SUHV Club ID'<br>";
+ 		echo "[suhv-api-get-directgames]<span class='description'> Letzte Direktbegegnung</span><br>";
+ 		echo "Bestimmende Variablen: 'SUHV Game ID'";
  	}
+
  	
  	public function SUHV_shortcodes_team()
  	{
  		echo "[suhv-api-team-get-games] <span class='description'>Nächste Spiele des Teams</span><br>"; 
-    echo "[suhv-api-team-get-games <span class='description'>team_id=\"429283\"]</span><br>";
- 		echo "[suhv-api-team-get-playedgames] <span class='description'>Gespielte Spiele des Teams</span><br>";
-    echo "[suhv-api-team-get-playedgames team_id=\"429283\"] <span class='description'></span><br>";
-    echo "[suhv-api-team-get-gamedetails] <span class='description'>Details der Direktbegegnungen des Teams am aktuellen Wochenende <strong>(Mittwoch bis Dienstag)</strong></span><br>";
-    echo "[suhv-api-team-get-gamedetails game_id=\"963116\"] <span class='description'>Details der Direktbegegnung des Spiels mit ID</span><br>";
-    echo "[suhv-api-team-get-gamedetails team_id=\"429283\"] <span class='description'>Details der Direktbegegnung des Teams (new)</span><br>";
+ 		echo "[suhv-api-team-get-games <span class='description'>team_id=\"429283\"]</span><br>";
+ 		echo "[suhv-api-team-get-playedgames] <span class='description'>Gespielte Spiele des Teams</span><br>"; 
+ 		echo "[suhv-api-team-get-playedgames team_id=\"429283\"] <span class='description'></span><br>";
+ 		echo "[suhv-api-team-get-gamedetails] <span class='description'>Details der Direktbegegnungen des Teams am aktuellen Wochenende <strong>(Mittwoch bis Dienstag)</strong></span><br>";
+ 		echo "[suhv-api-team-get-gamedetails game_id=\"963116\"] <span class='description'>Details der Direktbegegnung des Spiels mit ID</span><br>";
+ 		echo "[suhv-api-team-get-gamedetails team_id=\"429283\"] <span class='description'>Details der Direktbegegnung des Teams (new)</span><br>";
  		echo "[suhv-api-get-team-table] <span class='description'>Tabelle des Teams</span><br>"; 
-    echo "[suhv-api-get-team-table team_id=\"429283\"] <span class='description'></span><br>";
+ 		echo "[suhv-api-get-team-table team_id=\"429283\"] <span class='description'></span><br>";
  		echo "[suhv-api-get-team-rank] <span class='description'>Rangliste in Liga des Teams</span><br>";	
-    echo "[suhv-api-get-team-rank team_id=\"429283\"] <span class='description'></span><br>";
+ 		echo "[suhv-api-get-team-rank team_id=\"429283\"] <span class='description'></span><br>";
  		echo "[suhv-api-nla-team-get-table] <span class='description'>Tabelle des NLA Teams (*depreciated/nicht mehr verwenden)</span><br>"; 
  		echo "[suhv-api-get-team-table_nla] <span class='description'>Tabelle des NLA Teams (*depreciated/nicht mehr verwenden)</span><br>"; 
-    echo "[suhv-api-get-team-rank_nla] <span class='description'>Rangliste des NLA Teams (*depreciated/nicht mehr verwenden)</span><br>";
-    echo "Bestimmende Variablen oder Seitenvariablen: 'SUHV Club ID' & 'SUHV Team ID'";
+ 		echo "[suhv-api-get-team-rank_nla] <span class='description'>Rangliste des NLA Teams (*depreciated/nicht mehr verwenden)</span><br>";
+ 		echo "Bestimmende Variablen oder Seitenvariablen: 'SUHV Club ID' & 'SUHV Team ID'";
  	}
  	
  	public function SUHV_shortcodes_league()
  	{
  		echo "[suhv-api-league-get-games] <span class='description'>Alle Meisterschaftsrunden der Liga</span><br>"; 
-    echo "[suhv-api-league-get-weekend-games] <span class='description'>Alle Spiele der Liga am aktuellen Wochenende</span><br>"; 
-    echo "Bestimmende Seitenvariablen: 'SUHV League ID' & 'SUHV Round ID' & 'SUHV Class ID' & 'SUHV Group ID'<br>";
-    echo "Hinweise zu IDs: ";
-    echo "<span class='description'><a href=\"https://www.swissunihockey.ch/de/league-group-detail/\">Liga-IDs auf swissunihockey</a></span><br>";
+ 		echo "[suhv-api-league-get-weekend-games] <span class='description'>Alle Spiele der Liga am aktuellen Wochenende</span><br>"; 
+ 		echo "Bestimmende Seitenvariablen: 'SUHV League ID' & 'SUHV Round ID' & 'SUHV Class ID' & 'SUHV Group ID'<br>";
+ 		echo "Hinweise zu IDs: ";
+ 		echo "<span class='description'><a href=\"https://www.swissunihockey.ch/de/league-group-detail/\">Liga-IDs auf swissunihockey</a></span><br>";
  	}
  	
  	public function SUHV_shortcodes_widget()

@@ -168,7 +168,8 @@ class SwissUnihockey_Public {
         $context['season'] = $season;
         $context['club_id'] = $club_id;
         $context['team_id'] = $team_id;
-        //echo "<br>context: mode ".$context['mode']." - context: page ".$context['page'];
+        $context['games_per_page'] = 200;
+        // echo "<br>context: mode ".$context['mode']." - context: page ".$context['page'];
         $json = $this->get('/games', $context);
         return $json; 
     }

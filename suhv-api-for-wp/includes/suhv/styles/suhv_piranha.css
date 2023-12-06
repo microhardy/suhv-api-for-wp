@@ -95,7 +95,7 @@ th.suhv-opponent {
 td.suhv-win, td.suhv-lose, td.suhv-draw, td.suhv-result {
 	color: white;
 	text-align: center;
-	font-weight: bold;
+	/* font-weight: bold; */
 	border: 0px solid white;
 	border-top-width: 1px;
 	border-bottom-width: 1px;

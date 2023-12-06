@@ -149,6 +149,4 @@ if ( ! is_admin() ){ // Alles wird nur im Frontend ausgeführt
  
 } // End if ( ! is_admin() )
 
-
-
 ?>
