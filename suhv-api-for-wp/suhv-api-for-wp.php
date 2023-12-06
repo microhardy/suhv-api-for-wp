@@ -7,7 +7,7 @@
  * STATUS: Reviewed
 */
 /*
-Plugin Name: SUHV API-2 Schnittstelle für WordPress
+Plugin Name: Toggi-SUHV API-2 Schnittstelle für WordPress
 Plugin URI: www.churunihockey.ch
 Description: Nutzt da neu API 2.0 von Swissunihockey.ch Basiert auf Lösung von Jérôme Meier http://www.schwarzpunkt.ch 2012
 Version: 2.13

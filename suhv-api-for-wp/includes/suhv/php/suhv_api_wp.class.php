@@ -444,14 +444,12 @@ class Suhv_WP {
 	//echo "api_club_getPlayedGames";
 		$season = $this->season;
  	    $club_ID = $this->club_id;
-	    $club_shortname = $this->club_shor
+	    $club_shortname = $this->club_shortname;
  	    $team_ID = $this->team_id;
  	    $mode = "club";
  	    $cache = $this->use_cache;
  	    return SwissUnihockey_Api_Public::api_club_getPlayedGames($season, $club_ID, $club_shortname, $team_ID, $mode, $cache );
 	}
-
-
 
 	function api_club_getCupGames(){
 		if ( !isset ( $this->club ) ) $this->set_club();
@@ -570,20 +568,6 @@ class Suhv_WP {
  	    $cache = $this->use_cache;
  	    //echo "season: ".$season." - club:".$club_ID." - team:".$team_ID;
  	    return SwissUnihockey_Api_Public::api_team_getHomeGames($season, $club_ID, $club_shortname, $team_ID, $mode, $cache );
-	}
-
-    
-	function api_team_getPlayedGames(){
-		if ( !isset ( $this->club ) ) $this->set_club();
-		//echo "api_club_getGames";
-		$season = $this->season;
- 	    $club_ID = $this->club_id;
- 	    $club_shortname = $this->club_shortname;
- 	    $team_ID = $this->team_id;
- 	    $mode = "team";
- 	    $cache = $this->use_cache;
- 	    //echo "season: ".$season." - club:".$club_ID." - team:".$team_ID;
- 	    return SwissUnihockey_Api_Public::api_team_getPlayedGames($season, $club_ID, $club_shortname, $team_ID, $mode, $cache );
 	}
 
 	function api_getNLATable( $team_id = NULL ){

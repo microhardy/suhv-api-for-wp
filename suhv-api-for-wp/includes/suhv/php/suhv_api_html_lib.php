@@ -2641,7 +2641,7 @@ private static function suhvDown() {
      
       ));  
 
-      if (issed($details->data)) {
+      if (isset($details->data)) {
         $data = $details->data; 
         $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
         $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
@@ -2824,8 +2824,8 @@ private static function suhvDown() {
       $title = str_replace ("Saison", SwissUnihockey_Api_Public::translate("Replacements","Saison"),$title);
       $html .= "<table class=\"suhv-table suhv-team-getGames".$tablepress."\">\n";
       // $html .= "<caption>".$title."</caption>";
-      $html .= "<thead><tr><th class=\"suhv-date\">Datum".;
-      $html .= "<thead><tr><th class=\"suhv-time\">Zeit";
+      $html .= "<thead><tr><th class=\"suhv-date\">Datum";
+      $html .= "<th class=\"suhv-time\">Zeit";
       $html .= "</th><th class=\"suhv-opponent\">".$header_Guest;
       $html .= "</th><th class=\"suhv-location\">".$header_Location;
       //if ($header_Result != "")  $html .= "</th><th class=\"suhv-result\">".$header_Result."</th></tr></thead>";
@@ -3033,7 +3033,7 @@ private static function suhvDown() {
         $title_even = SwissUnihockey_Api_Public::translate("TeamTable",$title_even);
 
 	      $html .= "<table class=\"suhv-table suhv-getTeamTable".$tablepress."\">";
-	      if ($capt) $html .= "<caption>".$title.$view_cache."</caption>";
+	      // if ($capt) $html .= "<caption>".$title.$view_cache."</caption>";
 	      $html .= "<thead>".       
 	        "<tr><th class=\"suhv-rank\"><abbr title=\"".$title_rank."\">".$header_Rank."</abbr>".
 	        "</th><th class=\"suhv-team\"><abbr title=\"".$title_team."\">".$header_Team."</abbr>".
