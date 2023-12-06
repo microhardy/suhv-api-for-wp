@@ -1,0 +1,347 @@
+@CHARSET "utf-8";
+
+.suhv-round-link a {
+	float:right;
+}
+
+.suhv-round-anchor a {
+  display: block;
+  position: relative;
+  top: -60px;
+  visibility: hidden;
+}
+
+
+table.suhv-table {
+	width: 100%;
+	margin-bottom: 20px;
+	border: 0px solid #999;
+}
+
+table.suhv-table th {
+	background-color: #D82423; 
+	border: 0;
+	text-align: left;
+	font-weight: bold;
+}
+
+table.suhv-table tbody td, table.suhv-table tfoot th {
+	border-top: 1px solid #ddd
+}
+
+table.suhv-table td.suhv-points, table.suhv-table td.suhv-diff, table.suhv-table th.suhv-points, table.suhv-table  th.suhv-diff {
+	text-align: right;
+}
+
+table.suhv-table td.suhv-ties, table.suhv-table td.suhv-defeats{
+	text-align: center;
+}
+
+table.suhv-table th.suhv-ties, table.suhv-table th.suhv-defeats{
+	text-align: center;
+}
+
+
+table.suhv-table td.suhv-scored, table.suhv-table  th.suhv-scored {
+	text-align: center;
+}
+
+table.suhv-table th, 
+table.suhv-table td {
+	padding: 8px;
+}
+
+tr.alt {
+	background-color: #f4f4f4;
+}
+
+tr.suhv-my-team {
+	background-color: inherit;
+}
+
+tr:hover {
+    background-color: #cfe2fd;
+}
+
+
+.suhv-played-games th.suhv-home, 
+.suhv-played-games th.suhv-away {
+	width: 25%;
+}
+
+.suhv-planned-games-full th.suhv-home, 
+.suhv-planned-games-full th.suhv-away {
+	width: 25%;
+}
+
+th.suhv-result {
+	width: 15%;
+	text-align: center;
+}
+
+th.suhv-date {
+	width: 20%;
+}
+
+th.suhv-place {
+	width: 20%;
+}
+
+th.suhv-opponent {
+	width: 40%;
+}
+
+td.suhv-win, td.suhv-lose, td.suhv-draw, td.suhv-result {
+	color: white;
+	text-align: center;
+	/* font-size: 110%; */
+	/* border: 0px solid white;
+	border-top-width: 0px;
+	border-bottom-width: 1px;*/
+}
+
+td.suhv-win a, td.suhv-lose a, td.suhv-draw a, td.suhv-result a {
+	color: white;
+	text-decoration: underline;
+}
+
+td.suhv-scored {
+	text-align: center;
+}
+
+td.suhv-home {
+	font-weight: bold;
+}
+td.suhv-win {
+	background-color: #090;
+	text-align: center;
+}
+
+
+td.suhv-draw {
+	background-color: #999;
+}
+
+td.suhv-lose {
+	background-color: #D82423;
+	text-align: center;
+}
+
+td.suhv-result {
+	color: #666666;
+	text-align: center;
+}
+
+td.suhv-activ {
+	background-color: #ffff99;
+	color: #000099;
+	text-align: center;
+	border: 0px dotted #D82423;
+	border-bottom-width: 2px;
+}
+
+td.suhv-activ a {
+	color: #000099;
+	text-decoration: underline;
+}
+
+td.suhv-wait {
+    font-size: 100%;
+}
+
+tr.suhv-bar td {
+	border-bottom: 1px solid #666;
+}
+
+/** suhv - Displays
+/* Typography */
+.su-spieldaten a, .su-spieldaten a:link, .su-spieldaten a:visited {
+	color: #e32412;
+	text-decoration: none;
+}
+
+.su-spieldaten .su-header {
+	background: #000;
+	color: #fff;
+	border-bottom: 2px #fff solid;
+	padding: 5px 10px;
+}
+
+.su-spieldaten .su-row { clear: both;}
+
+.su-spieldaten {
+    font-family: 'museo_sans', Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    color: #00003b;
+    font-size: 16px;
+    line-height: 1.2em;
+}
+/* Spielerportrait */
+.su-bt-player_details { background-color: #dae8e6}
+.su-spieldaten .su-obj-spielerdetails { }
+.su-spieldaten .su-obj-spielerdetails .su-obj-portrait { max-height: 360px; overflow: hidden; text-align: center;  }
+.su-spieldaten .su-obj-spielerdetails .su-obj-portrait img { max-width: 360px; }
+.su-spieldaten .su-obj-spielerdetails .su-value-portrait { /* zentriert */ }
+.su-spieldaten .su-obj-spielerdetails .su-obj-details { width: 360px; }
+.su-spieldaten .su-obj-spielerdetails .su-obj-details .su-table .su-strong { padding-left: 20px; }
+.su-spieldaten .su-obj-spielerdetails .su-obj-details .su-table tr>td:nth-child(1) { width: 30%; }
+.su-spieldaten .su-obj-spielerdetails .su-header { font-size: 22px; position: relative;}
+.su-spieldaten .su-obj-spielerdetails .su-header span { padding-left: 40px; }
+.su-spieldaten .su-obj-spielerdetails .su-obj-portrait {float: left;}
+.su-spieldaten .su-obj-spielerdetails .su-obj-details {float: left;}
+/* ==========================================
+Table
+=========================================== */
+
+.su-spieldaten table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	max-width: 100%;
+}
+
+.su-spieldaten .su-header {
+	background: #D82423;
+	font-weight: 800;
+	color: #fff;
+	border-bottom: 2px #fff solid;
+	position:relative;
+}
+
+.su-spieldaten .su-subheader {
+	background: #444;
+	color: #fff;
+	border-bottom: 2px #fff solid;
+}
+
+.su-spieldaten .su-basictable {
+	padding: 20px 10px;;
+	overflow: auto;
+	display: block;
+}
+
+.su-spieldaten .su-table {
+	background: #e9f1f0;
+	font-size: 16px;
+}
+.su-spieldaten .su-table thead tr {
+	background: #dae8e6;
+}
+
+.su-spieldaten .su-table th {
+	font-weight: 700;
+	padding: 10px 10px;
+	border-bottom: 2px #fff solid;
+}
+
+.su-spieldaten .su-table tr {
+}
+
+.su-spieldaten .su-table td {
+	padding: 12px 10px;
+	border-bottom: 2px #fff solid;
+	position: relative;
+}
+
+.su-spieldaten .su-table td.su-strong {
+	font-weight: 600;
+}
+.su-spieldaten .su-site-link {
+ padding: 12px 10px;
+ text-align: center;
+}
+
+/* Sponsor Spielersponsoren*/
+.sponsor-header { 
+	padding: 20px 10px;
+	clear: left;
+}
+.sponsor-logo{
+  float:left; text-align: left; 
+}
+.sponsor-logo img{
+ max-width: 360px;
+}
+.sponsor-name{
+  width: 50%;float:left; text-align: center; min-width: 240px;
+}
+<<<<<<< HEAD
+
+
+.match-detail{
+	text-align:center;
+	border: 2px solid #D62221;
+	margin: 3px;
+	padding: 3px;
+}
+
+.match-info {
+	text-align:center;
+	font-size: 1.2em;
+}
+
+.match-headline {
+	margin:5px;
+	text-align:center;
+	color: #D82423;
+}
+
+.match-datetime{
+	margin:3px;
+	font-size: 0.8em;
+}
+
+.match-result {
+  display: flex;                  /* establish flex container */
+  flex-direction: row;            /* default value; can be omitted */
+  flex-wrap: nowrap;              /* default value; can be omitted */
+  justify-content: space-between; /* switched from default (flex-start, see below) */
+}
+
+
+.match-team-count {
+	vertical-align: middle;
+	white-space: nowrap;
+    text-align: center;
+    margin: 10px;
+    font-size: 3em;
+    line-height:100%;
+    width:30%;
+}
+
+.match-team-count-add {
+    font-size: 0.6em;
+    margin-left: 3px;
+}
+
+.match-team-home {
+    margin-left: auto;
+}
+
+.match-team-guest {
+	margin-right: auto;
+}
+
+.match-team-guest img {
+	width: auto;
+}
+
+.match-team-home img {
+	width: auto;
+}
+
+.match-location {
+	margin:5px;
+    font-size: 0.75em;
+}
+
+@media screen and (max-width: 600px) {
+.match-team-home img {
+	max-width: 80%;
+}
+.match-team-guest img {
+	max-width: 80%;
+}
+
+}
+=======
+>>>>>>> joe-toggi
