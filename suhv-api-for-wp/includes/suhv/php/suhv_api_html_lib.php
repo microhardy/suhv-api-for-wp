@@ -172,301 +172,657 @@ private static function suhvDown() {
     
     ));
 
-      $data = $details->data; 
-      $startpage = $data->context->page;
-      // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." 1 page: ".$startpage);
-//echo "Startpage: ".$startpage."<br>";
-      if ($startpage!=1) { // eine Page retour wenn nicht erste
-           $page = $startpage-1;
-           $month = date('m');
-           if($month == "6") {$page=1;} // during June is the schedule not ready
-           $api = new SwissUnihockey_Public(); 
-           $api_calls++;
-           $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
-             'page' => $page
-           )); 
-          // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." 2 page: ".$page);
-      }
+    // Eine Seite retour bei Page-Ende?
+    
 
-      $data = $details->data; 
+    $data = $details->data; 
+    $startpage = $data->context->page;
+    // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." 1 page: ".$startpage);
 
-      $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
-
-      $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
-      $header_Leage = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
-      $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
-      $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
-      $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[5]->text);
-      $Cpos = strripos($my_club_name,'Chur');
-      if (!is_bool($Cpos)) { $header_Result = "Res.";}
-      $club_name = $data->title;
-      $games = $data->regions[0]->rows;
-      $attributes = $data->regions[0]->rows[0]->cells;
-      
-      $entries = count($games);
-      
-      $transient_games = $transient.$tag;
-      $last_games = get_transient( $transient_games );
-      if ($last_games == FALSE) {
-        $last_games = $games;
-        set_transient( $transient_games, $last_games, 2*55*60 );
-        // echo "<br>Reset Games";60
-      }
-      $loop = FALSE;
-      $tabs = $data->context->tabs;
-      if ($tabs == "on") $loop = TRUE;
-      $startpage = $data->context->page;
-      $page = $startpage;
-
-      $items = 0;
-      $today = strtotime("now");
-      $startdate = strtotime("-3 days",$today);
-      $cTime = (SwissUnihockey_Api_Public::cacheTime() / 60)*$trans_Factor;
-
-      if (!$cache) {
-        $view_cache = "<br> cache = off / Display: ".$n_Games." Club:".$my_club_name ." / Page:".$page; 
-        } else {$view_cache ="";
-      }
-      
-      $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
-      $html_head = "<div class=\"suhvIncludes twoRight\">\n\t<table class=\"table nobr\">\n";
-      
-      $latestDateOfGame = strtotime("1970-01-01");
-
-      error_reporting(E_ALL & ~E_NOTICE);
-      while ($loop) {
-      $i = 0;
-      do {
-            $game_id = $games[$i]->link->ids[0];
-            $game_detail_link = "https://www.swissunihockey.ch/de/game-detail?game_id=".$game_id;
-            $game_date = $games[$i]->cells[0]->text[0];
-            $game_time = $games[$i]->cells[0]->text[1];
-            if ($game_time != "???") {
-              $game_location_name = $games[$i]->cells[1]->text[0]; 
-              $game_location = $games[$i]->cells[1]->text[1]; 
-              $game_map_x = $games[$i]->cells[1]->link->x;
-              $game_map_y = $games[$i]->cells[1]->link->y;
-            }
-            else {
-              $game_location_name = "";
-              $game_location = ""; 
-              $game_map_x = "";
-              $game_map_y = "";
-            }
-            $game_league = $games[$i]->cells[2]->text[0];
-            $game_group = $games[$i]->cells[2]->text[1]; 
-            $game_homeclub = $games[$i]->cells[3]->text[0]; 
-            $game_guestclub = $games[$i]->cells[4]->text[0]; 
-            $game_result = $games[$i]->cells[5]->text[0];
-            $linkGame_ID = $games[$i]->link->ids[0];
-            $new_result = $game_result;
-            $game_result_add = "";
-            if (isset($games[$i]->cells[5]->text[1])) {$game_result_add = $games[$i]->cells[5]->text[1];}
-            $game_home_result = substr($game_result,0,stripos($game_result,":"));
-            $game_guest_result = substr($game_result,stripos($game_result,":")+1,strlen($game_result));
-            $site_url = get_site_url();
-            $site_display = substr($site_url,stripos($site_url,"://")+3);
-          
-            //Fehlerkorrektur für vom 7.1.2017 + Php 7.+
-            if ($game_date=="today") $game_date="heute";
-            if ($game_date=="yesterday") $game_date="gestern";
-            if ($game_date=="tomorrow") $game_date="morgen";
-
-            if (($game_date=="heute") or ($game_date=="gestern") or ($game_date=="morgen"))  {
-              if ($game_date=="heute")  { 
-                $date_of_game = strtotime("today");
-                $last_result = $game_result;
-              }
-              if ($game_date=="gestern") $date_of_game = strtotime("yesterday");
-              if ($game_date=="morgen") $date_of_game = strtotime("tomorrow");
-            }
-            else{
-             $date_parts = explode(".", $game_date); // dd.mm.yyyy in german
-             $date_of_game = strtotime($date_parts[2]."-".$date_parts[1]."-".$date_parts[0]);
-            }
-
-            $gameLocationLinkTitle = "";
-            if ($game_location) {
-              $gameLocationLinkTitle .= $game_location;
-              if ($game_location_name) {
-                $gameLocationLinkTitle .= " (" . $game_location_name . ")";
-              }
-            }
-            $game_maplink = "<a href=\"https://maps.google.ch/maps?q=" . $game_map_y . "," . $game_map_x . "\"" . " target=\"_blank\" title= \"" . $gameLocationLinkTitle . "\">";
-       
-            $game_homeDisplay = $game_homeclub;
-            $game_guestDisplay = $game_guestclub;
-
-            /* If Cup?
-            if (substr_count($game_league,"Cup")>=1) { 
-              $cup = TRUE;
-            } */
-
-            $special_league = "Junioren/-innen U14/U17 VM";
-            $team_one = $my_club_name." I";
-            $team_two = $my_club_name." II";
-            $league_short = "U14/U17";
-            
-            $homeClass ="suhv-place";
-
-            if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) { 
-              $resultClass = 'suhv-draw';
-              $resultHomeClass = 'suhv-home';
-              $resultGuestClass = 'suhv-home';
-              if ($game_league == $special_league){
-                  $game_league = str_replace ($special_league,$league_short,$game_league); //new ab 2016
-              }
-              $game_homeDisplay = $game_league." ".str_replace ($my_club_name,"",$game_homeDisplay);
-              $game_guestDisplay = $game_league." ".str_replace ($my_club_name,"",$game_guestDisplay);
-            }
-            else {
-              if ($game_league == $special_league){
-                  $game_league = str_replace ($special_league,$league_short,$game_league); //new ab 2016
-                  if ((substr_count($game_homeDisplay,$team_one )>=1) xor (substr_count($game_guestDisplay,$team_two)>=1) ){
-                    if ((substr_count($game_homeDisplay,$team_two )>=1) or (substr_count($game_guestDisplay,$team_two)>=1) ){
-                      $game_league .=" II"; // Angzeige "U14/U17 II"
-                     } 
-                    else { 
-                      if ((substr_count($game_homeDisplay,$team_one )>=1) or (substr_count($game_guestDisplay,$team_one)>=1) ){
-                        $game_league .=" I"; // Angzeige "U14/U17 I"
-                      }
-                   } 
-                  }
-                  else {
-                    if ((substr_count($game_homeDisplay,$team_two )>=1) or (substr_count($game_guestDisplay,$team_two)>=1) ){
-                      $game_league .=" II"; // Angzeige "U14/U17 II"
-                     } 
-                    else { 
-                      if ((substr_count($game_homeDisplay,$team_one )>=1) or (substr_count($game_guestDisplay,$team_one)>=1) ){
-                        $game_league .=" I"; // Angzeige "U14/U17 I"
-                      }
-                   } 
-                  }
-              }
-
-			  $game_league = SwissUnihockey_Api_Public::clean_league($game_league, $game_group);
-
-              if ($game_home_result == $game_guest_result) { $resultClass = 'suhv-draw';} else {$resultClass = 'suhv-result';}
-
-              if (substr_count($game_homeDisplay,$my_club_name)>=1) { 
-                if ((substr_count($game_homeDisplay,$my_club_name)>=1) xor (substr_count($game_guestDisplay,$my_club_name)>=1))
-                  $game_homeDisplay = $game_league; 
-                if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) 
-                  $game_homeDisplay = $league_short." ".str_replace ($my_club_name,"",$game_homeDisplay);
-                $resultHomeClass = 'suhv-home';
-                if ($game_home_result > $game_guest_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
-              }
-              else $resultHomeClass = 'suhv-guest';
-              if (substr_count($game_guestDisplay,$my_club_name)>=1) {
-                if ((substr_count($game_homeDisplay,$my_club_name)>=1) xor (substr_count($game_guestDisplay,$my_club_name)>=1))
-                  $game_guestDisplay = $game_league;
-                if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) 
-                  $game_guestDisplay = $league_short." ".str_replace ($my_club_name,"",$game_guestDisplay);
-                $resultGuestClass = 'suhv-home';
-                if ($game_guest_result > $game_home_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
-              }
-              else $resultGuestClass = 'suhv-guest';
-            }
-
-            if ($game_result == "")  { 
-              $resultClass = 'suhv-result';
-            }
-            if (($game_date=="heute") and ((substr_count($game_result,"*")!=0) or (substr_count($game_result,"-")!=0)))  {
-              $resultClass = 'suhv-activ';
-              if (substr_count($game_result,"-")!=0) {
-                $game_result = "?";
-                $resultClass .= ' suhv-wait';
-              }
-            } 
-
-            if ($game_date == "heute") {
-              $game_summary = "-";
-              $game_telegramm = "-";
-              $game_date = $heute;
-            }
-            if ($game_date=="morgen") $game_date = $morgen;
-            if ($game_date=="gestern") $game_date = $gestern;
-            if (($items <= $n_Games)) {
-
-              
-              preg_match("/([0-9]{1,2}):([0-9]{1,2})/", $game_time, $match);
-              $game_hour    = $match[1];
-              $game_minutes = $match[2];
-  
-              $mytimestamp = strtotime("+" . $game_hour . "hours", $date_of_game);
-              $mytimestamp = strtotime("+" . $game_minutes . "minutes", $mytimestamp);
-
-              if (($mytimestamp >= $startdate) and ($linkGame_ID_before != $linkGame_ID)) { //  and $cup
-                if ($latestDateOfGame != $date_of_game) {
-                  $latestDateOfGame = $date_of_game;
-                  $html_body .= "\n<tr class='suhvFatRow'>";
-                  $tag = date("w", $date_of_game);
-                  $html_body .= "\n\t<td colspan='5'>" . $tage->$tag . ", " . str_replace(".20", ".", $game_date) . "</td>";
-                  //$html_body .= "\n\t<td colspan='5'>".str_replace(".20",".",$game_date)."</td>";
-                  $html_body .= "\n    </tr>";
-                }
-                $html_body .= "\n<tr><td>" . $game_time . "</td><td>" . $game_homeDisplay . "</td><td>:</td><td>" . $game_guestDisplay . "</td><td>" . $game_maplink . $gameLocationLinkTitle . "</a></td></tr>";
-                // $cup = FALSE; // cup only
-              }
-            }
-            else {
-              $loop = FALSE;
-            }
-            $i++; 
-            $linkGame_ID_before = $linkGame_ID;
-         } while (($i < $entries) and ($loop));
-
-         if ($data->slider->next == NULL) { $loop = FALSE; }// only this loop
-         else {
-           $page++; 
-           if ($page >= ($startpage+10)) $loop = FALSE; // Don't Loop always. // max 10 Pages
-           $api = new SwissUnihockey_Public(); 
-           $api_calls++;
-           $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
-              'page' => $page
-           )); 
-           $data = $details->data; 
-           $games = $data->regions[0]->rows;
-           $entries = count($games);
-           // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." entries: ".$entries." items: ".$items." page: ".$page." n: ".$n_Games);
-        } // end else
-      } // end While
-        // Report all errors
-      error_reporting(E_ALL);
-      $html_head .= $html_res;
-      // $html_head .= "</tr></thead><tbody>";
-      $html .= $html_head;
-      $html .= $html_body;
-      // $html .= "</tbody>";
-      // $html .= "</table>";
-      $html .= "\n</table></div>";
-
-      $stop =  time();
-      $secs = ($stop- $go);
-      //SwissUnihockey_Api_Public::log_me("club_getGames eval-time: ".$secs." secs  api-calls: ". $api_calls);
-      //$html2 = str_replace ("</table>","defekt",$html);// for test
-      set_transient( $transient, $html, SwissUnihockey_Api_Public::cacheTime()*$trans_Factor );
-      set_transient( $transient_games, $last_games, 2*60*60 );
-      if (($secs<=10) and isset($data))  {
-       $safe_html = str_replace (" min.)"," min. cache value)",$html);
-       set_transient( $secure_trans, $safe_html, 12*3600); 
-      }
-    } //end If
-    else { 
-        $htmlpos = strpos($value,"</table>");
-        $len = strlen($value);
-        if (($htmlpos) and ($len > 300)) { 
-          $html = $value; // Abfrage war OK
-          //SwissUnihockey_Api_Public::log_me("API Cache OK pos: ".$htmlpos." len: ".$len);
-        }
-        else {
-          $value = get_transient( $secure_trans ); // letzte gute Version holen bei Time-Out der API 2.0 von Swissunihockey
-          //SwissUnihockey_Api_Public::log_me("API Cache Restore!");
-          $html = $value; 
-        }
+    if ($startpage!=1) { // eine Page retour wenn nicht erste
+         $page = $startpage-1;
+         $month = date('m');
+         if($month == "6") {$page=1;} // during June is the schedule not ready
+         $api = new SwissUnihockey_Public(); 
+         $api_calls++;
+         $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
+           'page' => $page
+         )); 
+        // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." 2 page: ".$page);
     }
-    return $html;
-	}
+
+    $data = $details->data; 
+
+    $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+
+    $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
+    $header_Leage = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+    $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
+    $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
+    $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[5]->text);
+    $Cpos = strripos($my_club_name,'Chur');
+    if (!is_bool($Cpos)) { $header_Result = "Res.";}
+    $club_name = $data->title;
+    $games = $data->regions[0]->rows;
+    $attributes = $data->regions[0]->rows[0]->cells;
+    
+    $entries = count($games);
+    
+    $transient_games = $transient.$tag;
+    $last_games = get_transient( $transient_games );
+    if ($last_games == FALSE) {
+      $last_games = $games;
+      set_transient( $transient_games, $last_games, 2*55*60 );
+      // echo "<br>Reset Games";60
+    }
+    $loop = FALSE;
+    $tabs = $data->context->tabs;
+    if ($tabs == "on") $loop = TRUE;
+    $startpage = $data->context->page;
+    $page = $startpage;
+
+    $items = 0;
+    $today = strtotime("now");
+    $startdate = strtotime("-3 days",$today);
+    $cTime = (SwissUnihockey_Api_Public::cacheTime() / 60)*$trans_Factor;
+
+    if (!$cache) {
+      $view_cache = "<br> cache = off / Display: ".$n_Games." Club:".$my_club_name ." / Page:".$page; 
+      } else {$view_cache ="";
+    }
+    
+    $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
+    $html_head = "<div class=\"suhvIncludes twoRight\">\n\t<table class=\"table nobr\">\n";
+    
+    $latestDateOfGame = strtotime("1970-01-01");
+
+    error_reporting(E_ALL & ~E_NOTICE);
+    while ($loop) {
+    $i = 0;
+    do {
+          $game_id = $games[$i]->link->ids[0];
+          $game_detail_link = "https://www.swissunihockey.ch/de/game-detail?game_id=".$game_id;
+          $game_date = $games[$i]->cells[0]->text[0];
+          $game_time = $games[$i]->cells[0]->text[1];
+          if ($game_time != "???") {
+            $game_location_name = $games[$i]->cells[1]->text[0]; 
+            $game_location = $games[$i]->cells[1]->text[1]; 
+            $game_map_x = $games[$i]->cells[1]->link->x;
+            $game_map_y = $games[$i]->cells[1]->link->y;
+          }
+          else {
+            $game_location_name = "";
+            $game_location = ""; 
+            $game_map_x = "";
+            $game_map_y = "";
+          }
+          $game_league = $games[$i]->cells[2]->text[0];
+          $game_group = $games[$i]->cells[2]->text[1]; 
+          $game_homeclub = $games[$i]->cells[3]->text[0]; 
+          $game_guestclub = $games[$i]->cells[4]->text[0]; 
+          $game_result = $games[$i]->cells[5]->text[0];
+          $linkGame_ID = $games[$i]->link->ids[0];
+          $new_result = $game_result;
+          $game_result_add = "";
+          if (isset($games[$i]->cells[5]->text[1])) {$game_result_add = $games[$i]->cells[5]->text[1];}
+          $game_home_result = substr($game_result,0,stripos($game_result,":"));
+          $game_guest_result = substr($game_result,stripos($game_result,":")+1,strlen($game_result));
+          $site_url = get_site_url();
+          $site_display = substr($site_url,stripos($site_url,"://")+3);
+        
+          //Fehlerkorrektur für vom 7.1.2017 + Php 7.+
+          if ($game_date=="today") $game_date="heute";
+          if ($game_date=="yesterday") $game_date="gestern";
+          if ($game_date=="tomorrow") $game_date="morgen";
+
+          if (($game_date=="heute") or ($game_date=="gestern") or ($game_date=="morgen"))  {
+            if ($game_date=="heute")  { 
+              $date_of_game = strtotime("today");
+              $last_result = $game_result;
+            }
+            if ($game_date=="gestern") $date_of_game = strtotime("yesterday");
+            if ($game_date=="morgen") $date_of_game = strtotime("tomorrow");
+          }
+          else{
+           $date_parts = explode(".", $game_date); // dd.mm.yyyy in german
+           $date_of_game = strtotime($date_parts[2]."-".$date_parts[1]."-".$date_parts[0]);
+          }
+
+          $gameLocationLinkTitle = "";
+          if ($game_location) {
+            $gameLocationLinkTitle .= $game_location;
+            if ($game_location_name) {
+              $gameLocationLinkTitle .= " (" . $game_location_name . ")";
+            }
+          }
+          $game_maplink = "<a href=\"https://maps.google.ch/maps?q=" . $game_map_y . "," . $game_map_x . "\"" . " target=\"_blank\" title= \"" . $gameLocationLinkTitle . "\">";
+     
+          $game_homeDisplay = $game_homeclub;
+          $game_guestDisplay = $game_guestclub;
+
+          /* If Cup?
+          if (substr_count($game_league,"Cup")>=1) { 
+            $cup = TRUE;
+          } */
+
+          $special_league = "Junioren/-innen U14/U17 VM";
+          $team_one = $my_club_name." I";
+          $team_two = $my_club_name." II";
+          $league_short = "U14/U17";
+          
+          $homeClass ="suhv-place";
+
+          if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) { 
+            $resultClass = 'suhv-draw';
+            $resultHomeClass = 'suhv-home';
+            $resultGuestClass = 'suhv-home';
+            if ($game_league == $special_league){
+                $game_league = str_replace ($special_league,$league_short,$game_league); //new ab 2016
+            }
+            $game_homeDisplay = $game_league." ".str_replace ($my_club_name,"",$game_homeDisplay);
+            $game_guestDisplay = $game_league." ".str_replace ($my_club_name,"",$game_guestDisplay);
+          }
+          else {
+            if ($game_league == $special_league){
+                $game_league = str_replace ($special_league,$league_short,$game_league); //new ab 2016
+                if ((substr_count($game_homeDisplay,$team_one )>=1) xor (substr_count($game_guestDisplay,$team_two)>=1) ){
+                  if ((substr_count($game_homeDisplay,$team_two )>=1) or (substr_count($game_guestDisplay,$team_two)>=1) ){
+                    $game_league .=" II"; // Angzeige "U14/U17 II"
+                   } 
+                  else { 
+                    if ((substr_count($game_homeDisplay,$team_one )>=1) or (substr_count($game_guestDisplay,$team_one)>=1) ){
+                      $game_league .=" I"; // Angzeige "U14/U17 I"
+                    }
+                 } 
+                }
+                else {
+                  if ((substr_count($game_homeDisplay,$team_two )>=1) or (substr_count($game_guestDisplay,$team_two)>=1) ){
+                    $game_league .=" II"; // Angzeige "U14/U17 II"
+                   } 
+                  else { 
+                    if ((substr_count($game_homeDisplay,$team_one )>=1) or (substr_count($game_guestDisplay,$team_one)>=1) ){
+                      $game_league .=" I"; // Angzeige "U14/U17 I"
+                    }
+                 } 
+                }
+            }
+
+      $game_league = SwissUnihockey_Api_Public::clean_league($game_league, $game_group);
+
+            if ($game_home_result == $game_guest_result) { $resultClass = 'suhv-draw';} else {$resultClass = 'suhv-result';}
+
+            if (substr_count($game_homeDisplay,$my_club_name)>=1) { 
+              if ((substr_count($game_homeDisplay,$my_club_name)>=1) xor (substr_count($game_guestDisplay,$my_club_name)>=1))
+                $game_homeDisplay = $game_league; 
+              if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) 
+                $game_homeDisplay = $league_short." ".str_replace ($my_club_name,"",$game_homeDisplay);
+              $resultHomeClass = 'suhv-home';
+              if ($game_home_result > $game_guest_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
+            }
+            else $resultHomeClass = 'suhv-guest';
+            if (substr_count($game_guestDisplay,$my_club_name)>=1) {
+              if ((substr_count($game_homeDisplay,$my_club_name)>=1) xor (substr_count($game_guestDisplay,$my_club_name)>=1))
+                $game_guestDisplay = $game_league;
+              if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) 
+                $game_guestDisplay = $league_short." ".str_replace ($my_club_name,"",$game_guestDisplay);
+              $resultGuestClass = 'suhv-home';
+              if ($game_guest_result > $game_home_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
+            }
+            else $resultGuestClass = 'suhv-guest';
+          }
+
+          if ($game_result == "")  { 
+            $resultClass = 'suhv-result';
+          }
+          if (($game_date=="heute") and ((substr_count($game_result,"*")!=0) or (substr_count($game_result,"-")!=0)))  {
+            $resultClass = 'suhv-activ';
+            if (substr_count($game_result,"-")!=0) {
+              $game_result = "?";
+              $resultClass .= ' suhv-wait';
+            }
+          } 
+
+          if ($game_date == "heute") {
+            $game_summary = "-";
+            $game_telegramm = "-";
+            $game_date = $heute;
+          }
+          if ($game_date=="morgen") $game_date = $morgen;
+          if ($game_date=="gestern") $game_date = $gestern;
+          if (($items <= $n_Games)) {
+
+            
+            preg_match("/([0-9]{1,2}):([0-9]{1,2})/", $game_time, $match);
+            $game_hour    = $match[1];
+            $game_minutes = $match[2];
+
+            $mytimestamp = strtotime("+" . $game_hour . "hours", $date_of_game);
+            $mytimestamp = strtotime("+" . $game_minutes . "minutes", $mytimestamp);
+
+            if (($mytimestamp >= $startdate) and ($linkGame_ID_before != $linkGame_ID)) { //  and $cup
+              if ($latestDateOfGame != $date_of_game) {
+                $latestDateOfGame = $date_of_game;
+                $html_body .= "\n<tr class='suhvFatRow'>";
+                $tag = date("w", $date_of_game);
+                $html_body .= "\n\t<td colspan='5'>" . $tage->$tag . ", " . str_replace(".20", ".", $game_date) . "</td>";
+                //$html_body .= "\n\t<td colspan='5'>".str_replace(".20",".",$game_date)."</td>";
+                $html_body .= "\n    </tr>";
+              }
+              $html_body .= "\n<tr><td>" . $game_time . "</td><td>" . $game_homeDisplay . "</td><td>:</td><td>" . $game_guestDisplay . "</td><td>" . $game_maplink . $gameLocationLinkTitle . "</a></td></tr>";
+              // $cup = FALSE; // cup only
+            }
+          }
+          else {
+            $loop = FALSE;
+          }
+          $i++; 
+          $linkGame_ID_before = $linkGame_ID;
+       } while (($i < $entries) and ($loop));
+
+       if ($data->slider->next == NULL) { $loop = FALSE; }// only this loop
+       else {
+         $page++; 
+         if ($page >= ($startpage+10)) $loop = FALSE; // Don't Loop always. // max 10 Pages
+         $api = new SwissUnihockey_Public(); 
+         $api_calls++;
+         $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
+            'page' => $page
+         )); 
+         $data = $details->data; 
+         $games = $data->regions[0]->rows;
+         $entries = count($games);
+         // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." entries: ".$entries." items: ".$items." page: ".$page." n: ".$n_Games);
+      } // end else
+    } // end While
+      // Report all errors
+    error_reporting(E_ALL);
+    $html_head .= $html_res;
+    // $html_head .= "</tr></thead><tbody>";
+    $html .= $html_head;
+    $html .= $html_body;
+    // $html .= "</tbody>";
+    // $html .= "</table>";
+    $html .= "\n</table></div>";
+
+    $stop =  time();
+    $secs = ($stop- $go);
+    //SwissUnihockey_Api_Public::log_me("club_getGames eval-time: ".$secs." secs  api-calls: ". $api_calls);
+    //$html2 = str_replace ("</table>","defekt",$html);// for test
+    set_transient( $transient, $html, SwissUnihockey_Api_Public::cacheTime()*$trans_Factor );
+    set_transient( $transient_games, $last_games, 2*60*60 );
+    if (($secs<=10) and isset($data))  {
+     $safe_html = str_replace (" min.)"," min. cache value)",$html);
+     set_transient( $secure_trans, $safe_html, 12*3600); 
+    }
+  }
+  else { 
+      $htmlpos = strpos($value,"</table>");
+      $len = strlen($value);
+      if (($htmlpos) and ($len > 300)) { 
+        $html = $value; // Abfrage war OK
+        //SwissUnihockey_Api_Public::log_me("API Cache OK pos: ".$htmlpos." len: ".$len);
+      }
+      else {
+        $value = get_transient( $secure_trans ); // letzte gute Version holen bei Time-Out der API 2.0 von Swissunihockey
+        //SwissUnihockey_Api_Public::log_me("API Cache Restore!");
+        $html = $value; 
+      }
+  }
+  return $html;
+}
+
+/* ---------------------------------------------------------------------------------------------------- */
+public static function api_club_getPlayedGames($season, $club_ID, $club_shortname, $team_ID, $mode, $cache) {
+    
+  $team_ID = NULL;
+  $trans_Factor = 1;
+  $my_club_name = $club_shortname;
+  //SwissUnihockey_Api_Public::log_me($my_club_name);
+  $cup = FALSE;
+  $transient = "suhv-"."club_getPlayedGames".$club_ID.$team_ID.$season.$mode;
+  $secure_trans = $transient."Secure";
+  $semaphore = $club_ID.$team_ID."club_getPlayedGames-Flag";
+  $value = get_transient( $transient );
+  $flag = get_transient( $semaphore);
+  $linkGame_ID = NULL;
+  $likkGame_ID_before = NULL;
+
+  if ($flag) $sema_value = "Sema: TRUE"; else  $sema_value = "Sema: FALSE";
+  //SwissUnihockey_Api_Public::log_me($sema_value);
+  
+  if (!$cache) { $value = False; }
+
+  if (SwissUnihockey_Api_Public::suhvDown()){ $value = TRUE;}
+
+  if (($value == False) and ($flag == False)) {
+
+    set_transient( $semaphore, TRUE, 5); // Keep out for 10 seconds - no Mail
+
+    $go =  time();
+    $api_calls = 0;
+    $plugin_options = get_option( 'SUHV_WP_plugin_options' );
+    $n_Games = $plugin_options['SUHV_club_games_limit'];
+    $tablepress ='';
+    if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress"; 
+
+
+    // SwissUnihockey_Api_Public::log_me(array('function' => 'club_getGames', 'season' => $season, 'club_ID' =>  $club_ID, 'team_ID' =>   $team_ID, 'mode' => $mode));
+
+    $skip = "<br />";
+
+    $html = "";
+    $html_res = "";
+    $html_body = "";
+
+    $tage = SwissUnihockey_Api_Public::language_group('Days');
+    $heute = SwissUnihockey_Api_Public::translate('Time','heute');
+    $gestern = SwissUnihockey_Api_Public::translate('Time','gestern');
+    $morgen = SwissUnihockey_Api_Public::translate('Time','morgen');
+    $tag = date("w");
+    $wochentag = $tage->$tag;
+
+    $api = new SwissUnihockey_Public(); 
+    $api_calls++;
+    $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
+
+    )); 
+    
+    // Eine Seite retour bei Page-Ende? 
+
+    $data = $details->data; 
+    $startpage = $data->context->page;
+    // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." 1 page: ".$startpage);
+    //echo "Startpage: ".$startpage."<br>";
+    if ($startpage!=1) { // eine Page retour wenn nicht erste
+         $page = $startpage-1;
+         $month = date('m');
+         if($month == "6") {$page=1;} // during June is the schedule not ready
+         $api = new SwissUnihockey_Public(); 
+         $api_calls++;
+         $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
+           'page' => $page
+         )); 
+        // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." 2 page: ".$page);
+    }
+
+    $data = $details->data; 
+
+    $header_DateTime = SwissUnihockey_Api_Public::translate('Games',$data->headers[0]->text);
+
+    $header_Location = SwissUnihockey_Api_Public::translate('Games',$data->headers[1]->text);
+    $header_Leage = SwissUnihockey_Api_Public::translate('Games',$data->headers[2]->text);
+    $header_Home = SwissUnihockey_Api_Public::translate('Games',$data->headers[3]->text);
+    $header_Guest = SwissUnihockey_Api_Public::translate('Games',$data->headers[4]->text);
+    $header_Result = SwissUnihockey_Api_Public::translate('Games',$data->headers[5]->text);
+    $Cpos = strripos($my_club_name,'Chur');
+    if (!is_bool($Cpos)) { $header_Result = "Res.";}
+    $club_name = $data->title;
+    $games = $data->regions[0]->rows;
+    $attributes = $data->regions[0]->rows[0]->cells;
+    
+    $entries = count($games);
+    
+    $transient_games = $transient.$tag;
+    $last_games = get_transient( $transient_games );
+    if ($last_games == FALSE) {
+      $last_games = $games;
+      set_transient( $transient_games, $last_games, 2*55*60 );
+      // echo "<br>Reset Games";60
+    }
+    $loop = FALSE;
+    $tabs = $data->context->tabs;
+    if ($tabs == "on") $loop = TRUE;
+    $startpage = $data->context->page;
+    $page = $startpage;
+
+    $items = 0;
+    $today = strtotime("now");
+    $startdate = strtotime("+1 minutes",$today);
+    $cTime = (SwissUnihockey_Api_Public::cacheTime() / 60)*$trans_Factor;
+
+    if (!$cache) {
+      $view_cache = "<br> cache = off / Display: ".$n_Games." Club:".$my_club_name ." / Page:".$page; 
+      } else {$view_cache ="";
+    }
+    
+    $Gamedetails = SwissUnihockey_Api_Public::translate("Replacements","Spieldetails");
+    $html_head = "<div class=\"suhvIncludes twoRight\">\n\t<table class=\"table nobr\">\n";
+    
+    $latestDateOfGame = strtotime("1970-01-01");
+
+    error_reporting(E_ALL & ~E_NOTICE);
+    while ($loop) {
+    $i = $entries - 1;
+    do {
+          $game_id = $games[$i]->link->ids[0];
+          $game_detail_link = "https://www.swissunihockey.ch/de/game-detail?game_id=".$game_id;
+          $game_date = $games[$i]->cells[0]->text[0];
+          $game_time = $games[$i]->cells[0]->text[1];
+          if ($game_time != "???") {
+            $game_location_name = $games[$i]->cells[1]->text[0]; 
+            $game_location = $games[$i]->cells[1]->text[1]; 
+            $game_map_x = $games[$i]->cells[1]->link->x;
+            $game_map_y = $games[$i]->cells[1]->link->y;
+          }
+          else {
+            $game_location_name = "";
+            $game_location = ""; 
+            $game_map_x = "";
+            $game_map_y = "";
+          }
+          $game_league = $games[$i]->cells[2]->text[0];
+          $game_group = $games[$i]->cells[2]->text[1]; 
+          $game_homeclub = $games[$i]->cells[3]->text[0]; 
+          $game_guestclub = $games[$i]->cells[4]->text[0]; 
+          $game_result = $games[$i]->cells[5]->text[0];
+          $linkGame_ID = $games[$i]->link->ids[0];
+          $new_result = $game_result;
+          $game_result_add = "";
+          if (isset($games[$i]->cells[5]->text[1])) {
+            $game_result_add = "(".$games[$i]->cells[5]->text[1].")";
+          }
+          $game_home_result = substr($game_result,0,stripos($game_result,":"));
+          $game_guest_result = substr($game_result,stripos($game_result,":")+1,strlen($game_result));
+          $site_url = get_site_url();
+          $site_display = substr($site_url,stripos($site_url,"://")+3);
+        
+          //Fehlerkorrektur für vom 7.1.2017 + Php 7.+
+          if ($game_date=="today") $game_date="heute";
+          if ($game_date=="yesterday") $game_date="gestern";
+          if ($game_date=="tomorrow") $game_date="morgen";
+
+          if (($game_date=="heute") or ($game_date=="gestern") or ($game_date=="morgen"))  {
+            if ($game_date=="heute")  { 
+              $date_of_game = strtotime("today");
+              $last_result = $game_result;
+            }
+            if ($game_date=="gestern") $date_of_game = strtotime("yesterday");
+            if ($game_date=="morgen") $date_of_game = strtotime("tomorrow");
+          }
+          else{
+           $date_parts = explode(".", $game_date); // dd.mm.yyyy in german
+           $date_of_game = strtotime($date_parts[2]."-".$date_parts[1]."-".$date_parts[0]);
+          }
+
+          $gameLocationLinkTitle = "";
+          if ($game_location) {
+            $gameLocationLinkTitle .= $game_location;
+            if ($game_location_name) {
+              $gameLocationLinkTitle .= " (" . $game_location_name . ")";
+            }
+          }
+          $game_maplink = "<a href=\"https://maps.google.ch/maps?q=" . $game_map_y . "," . $game_map_x . "\"" . " target=\"_blank\" title= \"" . $gameLocationLinkTitle . "\">";
+     
+          $game_homeDisplay = $game_homeclub;
+          $game_guestDisplay = $game_guestclub;
+
+          /* If Cup?
+          if (substr_count($game_league,"Cup")>=1) { 
+            $cup = TRUE;
+          } */
+
+          $special_league = "Junioren/-innen U14/U17 VM";
+          $team_one = $my_club_name." I";
+          $team_two = $my_club_name." II";
+          $league_short = "U14/U17";
+          
+          $homeClass ="suhv-place";
+
+          if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) { 
+            $resultClass = 'suhv-draw';
+            $resultHomeClass = 'suhv-home';
+            $resultGuestClass = 'suhv-home';
+            if ($game_league == $special_league){
+                $game_league = str_replace ($special_league,$league_short,$game_league); //new ab 2016
+            }
+            $game_homeDisplay = $game_league." ".str_replace ($my_club_name,"",$game_homeDisplay);
+            $game_guestDisplay = $game_league." ".str_replace ($my_club_name,"",$game_guestDisplay);
+          }
+          else {
+            if ($game_league == $special_league){
+                $game_league = str_replace ($special_league,$league_short,$game_league); //new ab 2016
+                if ((substr_count($game_homeDisplay,$team_one )>=1) xor (substr_count($game_guestDisplay,$team_two)>=1) ){
+                  if ((substr_count($game_homeDisplay,$team_two )>=1) or (substr_count($game_guestDisplay,$team_two)>=1) ){
+                    $game_league .=" II"; // Angzeige "U14/U17 II"
+                   } 
+                  else { 
+                    if ((substr_count($game_homeDisplay,$team_one )>=1) or (substr_count($game_guestDisplay,$team_one)>=1) ){
+                      $game_league .=" I"; // Angzeige "U14/U17 I"
+                    }
+                 } 
+                }
+                else {
+                  if ((substr_count($game_homeDisplay,$team_two )>=1) or (substr_count($game_guestDisplay,$team_two)>=1) ){
+                    $game_league .=" II"; // Angzeige "U14/U17 II"
+                   } 
+                  else { 
+                    if ((substr_count($game_homeDisplay,$team_one )>=1) or (substr_count($game_guestDisplay,$team_one)>=1) ){
+                      $game_league .=" I"; // Angzeige "U14/U17 I"
+                    }
+                 } 
+                }
+            }
+
+            $game_league = SwissUnihockey_Api_Public::clean_league($game_league, $game_group);
+
+            if ($game_home_result == $game_guest_result) { $resultClass = 'suhv-draw';} else {$resultClass = 'suhv-result';}
+
+            if (substr_count($game_homeDisplay,$my_club_name)>=1) { 
+              if ((substr_count($game_homeDisplay,$my_club_name)>=1) xor (substr_count($game_guestDisplay,$my_club_name)>=1))
+                $game_homeDisplay = $game_league; 
+              if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) 
+                $game_homeDisplay = $league_short." ".str_replace ($my_club_name,"",$game_homeDisplay);
+              $resultHomeClass = 'suhv-home';
+              if ($game_home_result > $game_guest_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
+            }
+            else $resultHomeClass = 'suhv-guest';
+            if (substr_count($game_guestDisplay,$my_club_name)>=1) {
+              if ((substr_count($game_homeDisplay,$my_club_name)>=1) xor (substr_count($game_guestDisplay,$my_club_name)>=1))
+                $game_guestDisplay = $game_league;
+              if ((substr_count($game_homeDisplay,$my_club_name)>=1) and (substr_count($game_guestDisplay,$my_club_name)>=1)) 
+                $game_guestDisplay = $league_short." ".str_replace ($my_club_name,"",$game_guestDisplay);
+              $resultGuestClass = 'suhv-home';
+              if ($game_guest_result > $game_home_result) { $resultClass = 'suhv-win';} else {$resultClass = 'suhv-lose';}
+            }
+            else $resultGuestClass = 'suhv-guest';
+          }
+
+          if ($game_result == "")  { 
+            $resultClass = 'suhv-result';
+          }
+          if (($game_date=="heute") and ((substr_count($game_result,"*")!=0) or (substr_count($game_result,"-")!=0)))  {
+            $resultClass = 'suhv-activ';
+            if (substr_count($game_result,"-")!=0) {
+              $game_result = "?";
+              $resultClass .= ' suhv-wait';
+            }
+          } 
+
+          if ($game_date == "heute") {
+            $game_summary = "-";
+            $game_telegramm = "-";
+            $game_date = $heute;
+          }
+          if ($game_date=="morgen") $game_date = $morgen;
+          if ($game_date=="gestern") $game_date = $gestern;
+          if (($items <= $n_Games)) {
+
+            if (($date_of_game <= $startdate) and ($linkGame_ID_before != $linkGame_ID)) { //  and $cup
+              if ($latestDateOfGame != $date_of_game) {
+                $latestDateOfGame = $date_of_game;
+                $html_body .= "\n<tr class='suhvFatRow'>";
+                $tag = date("w", $date_of_game);
+                $html_body .= "\n\t<td colspan='5'>" . $tage->$tag . ", " . str_replace(".20", ".", $game_date) . "</td>";
+                //$html_body .= "\n\t<td colspan='5'>".str_replace(".20",".",$game_date)."</td>";
+                $html_body .= "\n    </tr>";
+              }
+
+              if ($resultHomeClass == 'suhv-guest') {
+								$html_body .= "\n<tr><td>" . $game_guestDisplay . "</td><td>&nbsp;</td><td>" . $game_guest_result . ":" . $game_home_result . $game_result_add . "</td><td>&nbsp;</td><td>" . $game_homeDisplay . "</td></tr>";
+							} else {
+								$html_body .= "\n<tr><td>" . $game_homeDisplay . "</td><td>&nbsp;</td><td>" . $game_result . $game_result_add . "</td><td>&nbsp;</td><td>" . $game_guestDisplay . "</td></tr>";
+							}
+              // $cup = FALSE; // cup only
+            }
+          }
+          else {
+            $loop = FALSE;
+          }
+          $i--; 
+          $linkGame_ID_before = $linkGame_ID;
+       } while (($i >= 0) and ($loop));
+
+       if ($data->slider->next == NULL) { $loop = FALSE; }// only this loop
+       else {
+         $page++; 
+         if ($page >= ($startpage+10)) $loop = FALSE; // Don't Loop always. // max 10 Pages
+         $api = new SwissUnihockey_Public(); 
+         $api_calls++;
+         $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
+            'page' => $page
+         )); 
+         $data = $details->data; 
+         $games = $data->regions[0]->rows;
+         $entries = count($games);
+         // SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." entries: ".$entries." items: ".$items." page: ".$page." n: ".$n_Games);
+      } // end else
+    } // end While
+      // Report all errors
+    error_reporting(E_ALL);
+    $html_head .= $html_res;
+    // $html_head .= "</tr></thead><tbody>";
+    $html .= $html_head;
+    $html .= $html_body;
+    // $html .= "</tbody>";
+    // $html .= "</table>";
+    $html .= "\n</table></div>";
+
+    $stop =  time();
+    $secs = ($stop- $go);
+    //SwissUnihockey_Api_Public::log_me("club_getGames eval-time: ".$secs." secs  api-calls: ". $api_calls);
+    //$html2 = str_replace ("</table>","defekt",$html);// for test
+    set_transient( $transient, $html, SwissUnihockey_Api_Public::cacheTime()*$trans_Factor );
+    set_transient( $transient_games, $last_games, 2*60*60 );
+    if (($secs<=10) and isset($data))  {
+     $safe_html = str_replace (" min.)"," min. cache value)",$html);
+     set_transient( $secure_trans, $safe_html, 12*3600); 
+    }
+  } //end If
+  else { 
+      $htmlpos = strpos($value,"</table>");
+      $len = strlen($value);
+      if (($htmlpos) and ($len > 300)) { 
+        $html = $value; // Abfrage war OK
+        //SwissUnihockey_Api_Public::log_me("API Cache OK pos: ".$htmlpos." len: ".$len);
+      }
+      else {
+        $value = get_transient( $secure_trans ); // letzte gute Version holen bei Time-Out der API 2.0 von Swissunihockey
+        //SwissUnihockey_Api_Public::log_me("API Cache Restore!");
+        $html = $value; 
+      }
+  }
+  return $html;
+}
 
 /* ---------------------------------------------------------------------------------------------------- */
  public static function api_club_getGames_Mails($season, $club_ID, $club_shortname, $team_ID, $mode, $cache) {
@@ -1321,9 +1677,7 @@ private static function suhvDown() {
     return $html;
   }
 
-/* ---------------------------------------------------------------------------------------------------- */
   public static function api_club_getWeekendGames($season, $club_ID, $club_shortname, $team_ID, $mode, $start_date, $end_date, $cache) {
-    
     date_default_timezone_set("Europe/Paris");
     $my_club_name = $club_shortname;
     $linkGame_ID = NULL;
