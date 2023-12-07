@@ -53,7 +53,7 @@ private static function nearWeekend() {
 private static function clean_league($game_league, $game_group="") {
 
     $game_league = str_replace(" Regional", " (".$game_group.") ", $game_league);
-//    $game_league = str_replace ("Junioren", "",$game_league);
+    // $game_league = str_replace ("Junioren", "",$game_league);
     $game_league = str_replace ("Juniorinnen", "",$game_league);
     $game_league = str_replace ("/-innen ", "",$game_league);
     $game_league = str_replace ("Herren Aktive", "",$game_league);
@@ -141,38 +141,36 @@ private static function suhvDown() {
 
     if (($value == False) and ($flag == False)) {
 
-      set_transient( $semaphore, TRUE, 5); // Keep out for 10 seconds - no Mail
+        set_transient( $semaphore, TRUE, 5); // Keep out for 10 seconds - no Mail
 
-      $go =  time();
-      $api_calls = 0;
-      $plugin_options = get_option( 'SUHV_WP_plugin_options' );
-      $n_Games = $plugin_options['SUHV_club_games_limit'];
-      $tablepress ='';
-      if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress"; 
+        $go =  time();
+        $api_calls = 0;
+        $plugin_options = get_option( 'SUHV_WP_plugin_options' );
+        $n_Games = $plugin_options['SUHV_club_games_limit'];
+        $tablepress ='';
+        if ((isset( $plugin_options['SUHV_css_tablepress']) == 1)) $tablepress = " tablepress"; 
 
 
-      // SwissUnihockey_Api_Public::log_me(array('function' => 'club_getGames', 'season' => $season, 'club_ID' =>  $club_ID, 'team_ID' =>   $team_ID, 'mode' => $mode));
+        // SwissUnihockey_Api_Public::log_me(array('function' => 'club_getGames', 'season' => $season, 'club_ID' =>  $club_ID, 'team_ID' =>   $team_ID, 'mode' => $mode));
 
-      $skip = "<br />";
+        $skip = "<br />";
 
-      $html = "";
-      $html_res = "";
-      $html_body = "";
+        $html = "";
+        $html_res = "";
+        $html_body = "";
 
-      $tage = SwissUnihockey_Api_Public::language_group('Days');
-      $heute = SwissUnihockey_Api_Public::translate('Time','heute');
-      $gestern = SwissUnihockey_Api_Public::translate('Time','gestern');
-      $morgen = SwissUnihockey_Api_Public::translate('Time','morgen');
-      $tag = date("w");
-      $wochentag = $tage->$tag;
+        $tage = SwissUnihockey_Api_Public::language_group('Days');
+        $heute = SwissUnihockey_Api_Public::translate('Time','heute');
+        $gestern = SwissUnihockey_Api_Public::translate('Time','gestern');
+        $morgen = SwissUnihockey_Api_Public::translate('Time','morgen');
+        $tag = date("w");
+        $wochentag = $tage->$tag;
 
-      $api = new SwissUnihockey_Public(); 
-      $api_calls++;
-      $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
- 
-      )); 
-      
-// Eine Seite retour bei Page-Ende? 
+        $api = new SwissUnihockey_Public(); 
+        $api_calls++;
+        $details = $api->clubGames($season, $club_ID, $team_ID, $mode, array(
+    
+    ));
 
       $data = $details->data; 
       $startpage = $data->context->page;
@@ -499,7 +497,7 @@ private static function suhvDown() {
 
     if (($value == False) and ($flag == False) and (substr_count($e_Mail_Result,"@" )>=1)) {
 
-  //**TEST****
+	  //**TEST****
 	  if (substr_count($_SERVER['SERVER_NAME'] ,"churunihockey")>=1) {
 		  $myfile = fopen("cronlog.txt", "a+") or die("Unable to open file!");
 		  $txt = "LoopMail: ".date("H:i:s")."\n";
@@ -537,7 +535,7 @@ private static function suhvDown() {
         
       )); 
       
-// Eine Seite retour bei Page-Ende? 
+      // Eine Seite retour bei Page-Ende? 
 
       $data = $details->data; 
       $startpage = $data->context->page;
@@ -1066,7 +1064,7 @@ private static function suhvDown() {
        
       )); 
       
-// Eine Seite retour bei Page-Ende? 
+      // Eine Seite retour bei Page-Ende? 
 
       $data = $details->data; 
       $startpage = $data->context->page;
@@ -1390,7 +1388,7 @@ private static function suhvDown() {
        
       )); 
       
-// Eine Seite retour bei Page-Ende? 
+      // Eine Seite retour bei Page-Ende? 
 
       $data = $details->data; 
       $startpage = $data->context->page;
@@ -1653,7 +1651,7 @@ private static function suhvDown() {
 
     if ($away != NULL) { $away = TRUE; $gametype = "Away";} else { $away = FALSE; $gametype = "Home";}
 
-//**TEST****
+    //**TEST****
     if (substr_count($_SERVER['SERVER_NAME'] ,"churunihockey")>=1) {
       $myfile = fopen("cronlog.txt", "a+") or die("Unable to open file!");
       $txt = "LiveGamesDetails: ".date("d.m.Y - H:i:s")."\n";
@@ -1716,7 +1714,7 @@ private static function suhvDown() {
        
       )); 
       
-// Eine Seite retour bei Page-Ende? 
+      // Eine Seite retour bei Page-Ende? 
 
       $data = $details->data; 
       $startpage = $data->context->page;
@@ -2033,7 +2031,7 @@ private static function suhvDown() {
     
     if ($value == False) {
 
-  //SwissUnihockey_Api_Public::log_me(array('function' => 'club_getCurrentGameDetails', 'season' => $season, 'club_ID' =>  $club_ID, 'team_ID' =>   $team_ID, 'mode' => $mode, 'promo_left' => $promo_left, 'promo_middle' => $promo_middle, 'promo_right' => $promo_right));
+      //SwissUnihockey_Api_Public::log_me(array('function' => 'club_getCurrentGameDetails', 'season' => $season, 'club_ID' =>  $club_ID, 'team_ID' =>   $team_ID, 'mode' => $mode, 'promo_left' => $promo_left, 'promo_middle' => $promo_middle, 'promo_right' => $promo_right));
 
       $html = "";
       $html_res = "";
@@ -2073,7 +2071,7 @@ private static function suhvDown() {
 
         $data = $details->data; 
 
- //SwissUnihockey_Api_Public::log_me($details);
+        //SwissUnihockey_Api_Public::log_me($details);
 
         $data = $details->data; 
         $header_DateTime = $data->headers[0]->text;
@@ -2188,7 +2186,7 @@ private static function suhvDown() {
             $awayGoals = "<div>\n<ul>\n";
             $homeGameFound = FALSE;
 
-//SwissUnihockey_Api_Public::log_me($items." ".$game_date." : ".$game_homeclub." vs ".$game_guestclub);
+            //SwissUnihockey_Api_Public::log_me($items." ".$game_date." : ".$game_homeclub." vs ".$game_guestclub);
 
             if (($items <= $n_Games)) {
 
@@ -2300,7 +2298,7 @@ private static function suhvDown() {
            $data = $details->data; 
            $games = $data->regions[0]->rows;
            $entries = count($games);
- //SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." entries: ".$entries." items: ".$items." page: ".$page." n: ".$n_Games);
+           //SwissUnihockey_Api_Public::log_me("club_getGames api-calls:". $api_calls." entries: ".$entries." items: ".$items." page: ".$page." n: ".$n_Games);
         } // end else
       } // end While
         // Report all errors
@@ -2344,11 +2342,11 @@ private static function suhvDown() {
       fwrite($myfile, $html);
       fclose($myfile);
 
-/* save every File
-      $myfile = fopen($path."/".$game_id.date("_Y_m_d-H-i").".live", "w") or die("Unable to open file!");
-      fwrite($myfile, $html);
-      fclose($myfile);
-*/
+      /* save every File
+            $myfile = fopen($path."/".$game_id.date("_Y_m_d-H-i").".live", "w") or die("Unable to open file!");
+            fwrite($myfile, $html);
+            fclose($myfile);
+      */
       if (in_array($game_id, $test_games)) echo "<p class='error suhv'>TEST für Beameranzeige!<br></p>\n";
     }
 
@@ -2916,7 +2914,7 @@ private static function suhvDown() {
     $value = get_transient( $transient );
     $trans_Factor = 5;
     
-// Sample: https://api-v2.swissunihockey.ch/api/rankings?&team_id=427913&club_id=423403&season=2015
+    // Sample: https://api-v2.swissunihockey.ch/api/rankings?&team_id=427913&club_id=423403&season=2015
 
     if (!$cache) $value = False;
     if (SwissUnihockey_Api_Public::suhvDown()){ $value = TRUE; }
